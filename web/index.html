@@ -125,7 +125,7 @@
         
         <form name="fileUploadForm" action="" method="post" enctype="multipart/form-data" style="position: absolute; top:30px; left:100px; width:400px; height:25px" >
             
-            <input type="button" value="Home" onClick="goToHomeForm();">
+            <input type="button" value="Home" onClick="goToHomeForm();" />
             <h3>File Upload:</h3>
             Select a file to upload: <br>
             <input type="file" name="file" id="myFile"> <br/><br>
@@ -133,21 +133,21 @@
             
         </form>
         
-        <form name="filter" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
+        <form name="TANCFilterForm" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
             
-            <input type="button" value="Home" onClick="goToHomeForm();">    
+            <input type="button" value="Home" onClick="goToHomeForm();"/>    
             
             <h3>Apply Filters</h3>        
             <p><input type="radio" name="filter2tanc" value="init" onClick="chkdatetanc();"/> Case Initiated</p>
             <input type="date" name="totanc1" onClick="chkdatetanc();"/> to  <input type="date" name="fromtanc1"   onClick="chkdatetanc();" /><br/>
-            <p><input type="radio" checked name="filter2tanc" value="close" onClick="chkdatetanc();"/> Case Closed</p>
+            <p><input type="radio" name="filter2tanc" value="close" onClick="chkdatetanc();"/> Case Closed</p>
             <input type="date" name="totanc2" onClick="chkdatetanc();"/> to  <input type="date" name="fromtanc2"  onClick="chkdatetanc();" /><br/>
-            <p><input type="radio" checked name="filter2tanc" value="success" onClick="chkdatetanc();"/> Success </p>
+            <p><input type="radio" name="filter2tanc" value="success" onClick="chkdatetanc();"/> Success </p>
             <input type="date" name="totanc3" onClick="chkdatetanc();"/> to  <input type="date" name="fromtanc3"  onClick="chkdatetanc();" /><br/>
             <br/>
             <label><strong>Filter Company</strong></label><br/>    
             <p><input type="radio" name="filter2" value="small"/> Small or medium EnterPrise</p>
-            <p><input type="radio" checked name="filter2" value="All"/> All-Default-Large companies </p>
+            <p><input type="radio" checked name="filter2" value="All"/> All-Default  </p>
             <br/>
             <label><strong>Filter Country:</strong></label>
             <select name= "country" multiple>
@@ -522,18 +522,18 @@
             <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>Apply Filters</h3>
             <label><strong>Display Data For:</strong></label><br/>      
-            <p><input type="radio" name="filterad1" value="anti"> Antidumping/Countervailing Petitions Initiated</input></p>
-            <p><input type="radio" checked name="filterad1" value="count"> Antidumping/Countervailing Orders </input></p>
-            <p><input type="radio" checked name="filterad1" value="All">Both AD/CVD Petitions Initiated and Orders</input></p>
+            <p><input type="radio" name="filterad1" value="anti"/> Antidumping/Countervailing Petitions Initiated </p>
+            <p><input type="radio" checked name="filterad1" value="count"/> Antidumping/Countervailing Orders </p>
+            <p><input type="radio" checked name="filterad1" value="All"/>Both AD/CVD Petitions Initiated and Orders </p>
             <label><strong>Select date</strong></label><br/>    
-            <p><input type="radio" name="filter2adcase" value="init" onClick="chkdateadcase()"> Case Initiated</input></p>
-            <input type="date" name="toadcase1" onClick="chkdateadcase()"> to  <input type="date" name="fromadcase1" onClick="chkdateadcase()" display: inline-block;><br/>
-            <p><input type="radio" checked name="filter2adcase" value="close" onClick="chkdateadcase()"> Case Closed</input></p>
-            <input type="date" name="toadcase2" onClick="chkdateadcase()"> to  <input type="date" name="fromadcase2"  onClick="chkdateadcase()" display: inline-block; ><br/>
+            <p><input type="radio" name="filter2adcase" value="init" onClick="chkdateadcase();"/> Case Initiated </p>
+            <input type="date" name="toadcase1" onClick="chkdateadcase();"/> to  <input type="date" name="fromadcase1" onClick="chkdateadcase();" /><br/>
+            <p><input type="radio" checked name="filter2adcase" value="close" onClick="chkdateadcase();"> Case Closed </p>
+            <input type="date" name="toadcase2" onClick="chkdateadcase();"/> to  <input type="date" name="fromadcase2"  onClick="chkdateadcase();" /><br/>
             <br/>
             <label><strong>Filter Company</strong></label><br/>    
-            <p><input type="radio" name="filter3ad" value="small"> Small or medium EnterPrise</input></p>
-            <p><input type="radio" checked name="filter3ad" value="All"> All-Default-Large companies</input></p>
+            <p><input type="radio" name="filter3ad" value="small"/> Small or medium EnterPrise </p>
+            <p><input type="radio" checked name="filter3ad" value="All"/> All-Default  </p>
             <br/>
             <label><strong>Filter Country:</strong></label>
             <select name= "countryad" multiple>
@@ -760,7 +760,7 @@
                <option value = "21">Other</option>
             </select><br/>
             <br/>
-            <input type="button" value="Continue" onclick="mapview()" >
+            <input type="button" value="Continue" onclick="mapview();" />
             <button type="reset" value="Reset">Reset</button>
         </form>
         
@@ -775,7 +775,7 @@
             <br/>
             <label><strong>Filter Company</strong></label><br/>    
             <p><input type="radio" name="filter3tr" value="small"> Small or medium EnterPrise</input></p>
-            <p><input type="radio" checked name="filter3tr" value="All"> All-Default-Large companies</input></p>
+            <p><input type="radio" checked name="filter3tr" value="All"> All-Default </input></p>
             <br/>
             <label><strong>Filter Country:</strong></label>
             <select name= "countrytr">
@@ -1019,7 +1019,7 @@
             <br/>
             <label><strong>Filter Company</strong></label><br/>    
             <p><input type="radio" name="filter3law" value="small"> Small or medium EnterPrise</input></p>
-            <p><input type="radio" checked name="filter3law" value="All"> All-Default-Large companies</input></p>
+            <p><input type="radio" checked name="filter3law" value="All"> All-Default </input></p>
             <br/>
             <label><strong>Filter Country:</strong></label>
             <select name= "countrylaw">
@@ -1279,7 +1279,7 @@
             window.onload = function () {
                 document.forms["dataCategoryForm"].style.visibility="visible";
                 document.forms["fileUploadForm"].style.visibility="hidden";
-                document.forms["filter"].style.visibility="hidden";
+                document.forms["TANCFilterForm"].style.visibility="hidden";
                 document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                 document.forms["finalmap"].style.visibility="hidden";
                 document.forms["filteradcase"].style.visibility="hidden";
@@ -1308,7 +1308,7 @@
                     alert("No input selected - Select one of the data categories");
                     document.forms["dataCategoryForm"].style.visibility="visible";
                     document.forms["fileUploadForm"].style.visibility="hidden";
-                    document.forms["filter"].style.visibility="hidden";
+                    document.forms["TANCFilterForm"].style.visibility="hidden";
                     document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                     document.forms["filteradcase"].style.visibility="hidden";
                     document.forms["filtertrade"].style.visibility="hidden";
@@ -1319,7 +1319,7 @@
                     dataCategory = whichinput[k].value;
                     document.forms["dataCategoryForm"].style.visibility="hidden";
                     document.forms["fileUploadForm"].style.visibility="visible";
-                    document.forms["filter"].style.visibility="hidden";
+                    document.forms["TANCFilterForm"].style.visibility="hidden";
                     document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                     document.forms["filteradcase"].style.visibility="hidden";
                     document.forms["filtertrade"].style.visibility="hidden";
@@ -1340,25 +1340,26 @@
                     }
                 }
                 if(whichinput[k].value==="close") {   
-                    document.filter.totanc1.disabled=true;
-                    document.filter.fromtanc1.disabled=true;
-                    document.filter.totanc3.disabled=true;
-                    document.filter.fromtanc3.disabled=true;
-                    document.filter.totanc2.disabled=false;
-                    document.filter.fromtanc2.disabled=false;
+                    document.TANCFilterForm.totanc1.disabled=true;
+                    document.TANCFilterForm.fromtanc1.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=true;
+                    document.TANCFilterForm.fromtanc3.disabled=true;
+                    document.TANCFilterForm.totanc2.disabled=false;
+                    document.TANCFilterForm.fromtanc2.disabled=false;
                 } else if(whichinput[k].value==="init") {   
-                    document.filter.totanc2.disabled=true;
-                    document.filter.fromtanc2.disabled=true;
-                    document.filter.fromtanc3.disabled=true;
-                    document.filter.totanc1.disabled=false;
-                    document.filter.fromtanc1.disabled=false;
+                    document.TANCFilterForm.totanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc3.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=true;
+                    document.TANCFilterForm.totanc1.disabled=false;
+                    document.TANCFilterForm.fromtanc1.disabled=false;
                 } else if(whichinput[k].value==="success") {   
-                    document.filter.totanc2.disabled=true;
-                    document.filter.fromtanc2.disabled=true;
-                    document.filter.totanc1.disabled=true;
-                    document.filter.fromtanc1.disabled=true;
-                    document.filter.totanc3.disabled=false;
-                    document.filter.fromtanc3.disabled=false;
+                    document.TANCFilterForm.totanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc2.disabled=true;
+                    document.TANCFilterForm.totanc1.disabled=true;
+                    document.TANCFilterForm.fromtanc1.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=false;
+                    document.TANCFilterForm.fromtanc3.disabled=false;
                 }
             }   
             
@@ -1416,26 +1417,26 @@
                     }
                 }
                 if(whichinput[k].value==="close") {   
-                    document.filter.tolaw1.disabled=true;
-                    document.filter.fromlaw1.disabled=true;
-                    document.filter.tolaw3.disabled=true;
-                    document.filter.fromlaw3.disabled=true;
-                    document.filter.tolaw2.disabled=false;
-                    document.filter.fromlaw2.disabled=false;
+                    document.TANCFilterForm.tolaw1.disabled=true;
+                    document.TANCFilterForm.fromlaw1.disabled=true;
+                    document.TANCFilterForm.tolaw3.disabled=true;
+                    document.TANCFilterForm.fromlaw3.disabled=true;
+                    document.TANCFilterForm.tolaw2.disabled=false;
+                    document.TANCFilterForm.fromlaw2.disabled=false;
                 } else if(whichinput[k].value==="init") {   
-                    document.filter.tolaw2.disabled=true;
-                    document.filter.fromlaw2.disabled=true;
-                    document.filter.tolaw3.disabled=true;
-                    document.filter.fromlaw3.disabled=true;
-                    document.filter.tolaw1.disabled=false;
-                    document.filter.fromlaw1.disabled=false;
+                    document.TANCFilterForm.tolaw2.disabled=true;
+                    document.TANCFilterForm.fromlaw2.disabled=true;
+                    document.TANCFilterForm.tolaw3.disabled=true;
+                    document.TANCFilterForm.fromlaw3.disabled=true;
+                    document.TANCFilterForm.tolaw1.disabled=false;
+                    document.TANCFilterForm.fromlaw1.disabled=false;
                 } else if(whichinput[k].value==="success") {   
-                    document.filter.tolaw2.disabled=true;
-                    document.filter.fromlaw2.disabled=true;
-                    document.filter.tolaw1.disabled=true;
-                    document.filter.fromlaw1.disabled=true;
-                    document.filter.tolaw.disabled=false;
-                    document.filter.fromlaw3.disabled=false;
+                    document.TANCFilterForm.tolaw2.disabled=true;
+                    document.TANCFilterForm.fromlaw2.disabled=true;
+                    document.TANCFilterForm.tolaw1.disabled=true;
+                    document.TANCFilterForm.fromlaw1.disabled=true;
+                    document.TANCFilterForm.tolaw.disabled=false;
+                    document.TANCFilterForm.fromlaw3.disabled=false;
                 }
             }   
             
@@ -1472,7 +1473,7 @@
                     if(dataCategory==="TancCases") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
                         document.forms["fileUploadForm"].style.visibility="hidden";
-                        document.forms["filter"].style.visibility="visible";
+                        document.forms["TANCFilterForm"].style.visibility="visible";
                         document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                         document.forms["filteradcase"].style.visibility="hidden";
                         document.forms["filtertrade"].style.visibility="hidden";
@@ -1482,7 +1483,7 @@
                     } else if(dataCategory==="AdCvdActions") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
                         document.forms["fileUploadForm"].style.visibility="hidden";
-                        document.forms["filter"].style.visibility="hidden";
+                        document.forms["TANCFilterForm"].style.visibility="hidden";
                         document.forms["filteradcase"].style.visibility="visible";
                         document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                         document.forms["filtertrade"].style.visibility="hidden";
@@ -1492,7 +1493,7 @@
                     } else if(dataCategory==="TradeRemedyActions") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
                         document.forms["fileUploadForm"].style.visibility="hidden";
-                        document.forms["filter"].style.visibility="hidden";
+                        document.forms["TANCFilterForm"].style.visibility="hidden";
                         document.forms["filteradcase"].style.visibility="hidden";
                         document.forms["filtertrade"].style.visibility="visible";
                         document.forms["mapDisplayTypeForm"].style.visibility="hidden";
@@ -1502,7 +1503,7 @@
                     } else if(dataCategory==="Foreign tarde zone") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
                         document.forms["fileUploadForm"].style.visibility="hidden";
-                        document.forms["filter"].style.visibility="hidden";
+                        document.forms["TANCFilterForm"].style.visibility="hidden";
                         document.forms["filteradcase"].style.visibility="hidden";
                         document.forms["filtertrade"].style.visibility="hidden";
                         document.forms["mapDisplayTypeForm"].style.visibility="hidden";
@@ -1512,7 +1513,7 @@
                     } else if(dataCategory==="EnforcementAndCompliance") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
                         document.forms["fileUploadForm"].style.visibility="hidden";
-                        document.forms["filter"].style.visibility="hidden";
+                        document.forms["TANCFilterForm"].style.visibility="hidden";
                         document.forms["filteradcase"].style.visibility="hidden";
                         document.forms["filtertrade"].style.visibility="hidden";
                         document.forms["mapDisplayTypeForm"].style.visibility="hidden";
@@ -1530,7 +1531,7 @@
                 location.reload();
                 location.reload();
                 /*
-                document.forms["filter"].style.visibility="hidden";
+                document.forms["TANCFilterForm"].style.visibility="hidden";
                 document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                 document.forms["fileUploadForm"].style.visibility="hidden";
                 document.forms["finalmap"].style.visibility="hidden";
@@ -1555,8 +1556,7 @@
                  * }
                  */
                 
-                document.forms["filter"].style.visibility="hidden";
-                //document.forms["fileUploadForm"].style.visibility="hidden";
+                document.forms["TANCFilterForm"].style.visibility="hidden";
                 document.forms["mapDisplayTypeForm"].style.visibility="visible";
                 document.forms["dataCategoryForm"].style.visibility="hidden";
                 document.forms["fileUploadForm"].style.visibility="hidden";
@@ -1569,7 +1569,7 @@
             }
             
             function showmap() {
-                document.forms["filter"].style.visibility="hidden";
+                document.forms["TANCFilterForm"].style.visibility="hidden";
                 //document.forms["fileUploadForm"].style.visibility="hidden";
                 document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                 document.forms["dataCategoryForm"].style.visibility="hidden";
