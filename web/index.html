@@ -12,6 +12,99 @@
                 .floatright { float: right; }
             
         </style>
+        
+        <script type="text/javascript" src="scripts/HashMap.js"></script>
+        <script type="text/javascript" src="scripts/json_eval.js"></script>
+        
+        <!-- script to read data from excel file; requires Hashmap script file; can move this also to a different js file?? -->
+        <script type="text/javascript">
+
+            function readData(file) {
+                //need to find a better way to get the below start and end values
+                //right now hard coded for the dummy excel file
+                var xStart = 2; //first row of data - headers assumed
+                var yStart = 1; //first column of data
+                var xEnd = 178; //last row of data
+                var yEnd = 18;  //last column of data
+                var xVal = xStart;
+                var yVal = yStart;
+
+                var excel;
+                var excel_file;
+                var excel_sheet;
+                var data;
+                var headers = new Array();
+                var jsonArray = " { \"records\" : [ ";
+                
+                try {
+                    excel = new ActiveXObject("Excel.Application");
+                    excel.Visible = false;
+                    excel_file = excel.Workbooks.Open(file); //alert(excel_file.worksheets.count);
+                    excel_sheet = excel_file.Worksheets("Sheet1");
+            
+                    //read headers
+                    while (yVal <= yEnd && xVal === xStart) {
+                        data = excel_sheet.Cells(xVal,yVal).Value;
+                        headers.push(data);
+                        yVal = yVal + 1;
+                    }
+                    
+                    /* Test headers array
+                    for(var i = 0; i<headers.length; i++) 
+                        document.writeln(headers[i] + "<br>");
+                    */
+                   
+                    //read each row into a hashmap and push each hashmap into an array
+                    xVal = xVal + 1;
+                    while (xVal <= xEnd) {
+                        var currentHash = new HashMap();
+                        yVal = yStart;
+                        var values = new Array();
+                        while (yVal <= yEnd) {
+                            data = excel_sheet.Cells(xVal,yVal).Value;
+                            values.push(data);
+                            yVal = yVal + 1;
+                        }
+                        
+                        for(var i=0; i<headers.length;i++) {
+                            currentHash.put(headers[i], values[i]);
+                        }
+                        var header = currentHash.keys();
+                        //document.writeln("{");
+                        jsonArray = jsonArray + "{";
+                        for(var i=0; i<currentHash.size()-1;i++) {
+                            //document.writeln(header[i] + ":" + currentHash.get(header[i]) + ",");
+                            jsonArray = jsonArray + "\"" + header[i] + "\":" + currentHash.get(header[i]) + ",";
+                        }
+                        //document.writeln(header[i] + ":" + currentHash.get(header[i]) + "} <br>" );
+                        if (xVal < xEnd)
+                            jsonArray = jsonArray + "\"" + header[i] + "\":" + currentHash.get(header[i]) + "}, ";
+                        else 
+                            jsonArray = jsonArray + "\"" + header[i] + "\":" + currentHash.get(header[i]) + "} ";
+                        xVal = xVal + 1;
+                        
+                        
+                    }
+                    jsonArray = jsonArray + " ]}";
+                    //document.writeln(jsonArray + "<br><br>");                    
+                    
+                    //Parse and process json object string created above - retrieving record number of the first element in records array
+                    //var contents = jsonParse(jsonArray);
+                    //document.writeln("DUMMY RECORD NUMBER:" + contents["records"][0]["Record Number"]);
+                
+                } catch (ex) {
+                    alert(ex);
+                } finally {
+                    data = null;
+                    excel_sheet = null;
+                    excel_file.Close();    // important
+                    excel_file = null;
+                    excel.Application.Quit();
+                    excel = null;
+                }
+                return jsonArray;
+            }
+        </script>
     
     </head>
 
@@ -31,15 +124,19 @@
         </form>                
         
         <form name="fileUploadForm" action="" method="post" enctype="multipart/form-data" style="position: absolute; top:30px; left:100px; width:400px; height:25px" >
-            <input type="button" value="Home" onClick="gohome();">
+            
+            <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>File Upload:</h3>
-                Select a file to upload: <br />
-            <input type="file" name="file" size="50"/> <br/>
-            <input type="button" value="Upload File"  onclick="filters();"/>
+            Select a file to upload: <br>
+            <input type="file" name="file" id="myFile"> <br/><br>
+            <input type="button" value="Upload File"  onclick="goToFiltersForm();"/>            
+            
         </form>
         
         <form name="filter" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
-            <input type="button" value="Home" onClick="gohome();">    
+            
+            <input type="button" value="Home" onClick="goToHomeForm();">    
+            
             <h3>Apply Filters</h3>        
             <p><input type="radio" name="filter2tanc" value="init" onClick="chkdatetanc();"/> Case Initiated</p>
             <input type="date" name="totanc1" onClick="chkdatetanc();"/> to  <input type="date" name="fromtanc1"   onClick="chkdatetanc();" /><br/>
@@ -408,11 +505,11 @@
             <p><input type="radio" name="filter11" value="value"/> Estimated Number of employees affected </p>
             <p><input type="radio" checked name="filter11" value="display"/> Don't display </p>
             <br/>
-            <input type="button" value="Continue" onclick="mapview();" >
+            <input type="button" value="Continue" onclick="mapview();" />
             <button type="reset" value="Reset">Reset</button>
         </form>
-        <form name="displaytype" method="get" action="" style="position: absolute; top:600px; left:100px; width:400px; height:25px">
-            <input type="button" value="Home" onClick="gohome();">
+        <form name="mapDisplayTypeForm" method="get" action="" style="position: absolute; top:600px; left:100px; width:400px; height:25px">
+            <input type="button" value="Home" onClick="goToHomeForm();">
             <h1>I want to display data by</h1>
             <p><input type="radio" name="output" value="pins"/> Pins of locations USA map </p>
             <p><input type="radio" name="output" value="dotus"/> Dots of varying sizes USA map </p>
@@ -422,7 +519,7 @@
             <input type="button" value="continue" onclick="showmap();"/>
         </form>
         <form name="filteradcase" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
-            <input type="button" value="Home" onClick="gohome();">
+            <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>Apply Filters</h3>
             <label><strong>Display Data For:</strong></label><br/>      
             <p><input type="radio" name="filterad1" value="anti"> Antidumping/Countervailing Petitions Initiated</input></p>
@@ -668,7 +765,7 @@
         </form>
         
         <form name="filtertrade" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
-            <input type="button" value="Home" onClick="gohome();">
+            <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>Apply Filters</h3>
             <label><strong>Select date</strong></label><br/>    
             <p><input type="radio" name="filter2trade" value="init" onClick="chkdatetrade()"> Case Initiated</input></p>
@@ -905,20 +1002,20 @@
                <option value = "21">Other</option>
             </select><br/>
             <br/>
-            <input type="button" value="Continue" onclick="mapview()" >
+            <input type="button" value="Continue" onclick="mapview();" >
             <button type="reset" value="Reset">Reset</button>
         </form>
 
         <form name="filterlaw" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
-            <input type="button" value="Home" onClick="gohome();">
+            <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>Apply Filters</h3>
             <label><strong>Select date</strong></label><br/>    
-            <p><input type="radio" name="filter2law" value="init" onClick="chkdatelaw()"> Case Initiated</input></p>
-            <input type="date" name="tolaw1" onClick="chkdatelaw()"> to  <input type="date" name="fromlaw1"   onClick="chkdatelaw()" display: inline-block;><br/>
-            <p><input type="radio" checked name="filter2law" value="close" onClick="chkdatelaw()"> Case Closed</input></p>
-            <input type="date" name="tolaw2" onClick="chkdatelaw()"> to  <input type="date" name="fromlaw2"  onClick="chkdatelaw()" display: inline-block; ><br/>
-            <p><input type="radio" checked name="filter2law" value="success" onClick="chkdatelaw()"> Success </input></p>
-            <input type="date" name="tolaw3" onClick="chkdatelaw()"> to  <input type="date" name="fromlaw3"  onClick="chkdatelaw()" display: inline-block; ><br/>
+            <p><input type="radio" name="filter2law" value="init" onClick="chkdatelaw();"> Case Initiated</input></p>
+            <input type="date" name="tolaw1" onClick="chkdatelaw();"> to  <input type="date" name="fromlaw1"   onClick="chkdatelaw();" display: inline-block;><br/>
+            <p><input type="radio" checked name="filter2law" value="close" onClick="chkdatelaw();"> Case Closed</input></p>
+            <input type="date" name="tolaw2" onClick="chkdatelaw();"> to  <input type="date" name="fromlaw2"  onClick="chkdatelaw();" display: inline-block; ><br/>
+            <p><input type="radio" checked name="filter2law" value="success" onClick="chkdatelaw();"> Success </input></p>
+            <input type="date" name="tolaw3" onClick="chkdatelaw();"> to  <input type="date" name="fromlaw3"  onClick="chkdatelaw();" display: inline-block; ><br/>
             <br/>
             <label><strong>Filter Company</strong></label><br/>    
             <p><input type="radio" name="filter3law" value="small"> Small or medium EnterPrise</input></p>
@@ -1154,7 +1251,7 @@
             <button type="reset" value="Reset">Reset</button>
         </form>
         <form name="filterftz" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
-            <input type="button" value="Home" onClick="gohome();">
+            <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>Apply Filters</h3>
             <label><strong>Select date</strong></label><br/>    
             <p><input type="radio" name="filter2ftz" value="init"> Case Initiated</input></p>
@@ -1168,24 +1265,22 @@
             <label><strong>Filter Jobs Facilitated</strong></label><br/>    
             <p><input type="radio" name="filter4ftz" value="jobs">Jobs Facilitated</input></p>      
 
-            <input type="button" value="Continue" onclick="mapview()" >
+            <input type="button" value="Continue" onclick="mapview();" >
             <button type="reset" value="Reset">Reset</button>
         </form>
 
         <form name="finalmap" method="get" action="" style="position: absolute; top:750px; left:100px; width:400px; height:25px">
-            <input type="button" value="Home" onClick="gohome();">
+            <input type="button" value="Home" onClick="goToHomeForm();">
             <h1>Here we will display Map</h1>
         </form>
         
         <script type="text/javascript" >
             
-            var dataCategory; //category of data from first form - set in goToFileUploadForm
-            
             window.onload = function () {
                 document.forms["dataCategoryForm"].style.visibility="visible";
                 document.forms["fileUploadForm"].style.visibility="hidden";
                 document.forms["filter"].style.visibility="hidden";
-                document.forms["displaytype"].style.visibility="hidden";
+                document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                 document.forms["finalmap"].style.visibility="hidden";
                 document.forms["filteradcase"].style.visibility="hidden";
                 document.forms["filteradcase"].style.visibility="hidden";
@@ -1193,6 +1288,9 @@
                 document.forms["filterlaw"].style.visibility="hidden";
                 document.forms["filterftz"].style.visibility="hidden";
             };
+                        
+            var dataCategory; //category of data from first form - set in goToFileUploadForm
+            var dataRecords;  //JSON object string containing excel file records
             
             function goToFileUploadForm() {
                 var whichinput=document.getElementsByName("input");
@@ -1211,7 +1309,7 @@
                     document.forms["dataCategoryForm"].style.visibility="visible";
                     document.forms["fileUploadForm"].style.visibility="hidden";
                     document.forms["filter"].style.visibility="hidden";
-                    document.forms["displaytype"].style.visibility="hidden";
+                    document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                     document.forms["filteradcase"].style.visibility="hidden";
                     document.forms["filtertrade"].style.visibility="hidden";
                     document.forms["filterlaw"].style.visibility="hidden";
@@ -1222,7 +1320,7 @@
                     document.forms["dataCategoryForm"].style.visibility="hidden";
                     document.forms["fileUploadForm"].style.visibility="visible";
                     document.forms["filter"].style.visibility="hidden";
-                    document.forms["displaytype"].style.visibility="hidden";
+                    document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                     document.forms["filteradcase"].style.visibility="hidden";
                     document.forms["filtertrade"].style.visibility="hidden";
                     document.forms["filterlaw"].style.visibility="hidden";
@@ -1352,78 +1450,72 @@
                 }
             } 
             
-            function filters() {
-                var file=document.getElementsByName("file");
+            function goToFiltersForm() {
+                var fileName = document.getElementById("myFile").value;
                 if(document.forms["fileUploadForm"]["file"].value !== "") {
-                // you have a file
-                //function check_file(){
+                    // you have a file - check file extension .xls or .xlsx                   
                     str=document.forms["fileUploadForm"]["file"].value.toUpperCase();
                     suffix1=".XLSX";
                     suffix2=".XLS";
-                    if(!(str.indexOf(suffix2, str.length - suffix2.length) !== -1 )) {
-                        if(!(str.indexOf(suffix1, str.length - suffix1.length) !== -1 )) {
-                            alert('File of this extension type not allowed,\nAllowed file: *.xls or *.xlsx');
-                            document.getElementById('file').value='';
-                        }
+                    if(!(str.indexOf(suffix2, str.length - suffix2.length) !== -1) && !(str.indexOf(suffix1, str.length - suffix1.length) !== -1 )) {
+                        alert('File of this extension type not allowed,\nAllowed file: *.xls or *.xlsx');
+                        document.getElementById('file').value='';
                     }
 
-                    var whichinput=document.getElementsByName("input");
-                    var k;
-                    var len=whichinput.length;
-                    for (i=0;i<len;i++) {
-                        if(whichinput[i].checked) {
-                            alert("File Selected for " + whichinput[i].value +" ");
-                            k=i;
-                        }
-                    }
+                    dataRecords = readData(fileName);
+                    //Parse and process json object string created above - retrieving record number of the first element in records array
+                    var contents = jsonParse(dataRecords);
+                    alert("File " + fileName + " selected for category " + dataCategory
+                            +"\nPartial Content: First record number - " +  contents["records"][0]["Record Number"]);
+
                     //if(document.getElementById())
-                    if(whichinput[k].value==="TancCases") {
+                    if(dataCategory==="TancCases") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
                         document.forms["fileUploadForm"].style.visibility="hidden";
                         document.forms["filter"].style.visibility="visible";
-                        document.forms["displaytype"].style.visibility="hidden";
+                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                         document.forms["filteradcase"].style.visibility="hidden";
                         document.forms["filtertrade"].style.visibility="hidden";
                         document.forms["filterlaw"].style.visibility="hidden";
                         document.forms["filterftz"].style.visibility="hidden";
                         document.forms["finalmap"].style.visibility="hidden";
-                    } else if(whichinput[k].value==="AdCvdActions") {
+                    } else if(dataCategory==="AdCvdActions") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
                         document.forms["fileUploadForm"].style.visibility="hidden";
                         document.forms["filter"].style.visibility="hidden";
                         document.forms["filteradcase"].style.visibility="visible";
-                        document.forms["displaytype"].style.visibility="hidden";
+                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                         document.forms["filtertrade"].style.visibility="hidden";
                         document.forms["filterlaw"].style.visibility="hidden";
                         document.forms["filterftz"].style.visibility="hidden";
                         document.forms["finalmap"].style.visibility="hidden";
-                    } else if(whichinput[k].value==="TradeRemedyActions") {
+                    } else if(dataCategory==="TradeRemedyActions") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
                         document.forms["fileUploadForm"].style.visibility="hidden";
                         document.forms["filter"].style.visibility="hidden";
                         document.forms["filteradcase"].style.visibility="hidden";
                         document.forms["filtertrade"].style.visibility="visible";
-                        document.forms["displaytype"].style.visibility="hidden";
+                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                         document.forms["filterlaw"].style.visibility="hidden";
                         document.forms["filterftz"].style.visibility="hidden";
                         document.forms["finalmap"].style.visibility="hidden";
-                    } else if(whichinput[k].value==="Foreign tarde zone") {
+                    } else if(dataCategory==="Foreign tarde zone") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
                         document.forms["fileUploadForm"].style.visibility="hidden";
                         document.forms["filter"].style.visibility="hidden";
                         document.forms["filteradcase"].style.visibility="hidden";
                         document.forms["filtertrade"].style.visibility="hidden";
-                        document.forms["displaytype"].style.visibility="hidden";
+                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                         document.forms["filterlaw"].style.visibility="hidden";
                         document.forms["filterftz"].style.visibility="visible";
                         document.forms["finalmap"].style.visibility="hidden";
-                    } else if(whichinput[k].value==="EnforcementAndCompliance") {
+                    } else if(dataCategory==="EnforcementAndCompliance") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
                         document.forms["fileUploadForm"].style.visibility="hidden";
                         document.forms["filter"].style.visibility="hidden";
                         document.forms["filteradcase"].style.visibility="hidden";
                         document.forms["filtertrade"].style.visibility="hidden";
-                        document.forms["displaytype"].style.visibility="hidden";
+                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                         document.forms["filterlaw"].style.visibility="visible";
                         document.forms["filterftz"].style.visibility="hidden";
                         document.forms["finalmap"].style.visibility="hidden";
@@ -1434,12 +1526,12 @@
                 }
             }  
             
-            function gohome() {
+            function goToHomeForm() {
                 location.reload();
                 location.reload();
                 /*
                 document.forms["filter"].style.visibility="hidden";
-                document.forms["displaytype"].style.visibility="hidden";
+                document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                 document.forms["fileUploadForm"].style.visibility="hidden";
                 document.forms["finalmap"].style.visibility="hidden";
                 document.forms["dataCategoryForm"].style.visibility="visible";
@@ -1465,7 +1557,7 @@
                 
                 document.forms["filter"].style.visibility="hidden";
                 //document.forms["fileUploadForm"].style.visibility="hidden";
-                document.forms["displaytype"].style.visibility="visible";
+                document.forms["mapDisplayTypeForm"].style.visibility="visible";
                 document.forms["dataCategoryForm"].style.visibility="hidden";
                 document.forms["fileUploadForm"].style.visibility="hidden";
                 document.forms["filteradcase"].style.visibility="hidden";
@@ -1479,7 +1571,7 @@
             function showmap() {
                 document.forms["filter"].style.visibility="hidden";
                 //document.forms["fileUploadForm"].style.visibility="hidden";
-                document.forms["displaytype"].style.visibility="hidden";
+                document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                 document.forms["dataCategoryForm"].style.visibility="hidden";
                 document.forms["fileUploadForm"].style.visibility="hidden";
                 document.forms["filteradcase"].style.visibility="hidden";
