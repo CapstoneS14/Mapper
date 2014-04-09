@@ -4,6 +4,7 @@
         
         <title>Department of Commerce - Mapping Software</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
         <style>
             label { float: left; width: 600px; }
             display:block
@@ -15,6 +16,66 @@
         
         <script type="text/javascript" src="scripts/HashMap.js"></script>
         <script type="text/javascript" src="scripts/json_eval.js"></script>
+	<link rel="stylesheet" href="stylesheets/jquery.ui.all.css">
+	<script src="scripts/jquery-1.10.2.js"></script>
+	<script src="ui/jquery.ui.core.js"></script>
+	<script src="ui/jquery.ui.widget.js"></script>
+	<script src="ui/jquery.ui.datepicker.js"></script>
+	<link rel="stylesheet" href="stylesheets/local.css">
+	<script>
+	$(function() {
+		$( "#fromtanc1" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#totanc1" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});
+		$( "#totanc1" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#fromtanc1" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});
+                
+                $( "#fromtanc2" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#totanc2" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});
+		$( "#totanc2" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#fromtanc2" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});
+                
+                $( "#fromtanc3" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#totanc3" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});
+		$( "#totanc3" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#fromtanc3" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});
+	});
+	</script>
         
         <!-- script to read data from excel file; requires Hashmap script file; can move this also to a different js file?? -->
         <script type="text/javascript">
@@ -106,76 +167,68 @@
             }
         </script>
     
-        <!-- need to fix the css to make the widget more visible
-        <link rel="stylesheet" href="cs/jquery-ui-1.10.4.custom.css">
-        <script src="scripts/jquery-1.10.2.js"></script>
-        <script src="scripts/jquery-ui-1.10.4.custom.min.js"></script>
-         
-        <script type="text/javascript">
-            $(function() {
-                $( "#totanc1" ).datepicker();
-                $( "#fromtanc1" ).datepicker();
-                $( "#totanc2" ).datepicker();
-                $( "#fromtanc2" ).datepicker();
-                $( "#totanc3" ).datepicker();
-                $( "#fromtanc3" ).datepicker();
-            });            
-        </script>
-        -->
    </head>
 
     <body bgcolor="#E6E6FA">
              
-        <form name="dataCategoryForm" method="get" action="" style="position: absolute; top:30px; left:100px; width:400px; height:25px">
+        <form name="dataCategoryForm" method="get" action="" style="position: absolute; top:50px; left:100px; width:400px; height:25px">
                                   
             <h1>I want to display data for</h1>
-            <p><input type="radio" name="input" value="AdCvdActions"/> AD/CVD Actions </p>
-            <p><input type="radio" name="input" value="TancCases"/> TANC Casework </p>
-            <p><input type="radio" name="input" value="TradeRemedyActions"/> Trade Remedy Actions </p>
-            <p><input type="radio" name="input" value="ForeignTradeZone"/> Foreign Trade Zones </p>
-            <p><input type="radio" name="input" value="EnforcementAndCompliance"/> Enforcement and Compliance Highlights </p>
+            <p><input type="radio" name="input" value="AdCvdActions" disabled /> AD/CVD Actions </p>
+            <p><input type="radio" name="input" value="TancCases" /> TANC Casework </p>
+            <p><input type="radio" name="input" value="TradeRemedyActions" disabled /> Trade Remedy Actions </p>
+            <p><input type="radio" name="input" value="ForeignTradeZone" disabled /> Foreign Trade Zones </p>
+            <p><input type="radio" name="input" value="EnforcementAndCompliance" disabled /> Enforcement and Compliance Highlights </p>
             <!-- one more maybe? Petition -->
             <input type="button" value="Continue" onclick="goToFileUploadForm();"/>
             <button type="reset" value="Reset">Reset</button>
         </form>                
         
-        <form name="fileUploadForm" action="" method="post" enctype="multipart/form-data" style="position: absolute; top:30px; left:100px; width:400px; height:25px" >
+        <form name="fileUploadForm" action="" method="post" enctype="multipart/form-data" style="position: absolute; top:50px; left:100px; width:400px; height:25px" >
             
             <input type="button" value="Home" onClick="goToHomeForm();" />
-            <h3>File Upload:</h3>
-            Select a file to upload: <br>
+            <h1>File Upload</h1>
+            <br />
+            Select a file to upload: 
+            <br />
             <input type="file" name="file" id="myFile"> <br/><br>
-            <input type="button" value="Upload File"  onclick="goToFiltersForm();"/>            
+            <input type="button" value="Upload"  onclick="goToFiltersForm();"/>            
             <button type="reset" value="Reset">Reset</button>
         </form>
         
-        <form name="TANCFilterForm" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
+        <form name="TANCFilterForm" method="get"  action="" style="position: absolute; top:50px; left:100px; width:600px; height:25px">
             
             <input type="button" value="Home" onClick="goToHomeForm();"/>    
             
-            <h3>Select filters to apply on TANC Casework Data</h3>
+            <h1>Filters to apply on TANC Casework Data</h1>
+            <br/>
             
-            <label><strong>Date Ranges:</strong></label><br/>    
+            <label><strong>Select a type of date as well as the date range: </strong></label><br/>    
             <p>
                 <input type="radio" name="filter2tanc" value="init" onClick="chkdatetanc();"/> Cases Initiated      
-                <input type="date" name="totanc1" id="totanc1" disabled/> to  <input type="date" name="fromtanc1" id="fromtanc1" disabled />
+                <input type="text" name="fromtanc1" id="fromtanc1" disabled/> to  <input type="text" name="totanc1" id="totanc1" disabled />
             </p>
             <p>
                 <input type="radio" name="filter2tanc" value="close" onClick="chkdatetanc();"/> Cases Closed        
-                <input type="date" name="totanc2" id="totanc2" disabled/> to  <input type="date" name="fromtanc2" id="fromtanc2" disabled /><br/>
+                <input type="date" name="fromtanc2" id="fromtanc2" disabled/> to  <input type="date" name="totanc2" id="totanc2" disabled /><br/>
             </p>                
             <p>
                 <input type="radio" name="filter2tanc" value="success" onClick="chkdatetanc();"/> Cases of Success      
-                <input type="date" name="totanc3" id="totanc3" disabled/> to  <input type="date" name="fromtanc3" id="fromtanc3" disabled /><br/>
+                <input type="date" name="fromtanc3" id="fromtanc3" disabled/> to  <input type="date" name="totanc3" id="totanc3" disabled /><br/>
             </p>
             <br/>
             
-            <label><strong>Company Type:</strong></label><br/>    
-            <p><input type="radio" checked name="filter2" value="All"/> All Organizations (Default) </p>
-            <p><input type="radio" name="filter2" value="SME"/> Small and Medium Sized Enterprises only </p>
+            <label><strong>Select a company type:</strong></label><br/>    
+            <p>
+                <input type="radio" checked name="filter2" value="All"/> All Organizations (Default) 
+            </p>
+            <p>
+                <input type="radio" name="filter2" value="SME"/> Small and Medium Sized Enterprises only 
+            
+            </p>
             <br/>
             
-            <label><strong>Country(s) Involved: </strong></label><br/>
+            <label><strong>Select the country(s) involved: </strong></label><br/>
             <p>
                 <input type="radio" checked name="country" value="all" onClick="chkcountrytanc();"/> All (Default)                
             </p>
@@ -423,7 +476,7 @@
             </p>      
             <br/>
             
-            <label><strong>Industry:</strong></label><br/>
+            <label><strong>Select an industry: </strong></label><br/>
             <p>
                 <select name="industry">
                     <option value = "1" selected>All (Default)</option>
@@ -451,7 +504,7 @@
             </p>
             <br/>
             
-            <label><strong>Issue:</strong></label><br/>
+            <label><strong>Select an issue: </strong></label><br/>
             <p>
                 <select name="issues">
                     <option value = "1" selected>All (Default)</option>
@@ -496,7 +549,7 @@
             </p>
             <br/>
             
-            <label><strong>Publicity Permission:</strong></label><br/>      
+            <label><strong>Publicity permission check: </strong></label><br/>      
                 <p>
                     <input type="radio" checked name="filter6" value="All"/> All (Default) 
                 </p>
@@ -505,7 +558,7 @@
                 </p>
             <br/>    
             
-            <label><strong>FTA Relevant:</strong></label><br/>
+            <label><strong>Select FTA relevance: </strong></label><br/>
             <p>
             <select name= "filter7">
                 <option value = "0" selected>All (Default)</option>
@@ -550,7 +603,7 @@
             </select><p>
             <br/>
             
-            <label><strong>WTO Relevant:</strong></label><br/>
+            <label><strong>Select WTO relevance: </strong></label><br/>
             <p><select name= "filter8">
                 <option value = "0" selected>All (Default)</option>
                 <option value = "1">WTO Agreement on Trade in Goods: GATT Article III</option>
@@ -585,7 +638,7 @@
             
             <br/>
             
-            <label><strong>Dollar Value of Success:</strong></label> <br/>
+            <label><strong>Select whether to display dollar value of success: </strong></label> <br/>
             <p>
                 <input type="radio" checked name="filter9" value="true"/> Display (Default)
             </p>
@@ -594,21 +647,21 @@
             </p>
             <br/>
             
-            <label><strong>Dollar Value of Market Access:</strong></label><br/>      
+            <label><strong>Select whether to display dollar value of market access: </strong></label><br/>      
             <p>
-                <input type="radio" checked name="filter10" value="false"/> Do not display (Default)
+                <input type="radio" checked name="filter10" value="true" disabled /> Do not display (Default)
             </p>
             <p>
-                <input type="radio" name="filter10" value="true"/> Display ($ in Millions) 
+                <input type="radio" name="filter10" value="false" disabled /> Display ($ in Millions) 
             </p>
             <br/>
             
-            <label><strong>Estimated Number of Employees Affected:</strong></label><br/>      
+            <label><strong>Select whether to display estimated number of employees affected: s</strong></label><br/>      
             <p>
-                <input type="radio" checked name="filter11" value="false"/> Do not display (Default) 
+                <input type="radio" checked name="filter11" value="true" disabled /> Do not display (Default) 
             </p>
             <p>
-                <input type="radio" name="filter11" value="true"/> Display 
+                <input type="radio" name="filter11" value="false" disabled /> Display 
             </p>
             <br/>
             
@@ -618,7 +671,7 @@
         </form>
         
         
-        <form name="mapDisplayTypeForm" method="get" action="" style="position: absolute; top:900px; left:100px; width:400px; height:25px">
+        <form name="mapDisplayTypeForm" method="get" action="" style="position: absolute; top:700px; left:100px; width:400px; height:25px">
             
             <input type="button" value="Home" onClick="goToHomeForm();"/>
             
@@ -645,8 +698,428 @@
             
         </form>
         
+        <form name="finalmap" method="get" action="" style="position: absolute; top:700px; left:100px; width:400px; height:25px">
+            <input type="button" value="Home" onClick="goToHomeForm();">
+            <h1>Here we will display Map</h1>
+        </form>
         
-        <form name="filteradcase" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
+        <script type="text/javascript" >
+            
+            window.onload = function () {
+                document.forms["dataCategoryForm"].style.visibility="visible";
+                document.forms["fileUploadForm"].style.visibility="hidden";
+                document.forms["TANCFilterForm"].style.visibility="hidden";
+                document.forms["mapDisplayTypeForm"].style.visibility="hidden";
+                document.forms["finalmap"].style.visibility="hidden";
+                document.forms["adcvdFilterForm"].style.visibility="hidden";
+                document.forms["adcvdFilterForm"].style.visibility="hidden";
+                document.forms["filtertrade"].style.visibility="hidden";
+                document.forms["filterlaw"].style.visibility="hidden";
+                document.forms["filterftz"].style.visibility="hidden";
+            };
+                        
+            var dataCategory; //category of data from first form - set in goToFileUploadForm
+            var dataRecords;  //JSON object string containing excel file records
+            
+            //TANC Filter Options variables
+            var dateOption; //either init, close, success
+            var dateInitiateFilterFrom; 
+            var dateInitiateFilterTo;
+            var dateCloseFilterFrom; 
+            var dateCloseFilterTo;
+            var dateSuccessFilterFrom; 
+            var dateSuccessFilterTo;
+            
+            var companyOption; // all or SME only
+            var countryOption; //all or list
+            var countryList; //if list then list of countries selected
+            var industryOption; //all or other specific selected value
+            var issueOption; //all or other specific selected value
+            var publicityOption; //granted or not - if not then different values with numbers
+            var agreementOption; // either FTA or WTO or both
+            var successValueOption; // either true or false on whether or not to display
+            var marketAccessOption;
+            var empAffectedOption;
+            
+            
+            function goToFileUploadForm() {
+                var whichinput=document.getElementsByName("input");
+                var k;
+                var len=whichinput.length;
+                var checked = false;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                        checked = true;
+                    }
+                }
+                
+                if (checked === false) {
+                    alert("No input selected - Select one of the data categories");
+                    document.forms["dataCategoryForm"].style.visibility="visible";
+                    document.forms["fileUploadForm"].style.visibility="hidden";
+                    document.forms["TANCFilterForm"].style.visibility="hidden";
+                    document.forms["mapDisplayTypeForm"].style.visibility="hidden";
+                    document.forms["finalmap"].style.visibility="hidden";
+                    document.forms["adcvdFilterForm"].style.visibility="hidden";
+                    document.forms["filtertrade"].style.visibility="hidden";
+                    document.forms["filterlaw"].style.visibility="hidden";
+                    document.forms["filterftz"].style.visibility="hidden";                    
+                } else {
+                    dataCategory = whichinput[k].value;
+                    document.forms["dataCategoryForm"].style.visibility="hidden";
+                    document.forms["fileUploadForm"].style.visibility="visible";
+                    document.forms["TANCFilterForm"].style.visibility="hidden";
+                    document.forms["mapDisplayTypeForm"].style.visibility="hidden";
+                    document.forms["finalmap"].style.visibility="hidden";
+                    document.forms["adcvdFilterForm"].style.visibility="hidden";
+                    document.forms["filtertrade"].style.visibility="hidden";
+                    document.forms["filterlaw"].style.visibility="hidden";
+                    document.forms["filterftz"].style.visibility="hidden";
+                }
+                    
+            }
+            
+            function chkdatetanc() {
+                var whichinput=document.getElementsByName("filter2tanc");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                dateOption = whichinput[k].value;
+                if(dateOption==="close") {   
+                    document.TANCFilterForm.totanc1.disabled=true;
+                    document.TANCFilterForm.fromtanc1.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=true;
+                    document.TANCFilterForm.fromtanc3.disabled=true;
+                    document.TANCFilterForm.totanc2.disabled=false;
+                    document.TANCFilterForm.fromtanc2.disabled=false;
+                    
+                    document.TANCFilterForm.totanc1.value="";
+                    document.TANCFilterForm.fromtanc1.value="";
+                    document.TANCFilterForm.totanc3.value="";
+                    document.TANCFilterForm.fromtanc3.value="";
+                    document.TANCFilterForm.totanc2.value="";
+                    document.TANCFilterForm.fromtanc2.value="";
+                } else if(dateOption==="init") {   
+                    document.TANCFilterForm.totanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc3.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=true;
+                    document.TANCFilterForm.totanc1.disabled=false;
+                    document.TANCFilterForm.fromtanc1.disabled=false;
+                    
+                    document.TANCFilterForm.totanc1.value="";
+                    document.TANCFilterForm.fromtanc1.value="";
+                    document.TANCFilterForm.totanc3.value="";
+                    document.TANCFilterForm.fromtanc3.value="";
+                    document.TANCFilterForm.totanc2.value="";
+                    document.TANCFilterForm.fromtanc2.value="";
+                } else if(dateOption==="success") {   
+                    document.TANCFilterForm.totanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc2.disabled=true;
+                    document.TANCFilterForm.totanc1.disabled=true;
+                    document.TANCFilterForm.fromtanc1.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=false;
+                    document.TANCFilterForm.fromtanc3.disabled=false;
+                    
+                    document.TANCFilterForm.totanc1.value="";
+                    document.TANCFilterForm.fromtanc1.value="";
+                    document.TANCFilterForm.totanc3.value="";
+                    document.TANCFilterForm.fromtanc3.value="";
+                    document.TANCFilterForm.totanc2.value="";
+                    document.TANCFilterForm.fromtanc2.value="";
+                } else {
+                    document.TANCFilterForm.totanc1.disabled=true;
+                    document.TANCFilterForm.fromtanc1.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=true;
+                    document.TANCFilterForm.fromtanc3.disabled=true;
+                    document.TANCFilterForm.totanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc2.disabled=true;
+                    
+                    document.TANCFilterForm.totanc1.value="";
+                    document.TANCFilterForm.fromtanc1.value="";
+                    document.TANCFilterForm.totanc3.value="";
+                    document.TANCFilterForm.fromtanc3.value="";
+                    document.TANCFilterForm.totanc2.value="";
+                    document.TANCFilterForm.fromtanc2.value="";
+                }
+            }               
+            
+            function goToFiltersForm() {
+                var fileName = document.getElementById("myFile").value;
+                if(document.forms["fileUploadForm"]["file"].value !== "") {
+                    // you have a file - check file extension .xls or .xlsx                   
+                    str=document.forms["fileUploadForm"]["file"].value.toUpperCase();
+                    suffix1=".XLSX";
+                    suffix2=".XLS";
+                    if(!(str.indexOf(suffix2, str.length - suffix2.length) !== -1) 
+                            && !(str.indexOf(suffix1, str.length - suffix1.length) !== -1 )) {
+                        alert('File of this extension type not allowed,\nAllowed file: *.xls or *.xlsx');
+                        document.getElementById('file').value='';
+                    }
+
+                    dataRecords = readData(fileName);
+                    //Parse and process json object string created above - retrieving record number of the first element in records array
+                    var contents = jsonParse(dataRecords);
+                    alert("File " + fileName + " selected for category " + dataCategory
+                            +"\nPartial Content: First record number - " +  contents["records"][0]["Record Number"]);
+
+                    //if(document.getElementById())
+                    if(dataCategory==="TancCases") {
+                        document.forms["dataCategoryForm"].style.visibility="hidden";
+                        document.forms["fileUploadForm"].style.visibility="hidden";
+                        document.forms["TANCFilterForm"].style.visibility="visible";
+                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
+                        document.forms["finalmap"].style.visibility="hidden";
+                        document.forms["adcvdFilterForm"].style.visibility="hidden";
+                        document.forms["filtertrade"].style.visibility="hidden";
+                        document.forms["filterlaw"].style.visibility="hidden";
+                        document.forms["filterftz"].style.visibility="hidden";
+                    } else if(dataCategory==="AdCvdActions") {
+                        document.forms["dataCategoryForm"].style.visibility="hidden";
+                        document.forms["fileUploadForm"].style.visibility="hidden";
+                        document.forms["TANCFilterForm"].style.visibility="hidden";
+                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
+                        document.forms["finalmap"].style.visibility="hidden";
+                        document.forms["adcvdFilterForm"].style.visibility="visible";
+                        document.forms["filtertrade"].style.visibility="hidden";
+                        document.forms["filterlaw"].style.visibility="hidden";
+                        document.forms["filterftz"].style.visibility="hidden";
+                    } else if(dataCategory==="TradeRemedyActions") {
+                        document.forms["dataCategoryForm"].style.visibility="hidden";
+                        document.forms["fileUploadForm"].style.visibility="hidden";
+                        document.forms["TANCFilterForm"].style.visibility="hidden";
+                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
+                        document.forms["finalmap"].style.visibility="hidden";
+                        document.forms["adcvdFilterForm"].style.visibility="hidden";
+                        document.forms["filtertrade"].style.visibility="visible";
+                        document.forms["filterlaw"].style.visibility="hidden";
+                        document.forms["filterftz"].style.visibility="hidden";
+                    } else if(dataCategory==="Foreign tarde zone") {
+                        document.forms["dataCategoryForm"].style.visibility="hidden";
+                        document.forms["fileUploadForm"].style.visibility="hidden";
+                        document.forms["TANCFilterForm"].style.visibility="hidden";
+                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
+                        document.forms["finalmap"].style.visibility="hidden";
+                        document.forms["adcvdFilterForm"].style.visibility="hidden";
+                        document.forms["filtertrade"].style.visibility="hidden";
+                        document.forms["filterlaw"].style.visibility="hidden";
+                        document.forms["filterftz"].style.visibility="visible";
+                    } else if(dataCategory==="EnforcementAndCompliance") {
+                        document.forms["dataCategoryForm"].style.visibility="hidden";
+                        document.forms["fileUploadForm"].style.visibility="hidden";
+                        document.forms["TANCFilterForm"].style.visibility="hidden";
+                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
+                        document.forms["finalmap"].style.visibility="hidden";
+                        document.forms["adcvdFilterForm"].style.visibility="hidden";
+                        document.forms["filtertrade"].style.visibility="hidden";
+                        document.forms["filterlaw"].style.visibility="visible";
+                        document.forms["filterftz"].style.visibility="hidden";                        
+                    }
+                    // document.forms["myform"]["firstname"].value;
+                } else {
+                    alert('Must Select any of your file for upload!');
+                }
+            }  
+            
+            function goToHomeForm() {
+                location.reload();
+                location.reload();
+            }
+            
+            function mapview() {                
+                var noErrors = true;
+                
+                dateInitiateFilterFrom = document.getElementById("fromtanc1").value;
+                dateInitiateFilterTo = document.getElementById("totanc1").value;
+                dateCloseFilterFrom = document.getElementById("fromtanc2").value;
+                dateCloseFilterTo = document.getElementById("totanc2").value;
+                dateSuccessFilterFrom = document.getElementById("fromtanc3").value;
+                dateSuccessFilterTo = document.getElementById("totanc3").value;
+                
+                if (dateOption === "init") {
+                    if (dateInitiateFilterFrom==="" || dateInitiateFilterTo==="") {
+                        alert("Date initiated cannot be empty. Reset values or enter a date!");
+                        noErrors = false;
+                        if (dateInitiateFrom === "") 
+                            document.forms["TANCFilterForm"].fromtanc1.focus();
+                        else 
+                            document.forms["TANCFilterForm"].totanc1.focus();
+                    } else {
+                        alert("Date initiated from " + dateInitiateFilterFrom + " to " + dateInitiateFilterTo);
+                    }
+                } else if (dateOption === "close") {
+                    if (dateCloseFilterFrom==="" || dateCloseFilterTo==="") {
+                        alert("Date initiated cannot be empty. Reset values or enter a date!");
+                        noErrors = false;
+                        if (dateCloseFilterFrom === "") 
+                            document.forms["TANCFilterForm"].fromtanc2.focus();
+                        else 
+                            document.forms["TANCFilterForm"].totanc2.focus();
+                    } else {
+                        alert("Date initiated from " + dateCloseFilterFrom + " to " + dateCloseFilterTo);
+                    }                
+                } else if (dateOption === "success") {
+                    if (dateSuccessFilterFrom==="" || dateSuccessFilterTo==="") {
+                        alert("Date initiated cannot be empty. Reset values or enter a date!");
+                        noErrors = false;
+                        if (dateSuccessFilterFrom === "") 
+                            document.forms["TANCFilterForm"].fromtanc3.focus();
+                        else 
+                            document.forms["TANCFilterForm"].totanc3.focus();
+                    } else {
+                        alert("Date initiated from " + dateSuccessFilterFrom + " to " + dateSuccessFilterTo);
+                    }                    
+                } else {
+                    
+                    
+                }
+                
+                if (noErrors === true) {
+                    document.forms["dataCategoryForm"].style.visibility="hidden";
+                    document.forms["fileUploadForm"].style.visibility="hidden";
+                    document.forms["TANCFilterForm"].style.visibility="hidden";
+                    document.forms["mapDisplayTypeForm"].style.visibility="visible";
+                    document.forms["finalmap"].style.visibility="hidden";
+                    document.forms["adcvdFilterForm"].style.visibility="hidden";
+                    document.forms["filtertrade"].style.visibility="hidden";
+                    document.forms["filterlaw"].style.visibility="hidden";
+                    document.forms["filterftz"].style.visibility="hidden";                                
+                    document.forms["mapDisplayTypeForm"].output.focus();                    
+                }
+                
+            }
+            
+            function showmap() {
+                document.forms["TANCFilterForm"].style.visibility="hidden";
+                document.forms["mapDisplayTypeForm"].style.visibility="hidden";
+                document.forms["dataCategoryForm"].style.visibility="hidden";
+                document.forms["fileUploadForm"].style.visibility="hidden";
+                document.forms["adcvdFilterForm"].style.visibility="hidden";
+                document.forms["finalmap"].style.visibility="visible";
+                document.forms["filtertrade"].style.visibility="hidden";
+                document.forms["filterftz"].style.visibility="hidden";
+                document.forms["filterlaw"].style.visibility="hidden";
+            }
+            
+            /* 
+             * --- to take a look at below functions as well as forms 
+             * and modify as above for other case data -----
+             */
+            function chkdateadcase() {
+                var whichinput=document.getElementsByName("filter2adcase");         
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                if(whichinput[k].value==="close") {   
+                    document.filter.toadcase1.disabled=true;
+                    document.filter.fromadcase1.disabled=true;
+                    document.filter.toadcase2.disabled=false;
+                    document.filter.fromadcase2.disabled=false;
+                } else if(whichinput[k].value==="init") {   
+                    document.filter.toadcase2.disabled=true;
+                    document.filter.fromadcase2.disabled=true;
+                    document.filter.toadcase1.disabled=false;
+                    document.filter.fromadcase1.disabled=false;
+                }
+            }
+            
+            function chkdatetrade() {
+                var whichinput=document.getElementsByName("filter2trade");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                if(whichinput[k].value==="close") {   
+                    document.filter.totrade1.disabled=true;
+                    document.filter.fromtrade1.disabled=true;
+                    document.filter.totrade2.disabled=false;
+                    document.filter.fromtrade2.disabled=false;
+                } else if(whichinput[k].value==="init") {   
+                    document.filter.totrade2.disabled=true;
+                    document.filter.fromtrade2.disabled=true;
+                    document.filter.totrade1.disabled=false;
+                    document.filter.fromtrade1.disabled=false;
+                }
+            }
+            
+            function chkdatelaw() {
+                var whichinput=document.getElementsByName("filter2law");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                if(whichinput[k].value==="close") {   
+                    document.TANCFilterForm.tolaw1.disabled=true;
+                    document.TANCFilterForm.fromlaw1.disabled=true;
+                    document.TANCFilterForm.tolaw3.disabled=true;
+                    document.TANCFilterForm.fromlaw3.disabled=true;
+                    document.TANCFilterForm.tolaw2.disabled=false;
+                    document.TANCFilterForm.fromlaw2.disabled=false;
+                } else if(whichinput[k].value==="init") {   
+                    document.TANCFilterForm.tolaw2.disabled=true;
+                    document.TANCFilterForm.fromlaw2.disabled=true;
+                    document.TANCFilterForm.tolaw3.disabled=true;
+                    document.TANCFilterForm.fromlaw3.disabled=true;
+                    document.TANCFilterForm.tolaw1.disabled=false;
+                    document.TANCFilterForm.fromlaw1.disabled=false;
+                } else if(whichinput[k].value==="success") {   
+                    document.TANCFilterForm.tolaw2.disabled=true;
+                    document.TANCFilterForm.fromlaw2.disabled=true;
+                    document.TANCFilterForm.tolaw1.disabled=true;
+                    document.TANCFilterForm.fromlaw1.disabled=true;
+                    document.TANCFilterForm.tolaw.disabled=false;
+                    document.TANCFilterForm.fromlaw3.disabled=false;
+                }
+            }   
+            
+            function tanccountry() {
+                var select1 = document.getElementsByName("country");
+                var selected1 = [];
+                for (var i = 0; i < select1.length; i++) {
+                    if (select1.options[i].selected) {
+                        alert("File Selected for " + select1.options[i].value +" ");
+                        //selected1.push(select1.options[i].value);
+                    }
+                }
+            } 
+            
+            function chkcountrytanc() {
+                var whichinput=document.getElementsByName("country");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                countryOption = whichinput[k].value;
+                if(whichinput[k].value==="all") {   
+                    document.TANCFilterForm.countryList.disabled=true;
+                } else  {   
+                    document.TANCFilterForm.countryList.disabled=false;
+                }
+                    
+            }
+            
+        </script>
+
+                
+        <form name="adcvdFilterForm" method="get"  action="" style="position: absolute; top:50px; left:100px; width:600px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>Apply Filters</h3>
             <label><strong>Display Data For:</strong></label><br/>      
@@ -933,7 +1406,7 @@
             <button type="reset" value="Reset">Reset</button>
         </form>
         
-        <form name="filtertrade" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
+        <form name="filtertrade" method="get"  action="" style="position: absolute; top:50px; left:100px; width:600px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>Apply Filters</h3>
             <label><strong>Select date</strong></label><br/>    
@@ -1216,20 +1689,20 @@
             <button type="reset" value="Reset">Reset</button>
         </form>
 
-        <form name="filterlaw" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
+        <form name="filterlaw" method="get"  action="" style="position: absolute; top:50px; left:100px; width:600px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>Apply Filters</h3>
             <label><strong>Select date</strong></label><br/>    
-            <p><input type="radio" name="filter2law" value="init" onClick="chkdatelaw();"> Case Initiated</input></p>
-            <input type="date" name="tolaw1" onClick="chkdatelaw();"> to  <input type="date" name="fromlaw1"   onClick="chkdatelaw();" display: inline-block;><br/>
-            <p><input type="radio" checked name="filter2law" value="close" onClick="chkdatelaw();"> Case Closed</input></p>
-            <input type="date" name="tolaw2" onClick="chkdatelaw();"> to  <input type="date" name="fromlaw2"  onClick="chkdatelaw();" display: inline-block; ><br/>
-            <p><input type="radio" checked name="filter2law" value="success" onClick="chkdatelaw();"> Success </input></p>
-            <input type="date" name="tolaw3" onClick="chkdatelaw();"> to  <input type="date" name="fromlaw3"  onClick="chkdatelaw();" display: inline-block; ><br/>
+            <p><input type="radio" name="filter2law" value="init" onClick="chkdatelaw();" /> Case Initiated </p>
+            <input type="date" name="tolaw1" onClick="chkdatelaw();" /> to  <input type="date" name="fromlaw1"   onClick="chkdatelaw();" /><br/>
+            <p><input type="radio" checked name="filter2law" value="close" onClick="chkdatelaw();" /> Case Closed </p>
+            <input type="date" name="tolaw2" onClick="chkdatelaw();"/> to  <input type="date" name="fromlaw2"  onClick="chkdatelaw();" /><br/>
+            <p><input type="radio" checked name="filter2law" value="success" onClick="chkdatelaw();" /> Success </p>
+            <input type="date" name="tolaw3" onClick="chkdatelaw();" /> to  <input type="date" name="fromlaw3"  onClick="chkdatelaw();" /><br/>
             <br/>
             <label><strong>Filter Company</strong></label><br/>    
-            <p><input type="radio" name="filter3law" value="small"> Small or medium EnterPrise</input></p>
-            <p><input type="radio" checked name="filter3law" value="All"> All-Default </input></p>
+            <p><input type="radio" name="filter3law" value="small" /> Small or medium EnterPrise </p>
+            <p><input type="radio" checked name="filter3law" value="All" /> All-Default </p>
             <br/>
             <label><strong>Filter Country:</strong></label>
             <select name= "countrylaw">
@@ -1505,377 +1978,20 @@
             <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>Apply Filters</h3>
             <label><strong>Select date</strong></label><br/>    
-            <p><input type="radio" name="filter2ftz" value="init"> Case Initiated</input></p>
-            <input type="date" name="to"> to  <input type="date" name="initendad"   display: inline-block; ><br/>
+            <p><input type="radio" name="filter2ftz" value="init" /> Case Initiated </p>
+            <input type="date" name="to" /> to  <input type="date" name="initendad" /><br/>
             <br/>
             <label><strong>Filter Company</strong></label><br/>    
-            <p><input type="radio" name="filter3ftz" value="export">Exports ($ millions)</input></p>
-            <p><input type="radio" checked name="filter3ftz" value="All"> Imports ($ millions)</input></p>
-            <p><input type="radio" checked name="filter3ftz" value="All"> All- default</input></p>
+            <p><input type="radio" name="filter3ftz" value="export" /> Exports ($ millions) </p>
+            <p><input type="radio" checked name="filter3ftz" value="All" /> Imports ($ millions) </p>
+            <p><input type="radio" checked name="filter3ftz" value="All" /> All- default </p>
             <br/>
             <label><strong>Filter Jobs Facilitated</strong></label><br/>    
-            <p><input type="radio" name="filter4ftz" value="jobs">Jobs Facilitated</input></p>      
+            <p><input type="radio" name="filter4ftz" value="jobs" /> Jobs Facilitated </p>      
 
             <input type="button" value="Continue" onclick="mapview();" >
             <button type="reset" value="Reset">Reset</button>
         </form>
-
-        <form name="finalmap" method="get" action="" style="position: absolute; top:750px; left:100px; width:400px; height:25px">
-            <input type="button" value="Home" onClick="goToHomeForm();">
-            <h1>Here we will display Map</h1>
-        </form>
-        
-        <script type="text/javascript" >
-            
-            window.onload = function () {
-                document.forms["dataCategoryForm"].style.visibility="visible";
-                document.forms["fileUploadForm"].style.visibility="hidden";
-                document.forms["TANCFilterForm"].style.visibility="hidden";
-                document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                document.forms["finalmap"].style.visibility="hidden";
-                document.forms["filteradcase"].style.visibility="hidden";
-                document.forms["filteradcase"].style.visibility="hidden";
-                document.forms["filtertrade"].style.visibility="hidden";
-                document.forms["filterlaw"].style.visibility="hidden";
-                document.forms["filterftz"].style.visibility="hidden";
-            };
-                        
-            var dataCategory; //category of data from first form - set in goToFileUploadForm
-            var dataRecords;  //JSON object string containing excel file records
-            
-            //TANC Filter Options variables
-            var dateOption; //either init, close, success
-            var dateFrom; 
-            var dateTo;
-            var companyOption; // all or SME only
-            var countryOption; //all or list
-            var countryList; //if list then list of countries selected
-            var industryOption; //all or other specific selected value
-            var issueOption; //all or other specific selected value
-            var publicityOption; //granted or not - if not then different values with numbers
-            var agreementOption; // either FTA or WTO or both
-            var successValueOption; //
-            var marketAccessOption;
-            var empAffectedOption;
-            
-            
-            function goToFileUploadForm() {
-                var whichinput=document.getElementsByName("input");
-                var k;
-                var len=whichinput.length;
-                var checked = false;
-                for (i=0;i<len;i++) {
-                    if(whichinput[i].checked) {
-                        k=i;
-                        checked = true;
-                    }
-                }
-                
-                if (checked === false) {
-                    alert("No input selected - Select one of the data categories");
-                    document.forms["dataCategoryForm"].style.visibility="visible";
-                    document.forms["fileUploadForm"].style.visibility="hidden";
-                    document.forms["TANCFilterForm"].style.visibility="hidden";
-                    document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                    document.forms["filteradcase"].style.visibility="hidden";
-                    document.forms["filtertrade"].style.visibility="hidden";
-                    document.forms["filterlaw"].style.visibility="hidden";
-                    document.forms["filterftz"].style.visibility="hidden";
-                    document.forms["finalmap"].style.visibility="hidden";
-                } else {
-                    dataCategory = whichinput[k].value;
-                    document.forms["dataCategoryForm"].style.visibility="hidden";
-                    document.forms["fileUploadForm"].style.visibility="visible";
-                    document.forms["TANCFilterForm"].style.visibility="hidden";
-                    document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                    document.forms["filteradcase"].style.visibility="hidden";
-                    document.forms["filtertrade"].style.visibility="hidden";
-                    document.forms["filterlaw"].style.visibility="hidden";
-                    document.forms["filterftz"].style.visibility="hidden";
-                    document.forms["finalmap"].style.visibility="hidden";
-                }
-                    
-            }
-            
-            function chkdatetanc() {
-                var whichinput=document.getElementsByName("filter2tanc");
-                var k;
-                var len=whichinput.length;
-                for (i=0;i<len;i++) {
-                    if(whichinput[i].checked) {
-                        k=i;
-                    }
-                }
-                if(whichinput[k].value==="close") {   
-                    document.TANCFilterForm.totanc1.disabled=true;
-                    document.TANCFilterForm.fromtanc1.disabled=true;
-                    document.TANCFilterForm.totanc3.disabled=true;
-                    document.TANCFilterForm.fromtanc3.disabled=true;
-                    document.TANCFilterForm.totanc2.disabled=false;
-                    document.TANCFilterForm.fromtanc2.disabled=false;
-                } else if(whichinput[k].value==="init") {   
-                    document.TANCFilterForm.totanc2.disabled=true;
-                    document.TANCFilterForm.fromtanc2.disabled=true;
-                    document.TANCFilterForm.fromtanc3.disabled=true;
-                    document.TANCFilterForm.totanc3.disabled=true;
-                    document.TANCFilterForm.totanc1.disabled=false;
-                    document.TANCFilterForm.fromtanc1.disabled=false;
-                } else if(whichinput[k].value==="success") {   
-                    document.TANCFilterForm.totanc2.disabled=true;
-                    document.TANCFilterForm.fromtanc2.disabled=true;
-                    document.TANCFilterForm.totanc1.disabled=true;
-                    document.TANCFilterForm.fromtanc1.disabled=true;
-                    document.TANCFilterForm.totanc3.disabled=false;
-                    document.TANCFilterForm.fromtanc3.disabled=false;
-                } else {
-                    document.TANCFilterForm.totanc1.disabled=true;
-                    document.TANCFilterForm.fromtanc1.disabled=true;
-                    document.TANCFilterForm.totanc3.disabled=true;
-                    document.TANCFilterForm.fromtanc3.disabled=true;
-                    document.TANCFilterForm.totanc2.disabled=true;
-                    document.TANCFilterForm.fromtanc2.disabled=true;
-                }
-            }   
-            
-            function chkdateadcase() {
-                var whichinput=document.getElementsByName("filter2adcase");         
-                var k;
-                var len=whichinput.length;
-                for (i=0;i<len;i++) {
-                    if(whichinput[i].checked) {
-                        k=i;
-                    }
-                }
-                if(whichinput[k].value==="close") {   
-                    document.filter.toadcase1.disabled=true;
-                    document.filter.fromadcase1.disabled=true;
-                    document.filter.toadcase2.disabled=false;
-                    document.filter.fromadcase2.disabled=false;
-                } else if(whichinput[k].value==="init") {   
-                    document.filter.toadcase2.disabled=true;
-                    document.filter.fromadcase2.disabled=true;
-                    document.filter.toadcase1.disabled=false;
-                    document.filter.fromadcase1.disabled=false;
-                }
-            }
-            
-            function chkdatetrade() {
-                var whichinput=document.getElementsByName("filter2trade");
-                var k;
-                var len=whichinput.length;
-                for (i=0;i<len;i++) {
-                    if(whichinput[i].checked) {
-                        k=i;
-                    }
-                }
-                if(whichinput[k].value==="close") {   
-                    document.filter.totrade1.disabled=true;
-                    document.filter.fromtrade1.disabled=true;
-                    document.filter.totrade2.disabled=false;
-                    document.filter.fromtrade2.disabled=false;
-                } else if(whichinput[k].value==="init") {   
-                    document.filter.totrade2.disabled=true;
-                    document.filter.fromtrade2.disabled=true;
-                    document.filter.totrade1.disabled=false;
-                    document.filter.fromtrade1.disabled=false;
-                }
-            }
-            
-            function chkdatelaw() {
-                var whichinput=document.getElementsByName("filter2law");
-                var k;
-                var len=whichinput.length;
-                for (i=0;i<len;i++) {
-                    if(whichinput[i].checked) {
-                        k=i;
-                    }
-                }
-                if(whichinput[k].value==="close") {   
-                    document.TANCFilterForm.tolaw1.disabled=true;
-                    document.TANCFilterForm.fromlaw1.disabled=true;
-                    document.TANCFilterForm.tolaw3.disabled=true;
-                    document.TANCFilterForm.fromlaw3.disabled=true;
-                    document.TANCFilterForm.tolaw2.disabled=false;
-                    document.TANCFilterForm.fromlaw2.disabled=false;
-                } else if(whichinput[k].value==="init") {   
-                    document.TANCFilterForm.tolaw2.disabled=true;
-                    document.TANCFilterForm.fromlaw2.disabled=true;
-                    document.TANCFilterForm.tolaw3.disabled=true;
-                    document.TANCFilterForm.fromlaw3.disabled=true;
-                    document.TANCFilterForm.tolaw1.disabled=false;
-                    document.TANCFilterForm.fromlaw1.disabled=false;
-                } else if(whichinput[k].value==="success") {   
-                    document.TANCFilterForm.tolaw2.disabled=true;
-                    document.TANCFilterForm.fromlaw2.disabled=true;
-                    document.TANCFilterForm.tolaw1.disabled=true;
-                    document.TANCFilterForm.fromlaw1.disabled=true;
-                    document.TANCFilterForm.tolaw.disabled=false;
-                    document.TANCFilterForm.fromlaw3.disabled=false;
-                }
-            }   
-            
-            function tanccountry() {
-                var select1 = document.getElementsByName("country");
-                var selected1 = [];
-                for (var i = 0; i < select1.length; i++) {
-                    if (select1.options[i].selected) {
-                        alert("File Selected for " + select1.options[i].value +" ");
-                        //selected1.push(select1.options[i].value);
-                    }
-                }
-            } 
-            
-            function chkcountrytanc() {
-                var whichinput=document.getElementsByName("country");
-                var k;
-                var len=whichinput.length;
-                for (i=0;i<len;i++) {
-                    if(whichinput[i].checked) {
-                        k=i;
-                    }
-                }
-                countryOption = whichinput[k].value;
-                if(whichinput[k].value==="all") {   
-                    document.TANCFilterForm.countryList.disabled=true;
-                } else  {   
-                    document.TANCFilterForm.countryList.disabled=false;
-                }
-                    
-            }   
-            
-            
-            function goToFiltersForm() {
-                var fileName = document.getElementById("myFile").value;
-                if(document.forms["fileUploadForm"]["file"].value !== "") {
-                    // you have a file - check file extension .xls or .xlsx                   
-                    str=document.forms["fileUploadForm"]["file"].value.toUpperCase();
-                    suffix1=".XLSX";
-                    suffix2=".XLS";
-                    if(!(str.indexOf(suffix2, str.length - suffix2.length) !== -1) && !(str.indexOf(suffix1, str.length - suffix1.length) !== -1 )) {
-                        alert('File of this extension type not allowed,\nAllowed file: *.xls or *.xlsx');
-                        document.getElementById('file').value='';
-                    }
-
-                    dataRecords = readData(fileName);
-                    //Parse and process json object string created above - retrieving record number of the first element in records array
-                    var contents = jsonParse(dataRecords);
-                    alert("File " + fileName + " selected for category " + dataCategory
-                            +"\nPartial Content: First record number - " +  contents["records"][0]["Record Number"]);
-
-                    //if(document.getElementById())
-                    if(dataCategory==="TancCases") {
-                        document.forms["dataCategoryForm"].style.visibility="hidden";
-                        document.forms["fileUploadForm"].style.visibility="hidden";
-                        document.forms["TANCFilterForm"].style.visibility="visible";
-                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                        document.forms["filteradcase"].style.visibility="hidden";
-                        document.forms["filtertrade"].style.visibility="hidden";
-                        document.forms["filterlaw"].style.visibility="hidden";
-                        document.forms["filterftz"].style.visibility="hidden";
-                        document.forms["finalmap"].style.visibility="hidden";
-                    } else if(dataCategory==="AdCvdActions") {
-                        document.forms["dataCategoryForm"].style.visibility="hidden";
-                        document.forms["fileUploadForm"].style.visibility="hidden";
-                        document.forms["TANCFilterForm"].style.visibility="hidden";
-                        document.forms["filteradcase"].style.visibility="visible";
-                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                        document.forms["filtertrade"].style.visibility="hidden";
-                        document.forms["filterlaw"].style.visibility="hidden";
-                        document.forms["filterftz"].style.visibility="hidden";
-                        document.forms["finalmap"].style.visibility="hidden";
-                    } else if(dataCategory==="TradeRemedyActions") {
-                        document.forms["dataCategoryForm"].style.visibility="hidden";
-                        document.forms["fileUploadForm"].style.visibility="hidden";
-                        document.forms["TANCFilterForm"].style.visibility="hidden";
-                        document.forms["filteradcase"].style.visibility="hidden";
-                        document.forms["filtertrade"].style.visibility="visible";
-                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                        document.forms["filterlaw"].style.visibility="hidden";
-                        document.forms["filterftz"].style.visibility="hidden";
-                        document.forms["finalmap"].style.visibility="hidden";
-                    } else if(dataCategory==="Foreign tarde zone") {
-                        document.forms["dataCategoryForm"].style.visibility="hidden";
-                        document.forms["fileUploadForm"].style.visibility="hidden";
-                        document.forms["TANCFilterForm"].style.visibility="hidden";
-                        document.forms["filteradcase"].style.visibility="hidden";
-                        document.forms["filtertrade"].style.visibility="hidden";
-                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                        document.forms["filterlaw"].style.visibility="hidden";
-                        document.forms["filterftz"].style.visibility="visible";
-                        document.forms["finalmap"].style.visibility="hidden";
-                    } else if(dataCategory==="EnforcementAndCompliance") {
-                        document.forms["dataCategoryForm"].style.visibility="hidden";
-                        document.forms["fileUploadForm"].style.visibility="hidden";
-                        document.forms["TANCFilterForm"].style.visibility="hidden";
-                        document.forms["filteradcase"].style.visibility="hidden";
-                        document.forms["filtertrade"].style.visibility="hidden";
-                        document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                        document.forms["filterlaw"].style.visibility="visible";
-                        document.forms["filterftz"].style.visibility="hidden";
-                        document.forms["finalmap"].style.visibility="hidden";
-                    }
-                    // document.forms["myform"]["firstname"].value;
-                } else {
-                    alert('Must Select any of your file for upload!');
-                }
-            }  
-            
-            function goToHomeForm() {
-                location.reload();
-                location.reload();
-                /*
-                document.forms["TANCFilterForm"].style.visibility="hidden";
-                document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                document.forms["fileUploadForm"].style.visibility="hidden";
-                document.forms["finalmap"].style.visibility="hidden";
-                document.forms["dataCategoryForm"].style.visibility="visible";
-                document.forms["filteradcase"].style.visibility="hidden";
-                document.forms["filtertrade"].style.visibility="hidden";
-                document.forms["filterlaw"].style.visibility="hidden";
-                document.forms["filterftz"].style.visibility="hidden";
-                */
-            }
-            
-            function mapview() {
-                
-                /*    
-                 * var select1 = document.getElementsByName("country");
-                 * var selected1 = [];
-                 * for (var i = 0; i < select1.length; i++) {
-                 *      if (select1.options[i].selected) {
-                 *          alert("File Selected for " + select1.options[i].value +" ");
-                 *          //selected1.push(select1.options[i].value);
-                 *      }
-                 * }
-                 */
-                
-                document.forms["TANCFilterForm"].style.visibility="hidden";
-                document.forms["mapDisplayTypeForm"].style.visibility="visible";
-                document.forms["dataCategoryForm"].style.visibility="hidden";
-                document.forms["fileUploadForm"].style.visibility="hidden";
-                document.forms["filteradcase"].style.visibility="hidden";
-                document.forms["filtertrade"].style.visibility="hidden";
-                document.forms["filterlaw"].style.visibility="hidden";
-                document.forms["filterftz"].style.visibility="hidden";
-                document.forms["finalmap"].style.visibility="hidden";
-                
-            }
-            
-            function showmap() {
-                document.forms["TANCFilterForm"].style.visibility="hidden";
-                //document.forms["fileUploadForm"].style.visibility="hidden";
-                document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                document.forms["dataCategoryForm"].style.visibility="hidden";
-                document.forms["fileUploadForm"].style.visibility="hidden";
-                document.forms["filteradcase"].style.visibility="hidden";
-                document.forms["finalmap"].style.visibility="visible";
-                document.forms["filtertrade"].style.visibility="hidden";
-                document.forms["filterftz"].style.visibility="hidden";
-                document.forms["filterlaw"].style.visibility="hidden";
-                // document.forms["myform"]["firstname"].value;
-            }
-        
-        </script>
 
     </body>
 
