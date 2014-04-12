@@ -4,7 +4,7 @@
         
         <title>Department of Commerce - Mapping Software</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE10">
         <style>
             label { float: left; width: 600px; }
             display:block
@@ -15,6 +15,9 @@
         </style>
         
         <script type="text/javascript" src="scripts/HashMap.js"></script>
+        <script type="text/javascript" src="scripts/CountryAbb.js"></script>
+        <script type="text/javascript" src="scripts/InitiateWorldMap.js"></script>
+        <script type="text/javascript" src="scripts/InitiateUSAMap.js"></script>
         <script type="text/javascript" src="scripts/json_eval.js"></script>
 	<link rel="stylesheet" href="stylesheets/jquery.ui.all.css">
 	<script src="scripts/jquery-1.10.2.js"></script>
@@ -135,13 +138,13 @@
                         jsonArray = jsonArray + "{";
                         for(var i=0; i<currentHash.size()-1;i++) {
                             //document.writeln(header[i] + ":" + currentHash.get(header[i]) + ",");
-                            jsonArray = jsonArray + "\"" + header[i] + "\":" + currentHash.get(header[i]) + ",";
+                            jsonArray = jsonArray + "\"" + header[i] + "\":\"" + currentHash.get(header[i]) + "\",";
                         }
                         //document.writeln(header[i] + ":" + currentHash.get(header[i]) + "} <br>" );
                         if (xVal < xEnd)
-                            jsonArray = jsonArray + "\"" + header[i] + "\":" + currentHash.get(header[i]) + "}, ";
+                            jsonArray = jsonArray + "\"" + header[i] + "\":\"" + currentHash.get(header[i]) + "\"}, ";
                         else 
-                            jsonArray = jsonArray + "\"" + header[i] + "\":" + currentHash.get(header[i]) + "} ";
+                            jsonArray = jsonArray + "\"" + header[i] + "\":\"" + currentHash.get(header[i]) + "\"} ";
                         xVal = xVal + 1;
                         
                         
@@ -151,7 +154,7 @@
                     
                     //Parse and process json object string created above - retrieving record number of the first element in records array
                     //var contents = jsonParse(jsonArray);
-                    //document.writeln("DUMMY RECORD NUMBER:" + contents["records"][0]["Record Number"]);
+                    //document.writeln("DUMMY RECORD NUMBER:" + data[0]["Record Number"]);
                 
                 } catch (ex) {
                     alert(ex);
@@ -166,8 +169,8 @@
                 return jsonArray;
             }
         </script>
-    
-   </head>
+        
+    </head>
 
     <body bgcolor="#E6E6FA">
              
@@ -671,20 +674,20 @@
         </form>
         
         
-        <form name="mapDisplayTypeForm" method="get" action="" style="position: absolute; top:700px; left:100px; width:400px; height:25px">
+        <form name="mapDisplayTypeForm" method="get" action="" style="position: absolute; top:50px; left:100px; width:400px; height:25px">
             
             <input type="button" value="Home" onClick="goToHomeForm();"/>
             
             <h1>I want to display data by</h1>
             
             <p>
-                <input type="radio" name="output" value="pins"/> Pins of locations USA map 
+                <input type="radio" name="output" value="pins" disabled/> Pins of locations USA map 
             </p>
             <p>
-                <input type="radio" name="output" value="dotus"/> Dots of varying sizes USA map 
+                <input type="radio" name="output" value="dotus" disabled/> Dots of varying sizes USA map 
             </p>
             <p>
-                <input type="radio" name="output" value="dotworld"/> Dots of varying sizes Worldwide map 
+                <input type="radio" name="output" value="dotworld" disabled/> Dots of varying sizes Worldwide map 
             </p>
             <p>
                 <input type="radio" name="output" value="shadeus"/> Shaded State USA map 
@@ -698,10 +701,18 @@
             
         </form>
         
-        <form name="finalmap" method="get" action="" style="position: absolute; top:700px; left:100px; width:400px; height:25px">
+        <form name="finalmap" method="get" action="" style="position: absolute; top:50px; left:100px; width:400px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">
-            <h1>Here we will display Map</h1>
+            
+            <div id="container" style="position: absolute; top: 170px; left: 100px; width: 1000px; max-height: 700px"></div>
+            <input type="button" value="Save Map Image" onclick="savemap();"/>
         </form>
+        
+        
+
+        <script src="scripts/d3.min.js"></script>
+        <script src="scripts/topojson.v1.min.js"></script>
+        <script src="scripts/datamaps.all.min.js"></script>
         
         <script type="text/javascript" >
             
@@ -722,14 +733,7 @@
             var dataRecords;  //JSON object string containing excel file records
             
             //TANC Filter Options variables
-            var dateOption; //either init, close, success
-            var dateInitiateFilterFrom; 
-            var dateInitiateFilterTo;
-            var dateCloseFilterFrom; 
-            var dateCloseFilterTo;
-            var dateSuccessFilterFrom; 
-            var dateSuccessFilterTo;
-            
+            var dateOption; //either init, close, success - pass true onto method if its success
             var companyOption; // all or SME only
             var countryOption; //all or list
             var countryList; //if list then list of countries selected
@@ -741,6 +745,31 @@
             var marketAccessOption;
             var empAffectedOption;
             
+            var successFilter = false; // boolean, default = false
+            var dateInitiateFilterFrom = null; // String, default = null
+            var dateInitiateFilterTo = null; // String, default = null
+            var dateCloseFilterFrom = null; // String, default = null
+            var dateCloseFilterTo = null; // String, default = null
+            /*
+            var smeFilter = false; // boolean, default = false;
+            var countryFilter; // NOT Defined yet, Abbreviation
+            var industryFilter = null; // String, default = null
+            var issueFilter = null; // String, default = null
+            var publicityPermissionFilter = false; // boolean, default = false
+            var ftaFilter = null; // String, default = null
+            var wtoFilter = null; // String, default = null
+            */
+           
+            var valueFilter = true; // boolean: display or not, default is true
+            
+            /*
+            var affectedEmployeeFilter = false; // which attribute?
+            */
+            var countryAbbreviationTable = getCountryAbb();
+            
+            var usOnlyMapFilter; // only show US map, boolean, default = false to show world shaded map
+            var mapFre = new HashMap(); //store frequency of each record on the map
+            var mapValue; //store accumulated value of each record on the map
             
             function goToFileUploadForm() {
                 var whichinput=document.getElementsByName("input");
@@ -868,6 +897,7 @@
                     alert("File " + fileName + " selected for category " + dataCategory
                             +"\nPartial Content: First record number - " +  contents["records"][0]["Record Number"]);
 
+            
                     //if(document.getElementById())
                     if(dataCategory==="TancCases") {
                         document.forms["dataCategoryForm"].style.visibility="hidden";
@@ -934,14 +964,10 @@
             function mapview() {                
                 var noErrors = true;
                 
-                dateInitiateFilterFrom = document.getElementById("fromtanc1").value;
-                dateInitiateFilterTo = document.getElementById("totanc1").value;
-                dateCloseFilterFrom = document.getElementById("fromtanc2").value;
-                dateCloseFilterTo = document.getElementById("totanc2").value;
-                dateSuccessFilterFrom = document.getElementById("fromtanc3").value;
-                dateSuccessFilterTo = document.getElementById("totanc3").value;
-                
                 if (dateOption === "init") {
+                    dateInitiateFilterFrom = document.getElementById("fromtanc1").value;
+                    dateInitiateFilterTo = document.getElementById("totanc1").value;
+                    
                     if (dateInitiateFilterFrom==="" || dateInitiateFilterTo==="") {
                         alert("Date initiated cannot be empty. Reset values or enter a date!");
                         noErrors = false;
@@ -953,26 +979,32 @@
                         alert("Date initiated from " + dateInitiateFilterFrom + " to " + dateInitiateFilterTo);
                     }
                 } else if (dateOption === "close") {
+                    dateCloseFilterFrom = document.getElementById("fromtanc2").value;
+                    dateCloseFilterTo = document.getElementById("totanc2").value;
+                    
                     if (dateCloseFilterFrom==="" || dateCloseFilterTo==="") {
-                        alert("Date initiated cannot be empty. Reset values or enter a date!");
+                        alert("Date closed cannot be empty. Reset values or enter a date!");
                         noErrors = false;
                         if (dateCloseFilterFrom === "") 
                             document.forms["TANCFilterForm"].fromtanc2.focus();
                         else 
                             document.forms["TANCFilterForm"].totanc2.focus();
                     } else {
-                        alert("Date initiated from " + dateCloseFilterFrom + " to " + dateCloseFilterTo);
+                        alert("Date closed from " + dateCloseFilterFrom + " to " + dateCloseFilterTo);
                     }                
                 } else if (dateOption === "success") {
-                    if (dateSuccessFilterFrom==="" || dateSuccessFilterTo==="") {
-                        alert("Date initiated cannot be empty. Reset values or enter a date!");
+                    dateCloseFilterFrom = document.getElementById("fromtanc3").value;
+                    dateCloseFilterTo = document.getElementById("totanc3").value;
+                            
+                    if (dateCloseFilterFrom==="" || dateCloseFilterTo==="") {
+                        alert("Date success cannot be empty. Reset values or enter a date!");
                         noErrors = false;
-                        if (dateSuccessFilterFrom === "") 
+                        if (dateCloseFilterFrom === "") 
                             document.forms["TANCFilterForm"].fromtanc3.focus();
                         else 
                             document.forms["TANCFilterForm"].totanc3.focus();
                     } else {
-                        alert("Date initiated from " + dateSuccessFilterFrom + " to " + dateSuccessFilterTo);
+                        alert("Date success from " + dateCloseFilterFrom + " to " + dateCloseFilterTo);
                     }                    
                 } else {
                     
@@ -989,21 +1021,343 @@
                     document.forms["filtertrade"].style.visibility="hidden";
                     document.forms["filterlaw"].style.visibility="hidden";
                     document.forms["filterftz"].style.visibility="hidden";                                
-                    document.forms["mapDisplayTypeForm"].output.focus();                    
                 }
                 
             }
             
             function showmap() {
-                document.forms["TANCFilterForm"].style.visibility="hidden";
-                document.forms["mapDisplayTypeForm"].style.visibility="hidden";
-                document.forms["dataCategoryForm"].style.visibility="hidden";
-                document.forms["fileUploadForm"].style.visibility="hidden";
-                document.forms["adcvdFilterForm"].style.visibility="hidden";
-                document.forms["finalmap"].style.visibility="visible";
-                document.forms["filtertrade"].style.visibility="hidden";
-                document.forms["filterftz"].style.visibility="hidden";
-                document.forms["filterlaw"].style.visibility="hidden";
+                
+                if (dateOption === "success") 
+                    successFilter = true;
+                else 
+                    successFilter = false;
+                
+                var whichinput=document.getElementsByName("output");
+                var k;
+                var len=whichinput.length;
+                var checked = false;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                        checked = true;
+                    }
+                }
+                var mapOption;
+                var noErrors = true;
+                if (checked === false) {
+                    alert("Select one of the options to display maps");
+                    noErrors = false;
+                } else {
+                    mapOption = whichinput[k].value;
+                }
+                                         
+                if (mapOption === "shadeus") {
+                    alert("To display Shaded US Map");
+                    usOnlyMapFilter = true;
+                } else if (mapOption === "shadeworld") {
+                    alert("To display Shaded World Map");
+                    usOnlyMapFilter = false;
+                }
+                
+                if (noErrors === true) {
+                    drawMaps();
+                    document.forms["TANCFilterForm"].style.visibility="hidden";
+                    document.forms["mapDisplayTypeForm"].style.visibility="hidden";
+                    document.forms["dataCategoryForm"].style.visibility="hidden";
+                    document.forms["fileUploadForm"].style.visibility="hidden";
+                    document.forms["adcvdFilterForm"].style.visibility="hidden";
+                    document.forms["finalmap"].style.visibility="visible";
+                    document.forms["filtertrade"].style.visibility="hidden";
+                    document.forms["filterftz"].style.visibility="hidden";
+                    document.forms["filterlaw"].style.visibility="hidden";
+                }
+            }
+            
+            function drawMaps() {
+                
+                if (usOnlyMapFilter === false) {
+                    initiateWorldMap(mapFre);
+                    if (valueFilter) {
+                        mapValue = new HashMap();
+                        initiateWorldMap(mapValue);
+                    }
+                } else {	//calculate frequency of each state on the us map
+                    initiateUSMap(mapFre);
+                    if (valueFilter) {
+                        mapValue = new HashMap();
+                        initiateUSMap(mapValue);
+                    }
+                }
+                
+                var EUlist = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark",
+                    "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland", "Italy", "Latvia",
+                    "Lithuania", "Luxembourg", "Malta", "Netherlands","Poland", "Portugal", "Romania", "Slovak Republic",
+                    "Slovenia", "Spain", "Sweden", "United Kingdom"];
+                
+                // go through each record
+                var contents = jsonParse(dataRecords);
+                var data = contents["records"];
+                
+                for (var record=0;record<data.length;record++) {
+                    // success filter section, assign the success date to case close date filter
+                    if (successFilter === true && (data[record]["Status"] !== "Closed" || data[record]["Success"] === "FALSE")) {
+                        continue;
+                    }		  
+                    // case date initiate filter section
+                    if (dateInitiateFilterFrom !== null && dateInitiateFilterTo !== null) {
+                        var tmp1 = data[record]["Case Initiated Date"].split(" "); // remove time and keep only date
+                        var tmp2 = tmp1[0].split("/"); // split mon/day/year
+                        var caseIniDay = parseInt(tmp2[1]);
+                        var caseIniMon = parseInt(tmp2[0]);
+                        var caseIniYear = parseInt(tmp2[2]);
+                        
+                        //skip record which date is earlier than the filter from-date
+                        if (dateInitiateFilterFrom !== null) {
+                            var tmp = dateInitiateFilterFrom.split("/");
+                            var filterIniDayFrom = parseInt(tmp[1]);
+                            var filterIniMonFrom = parseInt(tmp[0]);
+                            var filterIniYearFrom = parseInt(tmp[2]);
+                            
+                            if (caseIniYear < filterIniYearFrom) {
+                                continue;
+                            }
+                            if (caseIniYear === filterIniYearFrom && caseIniMon < filterIniMonFrom) {
+                                continue;
+                            }
+                            if (caseIniYear === filterIniYearFrom && caseIniMon === filterIniMonFrom && caseIniDay < filterIniDayFrom) {
+                                continue;
+                            }
+                        }
+                        
+                        //skip record which date is later than the filter to-date
+                        if (dateInitiateFilterTo !== null) {
+                            var tmp = dateInitiateFilterTo.split("/");
+                            var filterIniDayTo = parseInt(tmp[1]);
+                            var filterIniMonTo = parseInt(tmp[0]);
+                            var filterIniYearTo = parseInt(tmp[2]);
+                            
+                            if (caseIniYear > filterIniYearTo) {
+                                continue;
+                            }
+                            if (caseIniYear === filterIniYearTo && caseIniMon > filterIniMonTo) {
+                                continue;
+                            }
+                            if (caseIniYear === filterIniYearTo && caseIniMon === filterIniMonTo && caseIniDay > filterIniDayTo) {
+                                continue;
+                            }
+                        }
+                    }
+                    
+                    // case date close filter section
+                    if (dateCloseFilterFrom !== null && dateCloseFilterTo !== null) {
+                        var tmp1 = data[record]["Date Closed"].split(" "); // remove time and keep only date
+                        var tmp2 = tmp1[0].split("/"); // split mon/day/year
+                        var caseCloseDay = parseInt(tmp2[1]);
+                        var caseCloseMon = parseInt(tmp2[0]);
+                        var caseCloseYear = parseInt(tmp2[2]);
+                        
+                        //skip record which date is earlier than the filter from-date
+                        if (dateCloseFilterFrom !== null) {
+                            var tmp = dateCloseFilterFrom.split("/");
+                            var filterCloseDayFrom = parseInt(tmp[1]);
+                            var filterCloseMonFrom = parseInt(tmp[0]);
+                            var filterCloseYearFrom = parseInt(tmp[2]);
+                            
+                            if (caseCloseYear < filterCloseYearFrom) {
+                                continue;
+                            }
+                            if (caseCloseYear === filterCloseYearFrom && caseCloseMon < filterCloseMonFrom) {
+                                continue;
+                            }
+                            if (caseCloseYear === filterCloseYearFrom && caseCloseMon === filterCloseMonFrom && caseCloseDay < filterCloseDayFrom) {
+                                continue;
+                            }
+                        }
+                        
+                        //skip record which date is later than the filter to-date
+                        if (dateCloseFilterTo !== null) {
+                            var tmp = dateCloseFilterTo.split("/");
+                            var filterCloseDayTo = parseInt(tmp[1]);
+                            var filterCloseMonTo = parseInt(tmp[0]);
+                            var filterCloseYearTo = parseInt(tmp[2]);
+                            
+                            if (caseCloseYear > filterCloseYearTo) {
+                                continue;
+                            }
+                            if (caseCloseYear === filterCloseYearTo && caseCloseMon > filterCloseMonTo) {
+				continue;
+                            }
+                            if (caseCloseYear === filterCloseYearTo && caseCloseMon === filterCloseMonTo && caseCloseDay > filterCloseDayTo) {
+                                continue;
+                            }
+                        }
+                    }
+                    
+                    /*
+                     // there should be a country section here
+            
+                     // sme involved filter section, default should be false.
+                     if (smeFilter === true && data[record]["SME Involved"] === "No") {
+                     continue;
+                     }
+            
+                     // industry filter section, default is null, assuming the value is a string
+                     if (industryFilter != null) {
+                     var curIndustry = data[record]["Industry/Sectors"];
+                     if (curIndustry != industryFilter) {
+                     continue;
+                     }
+                     }
+            
+                     // issueFilter section
+                     if (issueFilter != null) {
+                     var curIssue = data[record]["Issue(s)"];
+                     if (curIssue.indexOf(issueFilter) < 0 ) {
+                     continue;
+                     }
+                     }
+            
+                     // publicity permission filter section, boolean, default = false
+                     if (publicityPermissionFilter === true && data[record]["Publicity Permission"] != "Granted") {
+                     continue;
+                     }
+            
+                     // FTA relevant filter
+                     if (ftaFilter != null) {
+                     var ftaStr = data[record]["Trade Agreement(s)"];
+                     if (ftaStr.indexOf(ftaFilter) < 0) {
+                     continue;
+                     }
+                     }
+            
+                     //WTO relevant filter
+                     if (wtoFilter != null) {
+                     var wtoStr = data[record]["Trade Agreement(s)"];
+                     if (wtoStr.indexOf(wtoFilter) < 0) {
+                     continue;
+                     }
+                     }*/
+                    var NumOfInvalidRecord = 0;
+	  
+                    //default (false) world map
+                    if (usOnlyMapFilter === false) {
+                        
+                        var country = data[record]["Country(s)"];
+                        
+                        if (country.indexOf(",") < 0 && country !== "European Union") {
+                            var cty = countryAbbreviationTable.get(country);
+                            if (cty === null) {
+				document.write("Invalid record: " + country + "<br>");
+				NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                            } 
+                            var tmp = mapFre.get(cty) + 1;
+                            mapFre.put(cty, tmp);			
+                            if (valueFilter) {
+				var curVal = data[record]["Case Value (in $ millions)"];
+				var tmpVal = parseInt(curVal) + mapValue.get(cty);
+				mapValue.put(cty, tmpVal);
+                            }
+                        } else if (country.indexOf("European Union") >= 0) { // EU
+                            var countries = EUlist;
+                            for (var i in countries) {
+				var cty = countryAbbreviationTable.get(countries[i]);
+				if (cty === null) {
+                                    document.write("Invalid record: " + countries[i] + "<br>");
+                                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+				}
+				var tmp = mapFre.get(cty) + 1;
+				mapFre.put(cty, tmp);
+				if (valueFilter) {
+                                    var curVal = data[record]["Case Value (in $ millions)"];
+                                    var tmpVal = parseInt(curVal) + mapValue.get(cty);
+                                    mapValue.put(cty, tmpVal);
+				}
+                            }
+                        } else if (country.indexOf(",") >= 0) {
+                            var countries = country.split(", ");
+                            for (var i in countries) {
+				var cty = countryAbbreviationTable.get(countries[i]);
+				if (cty == null) {
+                                    document.write("Invalid record: " + countries[i] + "<br>");
+                                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+				}
+				var tmp = mapFre.get(cty) + 1;
+				mapFre.put(cty, tmp);
+				if (valueFilter) {
+                                    var curVal = data[record]["Case Value (in $ millions)"];
+                                    var tmpVal = parseInt(curVal) + mapValue.get(cty);
+                                    mapValue.put(cty, tmpVal);
+				}
+                            }
+                        }
+                    } else { // us map
+                        var state = data[record]["Case Address: State"];
+                        if (!mapFre.containsKey(state)) {
+                            NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                        } else {
+                            var tmp = mapFre.get(state) + 1;
+                            mapFre.put(state, tmp);
+                            if (valueFilter) {
+				var curVal = data[record]["Case Value (in $ millions)"];
+				var tmpVal = parseInt(curVal) + mapValue.get(cty);
+                                mapValue.put(cty, tmpVal);
+                            }
+                        }
+                    }
+                }
+                
+                
+                var mapScope;
+                if (!usOnlyMapFilter) {
+                    mapScope = 'world';
+                    
+                } else {
+                    mapScope = 'usa';
+                }
+                
+                var mapkeys = mapFre.keys();
+                var myObj = {};
+                for (var i in mapkeys) {
+                    myObj[mapkeys[i]] = {}
+                    if (mapFre.get(mapkeys[i]) >= 10) {
+                        myObj[mapkeys[i]]["fillKey"] = 'HIGH';
+                    } else if (mapFre.get(mapkeys[i]) >= 5) {
+                        myObj[mapkeys[i]]["fillKey"] = 'MEDIUM';
+                    } else if (mapFre.get(mapkeys[i]) === 0) {
+                        myObj[mapkeys[i]]["fillKey"] = 'UNKNOWN';
+                    } else {
+                        myObj[mapkeys[i]]["fillKey"] = 'LOW';
+                    }
+                    myObj[mapkeys[i]]["numberOfCases"] = mapFre.get(mapkeys[i]);
+                    if (valueFilter) {
+                        myObj[mapkeys[i]]["valueOfCases"] = mapValue.get(mapkeys[i]);
+                    }
+                }
+                
+                var map = new Datamap({
+                    scope: mapScope,
+                    element: document.getElementById('container'),
+                    fills: {
+                        HIGH: 'rgb(0,100,0)',
+                        MEDIUM: 'rgb(0,255,0)',
+                        LOW: 'rgb(144,238,144)',
+                        UNKNOWN: 'rgb(192,192,192)',
+                        defaultFill: 'rgb(192,192,192)'
+                    },
+                    data: myObj,
+                    geographyConfig: {
+                        popupTemplate: function(geo, data) {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '<br>Total value of cases in ' + geo.properties.name,
+                                ': ' + data.valueOfCases,
+                                '</strong></div>'].join('');
+                        }
+                    }                
+                });
+                map.legend();        
+                
             }
             
             /* 
@@ -1118,6 +1472,8 @@
             
         </script>
 
+        <script>
+        </script>
                 
         <form name="adcvdFilterForm" method="get"  action="" style="position: absolute; top:50px; left:100px; width:600px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">
@@ -1993,6 +2349,10 @@
             <button type="reset" value="Reset">Reset</button>
         </form>
 
+
+    
+        
+        
     </body>
 
 </html>
