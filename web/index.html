@@ -82,7 +82,7 @@
         
         <!-- script to read data from excel file; requires Hashmap script file; can move this also to a different js file?? -->
         <script type="text/javascript">
-
+            //to be updated to get the row and column numbers from user input 
             function readData(file) {
                 //need to find a better way to get the below start and end values
                 //right now hard coded for the dummy excel file
@@ -187,14 +187,25 @@
             <button type="reset" value="Reset">Reset</button>
         </form>                
         
-        <form name="fileUploadForm" action="" method="post" enctype="multipart/form-data" style="position: absolute; top:50px; left:100px; width:400px; height:25px" >
+        <form name="fileUploadForm" action="" method="post" enctype="multipart/form-data" style="position: absolute; top:50px; left:100px; width:600px; height:25px" >
             
             <input type="button" value="Home" onClick="goToHomeForm();" />
             <h1>File Upload</h1>
             <br />
-            Select a file to upload: 
+            Browse to select an input Excel data file in order to proceed: 
             <br />
-            <input type="file" name="file" id="myFile"> <br/><br>
+            <input type="file" name="file" id="myFile" onchange="enableDescription();"> <br/>
+            <br/><br/>
+            
+            File contents description:
+            <br/>
+            Number of data records (first and last row numbers where first row has to be header)<br/>
+            <input type="text" name="xStart" id="xStart" disabled>  to <input type="text" name="xEnd" id="xEnd" disabled>
+            <br/>
+            Number of data headers (first and last column numbers)<br/>
+            <input type="text" name="yStart" id="yStart" disabled>  to <input type="text" name="yEnd" id="yEnd" disabled> 
+            <br/><br/><br/>
+            
             <input type="button" value="Upload"  onclick="goToFiltersForm();"/>            
             <button type="reset" value="Reset">Reset</button>
         </form>
@@ -223,10 +234,10 @@
             
             <label><strong>Select a company type:</strong></label><br/>    
             <p>
-                <input type="radio" checked name="filter2" value="All"/> All Organizations (Default) 
+                <input type="radio" checked name="tancSMEFilter" value="All"/> All Organizations (Default) 
             </p>
             <p>
-                <input type="radio" name="filter2" value="SME"/> Small and Medium Sized Enterprises only 
+                <input type="radio" name="tancSMEFilter" value="SME"/> Small and Medium Sized Enterprises only 
             
             </p>
             <br/>
@@ -734,7 +745,7 @@
             
             //TANC Filter Options variables
             var dateOption; //either init, close, success - pass true onto method if its success
-            var companyOption; // all or SME only
+            var companyOption; // all or SME only -- smeFilter used below instead
             var countryOption; //all or list
             var countryList; //if list then list of countries selected
             var industryOption; //all or other specific selected value
@@ -750,8 +761,8 @@
             var dateInitiateFilterTo = null; // String, default = null
             var dateCloseFilterFrom = null; // String, default = null
             var dateCloseFilterTo = null; // String, default = null
+            var smeFilter = false; // boolean, default = false; -- indu
             /*
-            var smeFilter = false; // boolean, default = false;
             var countryFilter; // NOT Defined yet, Abbreviation
             var industryFilter = null; // String, default = null
             var issueFilter = null; // String, default = null
@@ -807,6 +818,16 @@
                     document.forms["filterftz"].style.visibility="hidden";
                 }
                     
+            }
+            
+            function enableDescription() {
+                if(document.forms["fileUploadForm"]["file"].value !== "") {
+                    document.forms["fileUploadForm"]["xStart"].disabled = false;
+                    document.forms["fileUploadForm"]["xEnd"].disabled = false;
+                    document.forms["fileUploadForm"]["yStart"].disabled = false;
+                    document.forms["fileUploadForm"]["yEnd"].disabled = false;
+                }
+                
             }
             
             function chkdatetanc() {
@@ -1006,9 +1027,22 @@
                     } else {
                         alert("Date success from " + dateCloseFilterFrom + " to " + dateCloseFilterTo);
                     }                    
+                }
+                
+                var whichinput=document.getElementsByName("tancSMEFilter");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                
+                var smeInput = whichinput[k].value;
+                if(smeInput === "All") {
+                    smeFilter = false;
                 } else {
-                    
-                    
+                    smeFilter = true;
                 }
                 
                 if (noErrors === true) {
@@ -1103,6 +1137,8 @@
                     if (successFilter === true && (data[record]["Status"] !== "Closed" || data[record]["Success"] === "FALSE")) {
                         continue;
                     }		  
+                    
+                    //alert("date closed " + record + ": " + data[record]["Date Closed"]);
                     // case date initiate filter section
                     if (dateInitiateFilterFrom !== null && dateInitiateFilterTo !== null) {
                         var tmp1 = data[record]["Case Initiated Date"].split(" "); // remove time and keep only date
@@ -1148,8 +1184,8 @@
                         }
                     }
                     
-                    // case date close filter section
-                    if (dateCloseFilterFrom !== null && dateCloseFilterTo !== null) {
+                    // case date close filter section -- issue with date closed format read from the excel file :s
+                    if (dateCloseFilterFrom !== null && dateCloseFilterTo !== null) {                        
                         var tmp1 = data[record]["Date Closed"].split(" "); // remove time and keep only date
                         var tmp2 = tmp1[0].split("/"); // split mon/day/year
                         var caseCloseDay = parseInt(tmp2[1]);
@@ -1196,11 +1232,13 @@
                     /*
                      // there should be a country section here
             
+                     */
                      // sme involved filter section, default should be false.
                      if (smeFilter === true && data[record]["SME Involved"] === "No") {
                      continue;
                      }
-            
+                     
+                    /*
                      // industry filter section, default is null, assuming the value is a string
                      if (industryFilter != null) {
                      var curIndustry = data[record]["Industry/Sectors"];
@@ -2349,10 +2387,6 @@
             <button type="reset" value="Reset">Reset</button>
         </form>
 
-
-    
-        
-        
     </body>
 
 </html>
