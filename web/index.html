@@ -247,7 +247,7 @@
                 <input type="radio" checked name="country" value="all" onClick="chkcountrytanc();"/> All (Default)                
             </p>
             <p>
-                <input type="radio" name="country" value="list" onClick="chkcountrytanc();"/>   
+                <input type="radio" name="country" value="list" onClick="chkcountrytanc();" disabled/>   
                 <select name="countryList" multiple disabled>   
                 <option value = "AFG">Afghanistan</option>
                 <option value = "ALB">Albania</option>
@@ -520,7 +520,7 @@
             
             <label><strong>Select an issue: </strong></label><br/>
             <p>
-                <select name="issues">
+                <select name="issues" disabled>
                     <option value = "1" selected>All (Default)</option>
                     <option value = "2">Antidumping</option>
                     <option value = "3">Competition with SOEs</option>
@@ -565,16 +565,16 @@
             
             <label><strong>Publicity permission check: </strong></label><br/>      
                 <p>
-                    <input type="radio" checked name="filter6" value="All"/> All (Default) 
+                    <input type="radio" checked name="filter6" value="All" disabled/> All (Default) 
                 </p>
                 <p>
-                    <input type="radio" name="filter6" value="Granted"/> Publicity permission granted 
+                    <input type="radio" name="filter6" value="Granted" disabled/> Publicity permission granted 
                 </p>
             <br/>    
             
             <label><strong>Select FTA relevance: </strong></label><br/>
             <p>
-            <select name= "filter7">
+            <select name= "filter7" disabled>
                 <option value = "0" selected>All (Default)</option>
                 <option value = "1">Australia Free Trade Agreement</option>
                 <option value = "2">Bahrain Free Trade Agreement</option>
@@ -618,7 +618,7 @@
             <br/>
             
             <label><strong>Select WTO relevance: </strong></label><br/>
-            <p><select name= "filter8">
+            <p><select name= "filter8" disabled>
                 <option value = "0" selected>All (Default)</option>
                 <option value = "1">WTO Agreement on Trade in Goods: GATT Article III</option>
                 <option value = "2">WTO: Agreement on Government Procurement</option>
@@ -657,10 +657,11 @@
                 <input type="radio" checked name="filter9" value="true"/> Display (Default)
             </p>
             <p>
-                <input type="radio" name="filter9" value="false"/> Do not display 
+                <input type="radio" name="filter9" value="false" disabled/> Do not display 
             </p>
             <br/>
             
+            <!-- next two filters disabled as data does not exist yet -->
             <label><strong>Select whether to display dollar value of market access: </strong></label><br/>      
             <p>
                 <input type="radio" checked name="filter10" value="true" disabled /> Do not display (Default)
@@ -714,9 +715,8 @@
         
         <form name="finalmap" method="get" action="" style="position: absolute; top:50px; left:100px; width:400px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">
-            
-            <div id="container" style="position: absolute; top: 170px; left: 100px; width: 1000px; max-height: 700px"></div>
             <input type="button" value="Save Map Image" onclick="savemap();"/>
+            <div id="container" style="position: absolute; top: 180px; width: 1000px; max-height: 700px"></div>            
         </form>
         
         
@@ -771,7 +771,7 @@
             var wtoFilter = null; // String, default = null
             */
            
-            var valueFilter = true; // boolean: display or not, default is true
+            var valueFilter = false; // boolean: display or not, default is true
             
             /*
             var affectedEmployeeFilter = false; // which attribute?
@@ -1133,14 +1133,24 @@
                 var data = contents["records"];
                 
                 for (var record=0;record<data.length;record++) {
-                    // success filter section, assign the success date to case close date filter
-                    if (successFilter === true && (data[record]["Status"] !== "Closed" || data[record]["Success"] === "FALSE")) {
-                        continue;
+                    
+                    // success filter section, where the success date range is assigned to the case close date check range
+                    if (successFilter === true) {
+                        if(!(data[record]["Success"]) || typeof data[record]["Success"] === 'undefined') {
+                            continue;
+                        }
+                        
+                        if((data[record]["Status"] !== "Closed" || data[record]["Success"] === "FALSE")) {
+                            continue;
+                        }
                     }		  
                     
-                    //alert("date closed " + record + ": " + data[record]["Date Closed"]);
                     // case date initiate filter section
                     if (dateInitiateFilterFrom !== null && dateInitiateFilterTo !== null) {
+                        if(!(data[record]["Case Initiated Date"]) || typeof data[record]["Case Initiated Date"] === 'undefined') {
+                            continue;
+                        }
+                        
                         var tmp1 = data[record]["Case Initiated Date"].split(" "); // remove time and keep only date
                         var tmp2 = tmp1[0].split("/"); // split mon/day/year
                         var caseIniDay = parseInt(tmp2[1]);
@@ -1185,7 +1195,11 @@
                     }
                     
                     // case date close filter section -- issue with date closed format read from the excel file :s
-                    if (dateCloseFilterFrom !== null && dateCloseFilterTo !== null) {                        
+                    if (dateCloseFilterFrom !== null && dateCloseFilterTo !== null) {  
+                        if(!(data[record]["Date Closed"]) || typeof data[record]["Date Closed"] === 'undefined') {
+                            continue;
+                        }
+                        
                         var tmp1 = data[record]["Date Closed"].split(" "); // remove time and keep only date
                         var tmp2 = tmp1[0].split("/"); // split mon/day/year
                         var caseCloseDay = parseInt(tmp2[1]);
@@ -1233,10 +1247,11 @@
                      // there should be a country section here
             
                      */
-                     // sme involved filter section, default should be false.
-                     if (smeFilter === true && data[record]["SME Involved"] === "No") {
-                     continue;
-                     }
+                    
+                    // sme involved filter section, default should be false.
+                    if (smeFilter === true && data[record]["SME Involved"] === "No") {
+                        continue;
+                    }
                      
                     /*
                      // industry filter section, default is null, assuming the value is a string
@@ -1305,7 +1320,7 @@
 				}
 				var tmp = mapFre.get(cty) + 1;
 				mapFre.put(cty, tmp);
-				if (valueFilter) {
+				if (valueFilter === true) {
                                     var curVal = data[record]["Case Value (in $ millions)"];
                                     var tmpVal = parseInt(curVal) + mapValue.get(cty);
                                     mapValue.put(cty, tmpVal);
@@ -1315,27 +1330,27 @@
                             var countries = country.split(", ");
                             for (var i in countries) {
 				var cty = countryAbbreviationTable.get(countries[i]);
-				if (cty == null) {
+				if (cty === null) {
                                     document.write("Invalid record: " + countries[i] + "<br>");
                                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
 				}
 				var tmp = mapFre.get(cty) + 1;
 				mapFre.put(cty, tmp);
-				if (valueFilter) {
+				if (valueFilter === true) {
                                     var curVal = data[record]["Case Value (in $ millions)"];
                                     var tmpVal = parseInt(curVal) + mapValue.get(cty);
                                     mapValue.put(cty, tmpVal);
 				}
                             }
                         }
-                    } else { // us map
+                    } else { // US map
                         var state = data[record]["Case Address: State"];
                         if (!mapFre.containsKey(state)) {
                             NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         } else {
                             var tmp = mapFre.get(state) + 1;
                             mapFre.put(state, tmp);
-                            if (valueFilter) {
+                            if (valueFilter === true) {
 				var curVal = data[record]["Case Value (in $ millions)"];
 				var tmpVal = parseInt(curVal) + mapValue.get(cty);
                                 mapValue.put(cty, tmpVal);
@@ -1356,7 +1371,7 @@
                 var mapkeys = mapFre.keys();
                 var myObj = {};
                 for (var i in mapkeys) {
-                    myObj[mapkeys[i]] = {}
+                    myObj[mapkeys[i]] = {};
                     if (mapFre.get(mapkeys[i]) >= 10) {
                         myObj[mapkeys[i]]["fillKey"] = 'HIGH';
                     } else if (mapFre.get(mapkeys[i]) >= 5) {
@@ -1385,12 +1400,15 @@
                     data: myObj,
                     geographyConfig: {
                         popupTemplate: function(geo, data) {
-                            return ['<div class="hoverinfo"><strong>',
+                            var returnString = ['<div class="hoverinfo"><strong>',
                                 'Number of cases in ' + geo.properties.name,
-                                ': ' + data.numberOfCases,
-                                '<br>Total value of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases].join('');
+                            if(valueFilter === true) {
+                                returnString = returnString + ['<br>Total value of cases in ' + geo.properties.name,
                                 ': ' + data.valueOfCases,
                                 '</strong></div>'].join('');
+                            }
+                            return returnString;
                         }
                     }                
                 });
@@ -1804,14 +1822,14 @@
             <input type="button" value="Home" onClick="goToHomeForm();">
             <h3>Apply Filters</h3>
             <label><strong>Select date</strong></label><br/>    
-            <p><input type="radio" name="filter2trade" value="init" onClick="chkdatetrade()"> Case Initiated</input></p>
-            <input type="date" name="totrade1" onClick="chkdatetrade()"> to  <input type="date" name="fromtrade1"   onClick="chkdatetrade()" display: inline-block;><br/>
-            <p><input type="radio" checked name="filter2trade" value="close" onClick="chkdatetrade()"> Case Closed</input></p>
-            <input type="date" name="totrade2" onClick="chkdatetrade()"> to  <input type="date" name="fromtrade2"  onClick="chkdatetrade()" display: inline-block; ><br/>
+            <p><input type="radio" name="filter2trade" value="init" onClick="chkdatetrade();"/> Case Initiated </p>
+            <input type="date" name="totrade1" onClick="chkdatetrade();" /> to  <input type="date" name="fromtrade1"   onClick="chkdatetrade();" /><br/>
+            <p><input type="radio" checked name="filter2trade" value="close" onClick="chkdatetrade();"> Case Closed </p>
+            <input type="date" name="totrade2" onClick="chkdatetrade();" /> to  <input type="date" name="fromtrade2"  onClick="chkdatetrade();" /> ><br/>
             <br/>
             <label><strong>Filter Company</strong></label><br/>    
-            <p><input type="radio" name="filter3tr" value="small"> Small or medium EnterPrise</input></p>
-            <p><input type="radio" checked name="filter3tr" value="All"> All-Default </input></p>
+            <p><input type="radio" name="filter3tr" value="small"> Small or medium EnterPrise </p>
+            <p><input type="radio" checked name="filter3tr" value="All"> All-Default </p>
             <br/>
             <label><strong>Filter Country:</strong></label>
             <select name= "countrytr">
@@ -2386,7 +2404,7 @@
             <input type="button" value="Continue" onclick="mapview();" >
             <button type="reset" value="Reset">Reset</button>
         </form>
-
+ 
     </body>
 
 </html>

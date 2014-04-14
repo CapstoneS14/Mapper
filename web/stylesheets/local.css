@@ -17,3 +17,8 @@ table {
 .ui-draggable, .ui-droppable {
 	background-position: top;
 }
+
+.datamaps-legend {
+    left: 50px;
+    top: 300px;
+}
