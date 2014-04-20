@@ -1,3 +1,7 @@
+/**
+ * Not used - moved all function code to TANCDataMaps.js
+ * @returns {HashMap}
+ */
 var getCountryAbb = function() {
     var countryAbbreviationTable = new HashMap();
 	

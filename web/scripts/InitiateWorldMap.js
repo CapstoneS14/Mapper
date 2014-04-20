@@ -1,4 +1,9 @@
-    var initiateWorldMap = function (map) {
+/**
+ * Not used - moved all function code to TANCDataMaps.js
+ * @param {type} map
+ * @returns {undefined}
+ */
+var initiateWorldMap = function (map) {
         map.put("AFG", 0);
         map.put("ALB", 0);
         map.put("DZA", 0);

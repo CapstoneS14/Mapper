@@ -15,9 +15,7 @@
         </style>
         
         <script type="text/javascript" src="scripts/HashMap.js"></script>
-        <script type="text/javascript" src="scripts/CountryAbb.js"></script>
-        <script type="text/javascript" src="scripts/InitiateWorldMap.js"></script>
-        <script type="text/javascript" src="scripts/InitiateUSAMap.js"></script>
+        <script type="text/javascript" src="scripts/TANCDataMaps.js"></script>
         <script type="text/javascript" src="scripts/json_eval.js"></script>
 	<link rel="stylesheet" href="stylesheets/jquery.ui.all.css">
 	<script src="scripts/jquery-1.10.2.js"></script>
@@ -109,7 +107,7 @@
                 var excel_sheet;
                 var data;
                 var headers = new Array();
-                var jsonArray = " { \"records\" : [ ";
+                var jsonArray = " [ ";
                 
                 try {
                     excel = new ActiveXObject("Excel.Application");
@@ -160,7 +158,7 @@
                         
                         
                     }
-                    jsonArray = jsonArray + " ]}";
+                    jsonArray = jsonArray + " ]";
                     //document.writeln(jsonArray + "<br><br>");                    
                     
                     //Parse and process json object string created above - retrieving record number of the first element in records array
@@ -258,8 +256,8 @@
                 <input type="radio" checked name="country" value="all" onClick="chkcountrytanc();"/> All (Default)                
             </p>
             <p>
-                <input type="radio" name="country" value="list" onClick="chkcountrytanc();" disabled/>   
-                <select name="countryList" multiple disabled>   
+                <input type="radio" name="country" value="list" onClick="chkcountrytanc();"/>   
+                <select name="tancCountryList" multiple="multiple">   
                 <option value = "AFG">Afghanistan</option>
                 <option value = "ALB">Albania</option>
                 <option value = "DZA">Algeria</option>
@@ -503,45 +501,45 @@
             
             <label><strong>Select an industry: </strong></label><br/>
             <p>
-                <select name="industry" disabled>
-                    <option value = "1" selected>All (Default)</option>
-                    <option value = "2">Aerospace</option>
-                    <option value = "3">Automobiles</option>
-                    <option value = "4">Consumer Goods</option>
-                    <option value = "5">E-Commerce</option>
-                    <option value = "6">Energy</option>
-                    <option value = "7">Environmental technologies</option>
-                    <option value = "8">Financial services</option>
-                    <option value = "9">Healthcare products</option>
-                    <option value = "10">Information Technologies</option>
-                    <option value = "11">Legacy Record</option>
-                    <option value = "12">Machinery</option>
-                    <option value = "13">Materials</option>
-                    <option value = "14">Services industries</option>
-                    <option value = "15">Telecommunications</option>
-                    <option value = "16">Textiles and apparel, footwear</option>
-                    <option value = "17">Textiles and apparel, leather products</option>
-                    <option value = "18">Textiles and apparel, textiles and apparel</option>
-                    <option value = "19">Travel goods</option>
-                    <option value = "20">Travel and tourism</option>
-                    <option value = "21">Other</option>
+                <select name="tancIndustry">
+                    <option value = "All" selected>All (Default)</option>
+                    <option value = "Aerospace">Aerospace</option>
+                    <option value = "Automobiles">Automobiles</option>
+                    <option value = "Consumer Goods">Consumer Goods</option>
+                    <option value = "E-Commerce">E-Commerce</option>
+                    <option value = "Energy">Energy</option>
+                    <option value = "Environmental technologies">Environmental technologies</option>
+                    <option value = "Financial services">Financial services</option>
+                    <option value = "Healthcare products">Healthcare products</option>
+                    <option value = "Information Technologies">Information Technologies</option>
+                    <option value = "Legacy Record">Legacy Record</option>
+                    <option value = "Machinery">Machinery</option>
+                    <option value = "Materials">Materials</option>
+                    <option value = "Services industries">Services industries</option>
+                    <option value = "Telecommunications">Telecommunications</option>
+                    <option value = "Textiles and apparel, footwear">Textiles and apparel, footwear</option>
+                    <option value = "Textiles and apparel, leather products">Textiles and apparel, leather products</option>
+                    <option value = "Textiles and apparel, textiles and apparel">Textiles and apparel, textiles and apparel</option>
+                    <option value = "Travel goods">Travel goods</option>
+                    <option value = "Travel and tourism">Travel and tourism</option>
+                    <option value = "Other">Other</option>
                 </select>
             </p>
             <br/>
             
             <label><strong>Select an issue: </strong></label><br/>
             <p>
-                <select name="issues" disabled>
-                    <option value = "1" selected>All (Default)</option>
-                    <option value = "2">Antidumping</option>
-                    <option value = "3">Competition with SOEs</option>
-                    <option value = "4">Country of Origin</option>
-                    <option value = "5">Customs: Classification</option>
-                    <option value = "6">Customs: Fees and Formalities</option>
-                    <option value = "7">Customs: General</option>
-                    <option value = "8">Customs: Procedures</option>
-                    <option value = "9">Customs: Valuation</option>
-                    <option value = "10">Environment</option>
+                <select name="tancIssues">
+                    <option value = "All" selected>All (Default)</option>
+                    <option value = "Antidumping">Antidumping</option>
+                    <option value = "Competition with SOEs">Competition with SOEs</option>
+                    <option value = "Country of Origin">Country of Origin</option>
+                    <option value = "Customs: Classification">Customs: Classification</option>
+                    <option value = "Customs: Fees and Formalities">Customs: Fees and Formalities</option>
+                    <option value = "Customs: General">Customs: General</option>
+                    <option value = "Customs: Procedures">Customs: Procedures</option>
+                    <option value = "Customs: Valuation">Customs: Valuation</option>
+                    <option value = "Environment">Environment</option>
                     <option value = "11">Export Measures: General</option>
                     <option value = "12">Export Measures: Restrictions</option>
                     <option value = "13">Export Measures: Taxes</option>
@@ -757,7 +755,7 @@
             //TANC Filter Options variables
             var dateOption; //either init, close, success - pass true onto method if its success
             var companyOption; // all or SME only -- smeFilter used below instead
-            var countryOption; //all or list
+            
             var countryList; //if list then list of countries selected
             var industryOption; //all or other specific selected value
             var issueOption; //all or other specific selected value
@@ -772,11 +770,12 @@
             var dateInitiateFilterTo = null; // String, default = null
             var dateCloseFilterFrom = null; // String, default = null
             var dateCloseFilterTo = null; // String, default = null
-            var smeFilter = false; // boolean, default = false; -- indu
-            /*
-            var countryFilter; // NOT Defined yet, Abbreviation
+            var smeFilter; // boolean, default = false; -- indu            
+            var countryOption; //all or list
+            var countryList; //list of selected countries
             var industryFilter = null; // String, default = null
             var issueFilter = null; // String, default = null
+            /*
             var publicityPermissionFilter = false; // boolean, default = false
             var ftaFilter = null; // String, default = null
             var wtoFilter = null; // String, default = null
@@ -787,11 +786,11 @@
             /*
             var affectedEmployeeFilter = false; // which attribute?
             */
-            var countryAbbreviationTable = getCountryAbb();
             
             var usOnlyMapFilter; // only show US map, boolean, default = false to show world shaded map
             var mapFre = new HashMap(); //store frequency of each record on the map
             var mapValue; //store accumulated value of each record on the map
+            var NumOfInvalidRecord;
             
             function goToFileUploadForm() {
                 var whichinput=document.getElementsByName("input");
@@ -946,7 +945,7 @@
 
                     dataRecords = readData(fileName, xStart, xEnd, yStart, yEnd);
                     //Parse and process json object string created above - retrieving record number of the first element in records array
-                    var contents = jsonParse(dataRecords);
+                    //var contents = jsonParse(dataRecords);
                     alert("File " + fileName + " selected for category " + dataCategory);
                             //+"\nPartial Content: First record number - " +  contents["records"][0]["Record Number"]);
 
@@ -1013,8 +1012,17 @@
             }
             
             function mapview() {                
+                                
+                /*
+                 * ---- to implement
+                 * move all these read if blocks to a function called read filters 
+                 *      that decides which form to use based on data category to read filters
+                 *      populates appropriate global filter variables which need to be passed to
+                 *      drawDataMaps later
+                 *      and returns a noErrors value
+                 */
                 var noErrors = true;
-                
+                //read date range filters -- Tanc
                 if (dateOption === "init") {
                     dateInitiateFilterFrom = document.getElementById("fromtanc1").value;
                     dateInitiateFilterTo = document.getElementById("totanc1").value;
@@ -1059,6 +1067,7 @@
                     }                    
                 }
                 
+                //read sme/ all organizations filter -- tanc
                 var whichinput=document.getElementsByName("tancSMEFilter");
                 var k;
                 var len=whichinput.length;
@@ -1075,6 +1084,49 @@
                     smeFilter = true;
                 }
                 
+                //read country list selected -- tanc
+                if(countryOption === "list") {                    
+                    var selectList = document.forms["TANCFilterForm"].tancCountryList;
+                    countryList =  [];
+                    alert("Country option Selected: ");
+                    for (var i = 0 ; i<selectList.length; i++) {
+                        if (selectList[i].selected) {
+                            //alert("Item " + i + ": "  + selectList[i].value);
+                            countryList.push(selectList[i].value);
+                        }
+                    }
+                    alert("Selected Country List : " + countryList);
+                }                
+                
+                //read industry filter -- tanc
+                var industrySelectList = document.forms["TANCFilterForm"].tancIndustry;
+                alert("Industry filter Selected!");
+                for (var i = 0 ; i<industrySelectList.length; i++) {
+                    if (industrySelectList[i].selected) {
+                        if (industrySelectList[i].value === "all") {
+                            alert("Selected Industry : " + All);                            
+                        } else  {
+                            industryFilter = "" + industrySelectList[i].value;
+                            alert("Selected Industry : " + industryFilter);
+                        }
+                    }
+                }                
+
+                //read issues filter -- tanc
+                var issueSelectList = document.forms["TANCFilterForm"].tancIssues;
+                alert("Issue filter Selected!");
+                for (var i = 0 ; i<issueSelectList.length; i++) {
+                    if (issueSelectList[i].selected) {
+                        if (issueSelectList[i].value === "all") {
+                            alert("Selected Issues : " + All);                            
+                        } else  {
+                            issueFilter = "" + issueSelectList[i].value;
+                            alert("Selected Issue : " + issueFilter);
+                        }
+                    }
+                }                
+
+                
                 if (noErrors === true) {
                     document.forms["dataCategoryForm"].style.visibility="hidden";
                     document.forms["fileUploadForm"].style.visibility="hidden";
@@ -1088,6 +1140,7 @@
                 }
                 
             }
+            
             
             function showmap() {
                 
@@ -1124,7 +1177,7 @@
                 }
                 
                 if (noErrors === true) {
-                    drawMaps();
+                    drawTancMaps();
                     document.forms["TANCFilterForm"].style.visibility="hidden";
                     document.forms["mapDisplayTypeForm"].style.visibility="hidden";
                     document.forms["dataCategoryForm"].style.visibility="hidden";
@@ -1137,312 +1190,9 @@
                 }
             }
             
-            function drawMaps() {
-                
-                if (usOnlyMapFilter === false) {
-                    initiateWorldMap(mapFre);
-                    if (valueFilter) {
-                        mapValue = new HashMap();
-                        initiateWorldMap(mapValue);
-                    }
-                } else {	//calculate frequency of each state on the us map
-                    initiateUSMap(mapFre);
-                    if (valueFilter) {
-                        mapValue = new HashMap();
-                        initiateUSMap(mapValue);
-                    }
-                }
-                
-                var EUlist = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark",
-                    "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland", "Italy", "Latvia",
-                    "Lithuania", "Luxembourg", "Malta", "Netherlands","Poland", "Portugal", "Romania", "Slovak Republic",
-                    "Slovenia", "Spain", "Sweden", "United Kingdom"];
-                
-                // go through each record
-                var contents = jsonParse(dataRecords);
-                var data = contents["records"];
-                
-                for (var record=0;record<data.length;record++) {
-                    
-                    // success filter section, where the success date range is assigned to the case close date check range
-                    if (successFilter === true) {
-                        if(!(data[record]["Success"]) || typeof data[record]["Success"] === 'undefined') {
-                            continue;
-                        }
-                        
-                        if((data[record]["Status"] !== "Closed" || data[record]["Success"] === "FALSE")) {
-                            continue;
-                        }
-                    }		  
-                    
-                    // case date initiate filter section
-                    if (dateInitiateFilterFrom !== null && dateInitiateFilterTo !== null) {
-                        if(!(data[record]["Case Initiated Date"]) || typeof data[record]["Case Initiated Date"] === 'undefined') {
-                            continue;
-                        }
-                        
-                        var tmp1 = data[record]["Case Initiated Date"].split(" "); // remove time and keep only date
-                        var tmp2 = tmp1[0].split("/"); // split mon/day/year
-                        var caseIniDay = parseInt(tmp2[1]);
-                        var caseIniMon = parseInt(tmp2[0]);
-                        var caseIniYear = parseInt(tmp2[2]);
-                        
-                        //skip record which date is earlier than the filter from-date
-                        if (dateInitiateFilterFrom !== null) {
-                            var tmp = dateInitiateFilterFrom.split("/");
-                            var filterIniDayFrom = parseInt(tmp[1]);
-                            var filterIniMonFrom = parseInt(tmp[0]);
-                            var filterIniYearFrom = parseInt(tmp[2]);
-                            
-                            if (caseIniYear < filterIniYearFrom) {
-                                continue;
-                            }
-                            if (caseIniYear === filterIniYearFrom && caseIniMon < filterIniMonFrom) {
-                                continue;
-                            }
-                            if (caseIniYear === filterIniYearFrom && caseIniMon === filterIniMonFrom && caseIniDay < filterIniDayFrom) {
-                                continue;
-                            }
-                        }
-                        
-                        //skip record which date is later than the filter to-date
-                        if (dateInitiateFilterTo !== null) {
-                            var tmp = dateInitiateFilterTo.split("/");
-                            var filterIniDayTo = parseInt(tmp[1]);
-                            var filterIniMonTo = parseInt(tmp[0]);
-                            var filterIniYearTo = parseInt(tmp[2]);
-                            
-                            if (caseIniYear > filterIniYearTo) {
-                                continue;
-                            }
-                            if (caseIniYear === filterIniYearTo && caseIniMon > filterIniMonTo) {
-                                continue;
-                            }
-                            if (caseIniYear === filterIniYearTo && caseIniMon === filterIniMonTo && caseIniDay > filterIniDayTo) {
-                                continue;
-                            }
-                        }
-                    }
-                    
-                    // case date close filter section -- issue with date closed format read from the excel file :s
-                    if (dateCloseFilterFrom !== null && dateCloseFilterTo !== null) {  
-                        if(!(data[record]["Date Closed"]) || typeof data[record]["Date Closed"] === 'undefined') {
-                            continue;
-                        }
-                        
-                        var tmp1 = data[record]["Date Closed"].split(" "); // remove time and keep only date
-                        var tmp2 = tmp1[0].split("/"); // split mon/day/year
-                        var caseCloseDay = parseInt(tmp2[1]);
-                        var caseCloseMon = parseInt(tmp2[0]);
-                        var caseCloseYear = parseInt(tmp2[2]);
-                        
-                        //skip record which date is earlier than the filter from-date
-                        if (dateCloseFilterFrom !== null) {
-                            var tmp = dateCloseFilterFrom.split("/");
-                            var filterCloseDayFrom = parseInt(tmp[1]);
-                            var filterCloseMonFrom = parseInt(tmp[0]);
-                            var filterCloseYearFrom = parseInt(tmp[2]);
-                            
-                            if (caseCloseYear < filterCloseYearFrom) {
-                                continue;
-                            }
-                            if (caseCloseYear === filterCloseYearFrom && caseCloseMon < filterCloseMonFrom) {
-                                continue;
-                            }
-                            if (caseCloseYear === filterCloseYearFrom && caseCloseMon === filterCloseMonFrom && caseCloseDay < filterCloseDayFrom) {
-                                continue;
-                            }
-                        }
-                        
-                        //skip record which date is later than the filter to-date
-                        if (dateCloseFilterTo !== null) {
-                            var tmp = dateCloseFilterTo.split("/");
-                            var filterCloseDayTo = parseInt(tmp[1]);
-                            var filterCloseMonTo = parseInt(tmp[0]);
-                            var filterCloseYearTo = parseInt(tmp[2]);
-                            
-                            if (caseCloseYear > filterCloseYearTo) {
-                                continue;
-                            }
-                            if (caseCloseYear === filterCloseYearTo && caseCloseMon > filterCloseMonTo) {
-				continue;
-                            }
-                            if (caseCloseYear === filterCloseYearTo && caseCloseMon === filterCloseMonTo && caseCloseDay > filterCloseDayTo) {
-                                continue;
-                            }
-                        }
-                    }
-                    
-                    /*
-                     // there should be a country section here
-            
-                     */
-                    
-                    // sme involved filter section, default should be false.
-                    if (smeFilter === true && data[record]["SME Involved"] === "No") {
-                        continue;
-                    }
-                     
-                    /*
-                     // industry filter section, default is null, assuming the value is a string
-                     if (industryFilter != null) {
-                     var curIndustry = data[record]["Industry/Sectors"];
-                     if (curIndustry != industryFilter) {
-                     continue;
-                     }
-                     }
-            
-                     // issueFilter section
-                     if (issueFilter != null) {
-                     var curIssue = data[record]["Issue(s)"];
-                     if (curIssue.indexOf(issueFilter) < 0 ) {
-                     continue;
-                     }
-                     }
-            
-                     // publicity permission filter section, boolean, default = false
-                     if (publicityPermissionFilter === true && data[record]["Publicity Permission"] != "Granted") {
-                     continue;
-                     }
-            
-                     // FTA relevant filter
-                     if (ftaFilter != null) {
-                     var ftaStr = data[record]["Trade Agreement(s)"];
-                     if (ftaStr.indexOf(ftaFilter) < 0) {
-                     continue;
-                     }
-                     }
-            
-                     //WTO relevant filter
-                     if (wtoFilter != null) {
-                     var wtoStr = data[record]["Trade Agreement(s)"];
-                     if (wtoStr.indexOf(wtoFilter) < 0) {
-                     continue;
-                     }
-                     }*/
-                    var NumOfInvalidRecord = 0;
-	  
-                    //default (false) world map
-                    if (usOnlyMapFilter === false) {
-                        
-                        var country = data[record]["Country(s)"];
-                        
-                        if (country.indexOf(",") < 0 && country !== "European Union") {
-                            var cty = countryAbbreviationTable.get(country);
-                            if (cty === null) {
-				document.write("Invalid record: " + country + "<br>");
-				NumOfInvalidRecord = NumOfInvalidRecord + 1;
-                            } 
-                            var tmp = mapFre.get(cty) + 1;
-                            mapFre.put(cty, tmp);			
-                            if (valueFilter) {
-				var curVal = data[record]["Case Value (in $ millions)"];
-				var tmpVal = parseInt(curVal) + mapValue.get(cty);
-				mapValue.put(cty, tmpVal);
-                            }
-                        } else if (country.indexOf("European Union") >= 0) { // EU
-                            var countries = EUlist;
-                            for (var i in countries) {
-				var cty = countryAbbreviationTable.get(countries[i]);
-				if (cty === null) {
-                                    document.write("Invalid record: " + countries[i] + "<br>");
-                                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
-				}
-				var tmp = mapFre.get(cty) + 1;
-				mapFre.put(cty, tmp);
-				if (valueFilter === true) {
-                                    var curVal = data[record]["Case Value (in $ millions)"];
-                                    var tmpVal = parseInt(curVal) + mapValue.get(cty);
-                                    mapValue.put(cty, tmpVal);
-				}
-                            }
-                        } else if (country.indexOf(",") >= 0) {
-                            var countries = country.split(", ");
-                            for (var i in countries) {
-				var cty = countryAbbreviationTable.get(countries[i]);
-				if (cty === null) {
-                                    document.write("Invalid record: " + countries[i] + "<br>");
-                                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
-				}
-				var tmp = mapFre.get(cty) + 1;
-				mapFre.put(cty, tmp);
-				if (valueFilter === true) {
-                                    var curVal = data[record]["Case Value (in $ millions)"];
-                                    var tmpVal = parseInt(curVal) + mapValue.get(cty);
-                                    mapValue.put(cty, tmpVal);
-				}
-                            }
-                        }
-                    } else { // US map
-                        var state = data[record]["Case Address: State"];
-                        if (!mapFre.containsKey(state)) {
-                            NumOfInvalidRecord = NumOfInvalidRecord + 1;
-                        } else {
-                            var tmp = mapFre.get(state) + 1;
-                            mapFre.put(state, tmp);
-                            if (valueFilter === true) {
-				var curVal = data[record]["Case Value (in $ millions)"];
-				var tmpVal = parseInt(curVal) + mapValue.get(cty);
-                                mapValue.put(cty, tmpVal);
-                            }
-                        }
-                    }
-                }
-                
-                
-                var mapScope;
-                if (!usOnlyMapFilter) {
-                    mapScope = 'world';
-                    
-                } else {
-                    mapScope = 'usa';
-                }
-                
-                var mapkeys = mapFre.keys();
-                var myObj = {};
-                for (var i in mapkeys) {
-                    myObj[mapkeys[i]] = {};
-                    if (mapFre.get(mapkeys[i]) >= 10) {
-                        myObj[mapkeys[i]]["fillKey"] = 'HIGH';
-                    } else if (mapFre.get(mapkeys[i]) >= 5) {
-                        myObj[mapkeys[i]]["fillKey"] = 'MEDIUM';
-                    } else if (mapFre.get(mapkeys[i]) === 0) {
-                        myObj[mapkeys[i]]["fillKey"] = 'UNKNOWN';
-                    } else {
-                        myObj[mapkeys[i]]["fillKey"] = 'LOW';
-                    }
-                    myObj[mapkeys[i]]["numberOfCases"] = mapFre.get(mapkeys[i]);
-                    if (valueFilter) {
-                        myObj[mapkeys[i]]["valueOfCases"] = mapValue.get(mapkeys[i]);
-                    }
-                }
-                
-                var map = new Datamap({
-                    scope: mapScope,
-                    element: document.getElementById('container'),
-                    fills: {
-                        HIGH: 'rgb(0,100,0)',
-                        MEDIUM: 'rgb(0,255,0)',
-                        LOW: 'rgb(144,238,144)',
-                        UNKNOWN: 'rgb(192,192,192)',
-                        defaultFill: 'rgb(192,192,192)'
-                    },
-                    data: myObj,
-                    geographyConfig: {
-                        popupTemplate: function(geo, data) {
-                            var returnString = ['<div class="hoverinfo"><strong>',
-                                'Number of cases in ' + geo.properties.name,
-                                ': ' + data.numberOfCases].join('');
-                            if(valueFilter === true) {
-                                returnString = returnString + ['<br>Total value of cases in ' + geo.properties.name,
-                                ': ' + data.valueOfCases,
-                                '</strong></div>'].join('');
-                            }
-                            return returnString;
-                        }
-                    }                
-                });
-                map.legend();                        
+            function drawTancMaps() {
+                drawTancDataMaps(dataRecords, successFilter, dateInitiateFilterFrom, dateInitiateFilterTo, dateCloseFilterFrom, 
+                    dateCloseFilterTo, smeFilter, countryList, industryFilter, issueFilter, usOnlyMapFilter, valueFilter);
             }
             
             /* 
@@ -1527,14 +1277,15 @@
             }   
             
             function tanccountry() {
-                var select1 = document.getElementsByName("country");
-                var selected1 = [];
+                var select1 = document.getElementsByName("countryList");
+                var selectCountries = [];
                 for (var i = 0; i < select1.length; i++) {
                     if (select1.options[i].selected) {
                         alert("File Selected for " + select1.options[i].value +" ");
-                        //selected1.push(select1.options[i].value);
+                        selectCountries.push(select1.options[i].value);
                     }
                 }
+                return selectCountries;
             } 
             
             function chkcountrytanc() {
@@ -1547,18 +1298,17 @@
                     }
                 }
                 countryOption = whichinput[k].value;
-                if(whichinput[k].value==="all") {   
+                if(countryOption==="all") {   
                     document.TANCFilterForm.countryList.disabled=true;
                 } else  {   
                     document.TANCFilterForm.countryList.disabled=false;
+                    
                 }
                     
             }
             
         </script>
 
-        <script>
-        </script>
                 
         <form name="adcvdFilterForm" method="get"  action="" style="position: absolute; top:50px; left:100px; width:600px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">

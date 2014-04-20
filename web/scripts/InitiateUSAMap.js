@@ -1,4 +1,10 @@
-	var initiateUSMap = function(map) {
+/**
+ * Not used - moved all function code to TANCDataMaps.js
+ * @param {type} map
+ * @returns {undefined}
+ * 
+ */
+var initiateUSMap = function(map) {
                 map.put("AL", 0);
 		map.put("AK", 0);
 		map.put("AZ", 0);
