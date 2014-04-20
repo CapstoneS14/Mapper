@@ -91,17 +91,8 @@
                 }
             }
             
-            //to be updated to get the row and column numbers from user input 
-            function readData(file, xs, xe, ys, ye) {
-                //need to find a better way to get the below start and end values
-                //right now hard coded for the dummy excel file
-                var xStart = xs; //2; //first row of data - headers assumed
-                var yStart = ys; //1; //first column of data
-                var xEnd = xe; //178; //last row of data
-                var yEnd = ye; //18;  //last column of data
-                var xVal = xStart;
-                var yVal = yStart;
-
+            //read data from the file
+            function readData(file) {
                 var excel;
                 var excel_file;
                 var excel_sheet;
@@ -114,57 +105,142 @@
                     excel.Visible = false;
                     excel_file = excel.Workbooks.Open(file); //alert(excel_file.worksheets.count);
                     excel_sheet = excel_file.Worksheets("Sheet1");
-            
-                    //read headers
-                    while (yVal <= yEnd && xVal === xStart) {
-                        data = excel_sheet.Cells(xVal,yVal).Value;
-                        headers.push(data);
-                        yVal = yVal + 1;
+                                       
+                    var row_num_start = 1;
+                    var row_num_end = excel_sheet.Rows.Count;
+                    var col_num_start = 1;
+                    var col_num_end = excel_sheet.UsedRange.Columns.Count;
+                    
+                    var curr_row_num = row_num_start;                   
+                                      
+                    //Identify Header Row
+                    var dataCounter =0; // dataCounter=1 => Title; dataCounter=2 => Header                                        
+                    while(curr_row_num <= row_num_end  && dataCounter < 2){
+                        var curr_col_num = col_num_start;
+                        var dataFound = false;
+                        while(curr_col_num <= col_num_end && !dataFound){ 
+                            var data = excel_sheet.Cells(curr_row_num, curr_col_num).Value;
+                            //console.log("["+curr_row_num+","+curr_col_num+"]  :"+data+":");
+                            if(data !== undefined && data !== null && data.toString().trim() !== ""){
+                                //Data Found. increment the data counter and come out of the inner while loop(column loop)
+                                dataCounter++;
+                                row_num_start=curr_row_num;
+                                dataFound = true;
+                            }
+                            curr_col_num++;
+                        }
+                        curr_row_num++;
                     }
                     
-                    /* Test headers array
-                    for(var i = 0; i<headers.length; i++) 
-                        document.writeln(headers[i] + "<br>");
-                    */
-                   
-                    //read each row into a hashmap and push each hashmap into an array
-                    xVal = xVal + 1;
-                    while (xVal <= xEnd) {
-                        var currentHash = new HashMap();
-                        yVal = yStart;
-                        var values = new Array();
-                        while (yVal <= yEnd) {
-                            data = excel_sheet.Cells(xVal,yVal).Value;
-                            values.push(data);
-                            yVal = yVal + 1;
-                        }
-                        
-                        for(var i=0; i<headers.length;i++) {
-                            currentHash.put(headers[i], values[i]);
-                        }
-                        var header = currentHash.keys();
-                        //document.writeln("{");
-                        jsonArray = jsonArray + "{";
-                        for(var i=0; i<currentHash.size()-1;i++) {
-                            //document.writeln(header[i] + ":" + currentHash.get(header[i]) + ",");
-                            jsonArray = jsonArray + "\"" + header[i] + "\":\"" + currentHash.get(header[i]) + "\",";
-                        }
-                        //document.writeln(header[i] + ":" + currentHash.get(header[i]) + "} <br>" );
-                        if (xVal < xEnd)
-                            jsonArray = jsonArray + "\"" + header[i] + "\":\"" + currentHash.get(header[i]) + "\"}, ";
-                        else 
-                            jsonArray = jsonArray + "\"" + header[i] + "\":\"" + currentHash.get(header[i]) + "\"} ";
-                        xVal = xVal + 1;
-                        
-                        
-                    }
-                    jsonArray = jsonArray + " ]";
-                    //document.writeln(jsonArray + "<br><br>");                    
+                    console.log("Header Row Number = "+row_num_start);
+                                                           
+                    var xStart = row_num_start;
+                    var yStart = col_num_start;
                     
-                    //Parse and process json object string created above - retrieving record number of the first element in records array
-                    //var contents = jsonParse(jsonArray);
-                    //document.writeln("DUMMY RECORD NUMBER:" + data[0]["Record Number"]);
+                    var yEnd = col_num_end;
                 
+                    var xVal = row_num_start;
+                    var yVal = col_num_start;
+                                        
+                    //read headers
+                    var emptyRowCount=1;
+                    while (yVal <= yEnd) {
+                        data = excel_sheet.Cells(xVal,yVal).Value;
+                        if(data === undefined || data === null || data.toString().trim() === ""){
+                            data = "EMPTY"+emptyRowCount++;
+                        }
+                        headers.push(data);
+                        yVal++;
+                    }
+                    
+                    //Test headers array
+                    /*for(var i = 0; i<headers.length; i++) {
+                        console.log(headers[i]);
+                    }*/
+                    
+                    //Read data in chunks of 10 rows
+                    var chunk_size = 10;
+                    var total_num_of_rows = row_num_end - xStart + 1;
+                    var num_of_chunks = Math.ceil(total_num_of_rows/chunk_size);
+                    console.log("Number of possible chunks to read = " + num_of_chunks+". Each chunk is of size = "+chunk_size);
+                    
+                    xVal = xVal + 1;
+                    
+                    var chunkHasData = true; //initialize chunk to have data,so that it enters the following for loop
+                    
+                    for(var chunk=1; chunk<=num_of_chunks && chunkHasData; chunk++){                        
+                        
+                        //check whether this chunk has data
+                        var xEnd = xVal + chunk_size - 1;    
+                        
+                        for(var check_xVal = xVal; check_xVal <= xEnd; check_xVal++) {
+                            
+                            var check_yVal = yStart;
+                            dataFound = false;
+                            
+                            while(check_yVal <= yEnd){ 
+                                var data = excel_sheet.Cells(check_xVal, check_yVal).Value;
+                                if(data !== undefined && data !== null && data.toString().trim() !== ""){
+                                    dataFound = true;
+                                    break; //data found. current chunk has data.
+                                }
+                                check_yVal++;
+                            }
+                            if(dataFound){ 
+                                chunkHasData = true;
+                                break; //data is found. chunk has data. break from check loop.
+                            }else{
+                                chunkHasData = false; // continue to check next row in the chunk.
+                            }
+                        }  
+                        
+                        if(chunkHasData){
+                            console.log("Parsing chunk = "+chunk);
+                                                
+                            //read each row into a hashmap and push each hashmap into an array                   
+                            while (xVal <= xEnd) {
+                                var currentHash = new HashMap();
+                                yVal = yStart;
+                                var values = new Array();
+                                while (yVal <= yEnd) {
+                                    data = excel_sheet.Cells(xVal,yVal).Value;
+                                    values.push(data);
+                                    yVal = yVal + 1;
+                                }
+                                                               
+                                for(var i=0; i<headers.length;i++) {
+                                    currentHash.put(headers[i], values[i]);
+                                }
+                                var header = currentHash.keys();
+                                
+                                jsonArray = jsonArray + "{";
+                                
+                                for(var i=0; i<currentHash.size()-1;i++) {                                    
+                                    jsonArray = jsonArray + "\"" + header[i] + "\":\"" + currentHash.get(header[i]) + "\",";
+                                }
+                                
+                                jsonArray = jsonArray + "\"" + header[i] + "\":\"" + currentHash.get(header[i]) + "\"}, ";
+                     
+                                xVal = xVal + 1;
+                                
+                            }  //while
+                            
+                        }  //if(chunkHasData)                            
+                        
+                        xVal = xEnd + 1;
+                        
+                     }//chunk for loop
+                     
+                     //Remove the last comma and space
+                     var jsonArrayLength = jsonArray.length;
+                     var lastTwoCharsOfJsonArray = jsonArray.substr(jsonArrayLength-2);
+                     if(lastTwoCharsOfJsonArray === ", "){
+                         jsonArray = jsonArray.substring(0, jsonArray.length-2);
+                     }
+                     
+                     //close te jsonArray
+                     jsonArray = jsonArray + " ]";
+                     
                 } catch (ex) {
                     alert(ex);
                 } finally {
@@ -175,6 +251,7 @@
                     excel.Application.Quit();
                     excel = null;
                 }
+                console.log(jsonArray);
                 return jsonArray;
             }
         </script>
@@ -203,17 +280,8 @@
             <br />
             Browse to select an input Excel data file in order to proceed: 
             <br />
-            <input type="file" name="file" id="myFile" onchange="enableDescription();"> <br/>
+            <input type="file" name="file" id="myFile"> <br/>
             <br/><br/>
-            
-            File contents description:
-            <br/>
-            Number of data records (first and last row numbers where first row has to be header)<br/>
-            <input type="text" name="xStart" id="xStart" disabled value="2">  to <input type="text" name="xEnd" id="xEnd" disabled value="178">
-            <br/>
-            Number of data headers (first and last column numbers)<br/>
-            <input type="text" name="yStart" id="yStart" disabled value="1">  to <input type="text" name="yEnd" id="yEnd" disabled value="18"> 
-            <br/><br/><br/>
             
             <input type="button" value="Upload"  onclick="goToFiltersForm();"/>            
             <button type="reset" value="Reset">Reset</button>
@@ -830,16 +898,6 @@
                     
             }
             
-            function enableDescription() {
-                if(document.forms["fileUploadForm"]["file"].value !== "") {
-                    document.forms["fileUploadForm"]["xStart"].disabled = false;
-                    document.forms["fileUploadForm"]["xEnd"].disabled = false;
-                    document.forms["fileUploadForm"]["yStart"].disabled = false;
-                    document.forms["fileUploadForm"]["yEnd"].disabled = false;
-                }
-                
-            }
-            
             function chkdatetanc() {
                 var whichinput=document.getElementsByName("filter2tanc");
                 var k;
@@ -911,18 +969,8 @@
             
             function goToFiltersForm() {
                 var fileName = document.getElementById("myFile").value;
-                var continueProcess = false;
                 
-                if(isNum(document.forms["fileUploadForm"]["xStart"], "Row num start should be a number!")
-                    && isNum(document.forms["fileUploadForm"]["xEnd"], "Row num end should be a number!")
-                    && isNum(document.forms["fileUploadForm"]["yStart"], "Column num start should be a number!")
-                    && isNum(document.forms["fileUploadForm"]["yEnd"], "Column num end should be a number!")
-                ) {
-                    continueProcess = true;
-                } else {
-                    continueProcess = false;
-                }
-                if(document.forms["fileUploadForm"]["file"].value !== "" && continueProcess) {
+                if(document.forms["fileUploadForm"]["file"].value !== "") {
                     // you have a file - check file extension .xls or .xlsx                   
                     str=document.forms["fileUploadForm"]["file"].value.toUpperCase();
                     suffix1=".XLSX";
@@ -930,20 +978,11 @@
                     if(!(str.indexOf(suffix2, str.length - suffix2.length) !== -1) 
                             && !(str.indexOf(suffix1, str.length - suffix1.length) !== -1 )) {
                         alert('File of this extension type not allowed,\nAllowed file: *.xls or *.xlsx');
-                        document.getElementById('file').value='';
-                        document.forms["fileUploadForm"]["xStart"].disabled = true;
-                        document.forms["fileUploadForm"]["xEnd"].disabled = true;
-                        document.forms["fileUploadForm"]["yStart"].disabled = true;
-                        document.forms["fileUploadForm"]["yEnd"].disabled = true;
+                        document.getElementById('file').value='';                       
                     }                    
                     
                     
-                    var xStart = parseInt(document.getElementById("xStart").value);
-                    var xEnd = parseInt(document.getElementById("xEnd").value);
-                    var yStart = parseInt(document.getElementById("yStart").value);
-                    var yEnd = parseInt(document.getElementById("yEnd").value);
-
-                    dataRecords = readData(fileName, xStart, xEnd, yStart, yEnd);
+                    dataRecords = readData(fileName);
                     //Parse and process json object string created above - retrieving record number of the first element in records array
                     //var contents = jsonParse(dataRecords);
                     alert("File " + fileName + " selected for category " + dataCategory);
