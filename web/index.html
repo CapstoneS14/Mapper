@@ -11,7 +11,9 @@
             input[type=text] { float: left; width: 400px; }
                 .clear { clear: both; height: 0; line-height: 0; }
                 .floatright { float: right; }
-            
+            #progressbar .ui-progressbar-value {
+                background-color: #ccc;
+            }
         </style>
         
         <script type="text/javascript" src="scripts/HashMap.js"></script>
@@ -22,6 +24,7 @@
 	<script src="ui/jquery.ui.core.js"></script>
 	<script src="ui/jquery.ui.widget.js"></script>
 	<script src="ui/jquery.ui.datepicker.js"></script>
+        <script src="ui/jquery.ui.progressbar.js"></script>
 	<link rel="stylesheet" href="stylesheets/local.css">
 	<script>
 	$(function() {
@@ -75,7 +78,14 @@
 				$( "#fromtanc3" ).datepicker( "option", "maxDate", selectedDate );
 			}
 		});
+                
+                $( "#progressbar" ).progressbar({
+                    value: Math.floor( Math.random() * 100 )
+                });
+                                
 	});
+        
+        
 	</script>
         
         <!-- script to read data from excel file; requires Hashmap script file; can move this also to a different js file?? -->
@@ -92,7 +102,7 @@
             }
             
             //read data from the file
-            function readData(file) {
+            function readData(file, div) {
                 var excel;
                 var excel_file;
                 var excel_sheet;
@@ -101,11 +111,12 @@
                 var jsonArray = " [ ";
                 
                 try {
+                    div.style.visibility = 'visible'; 
                     excel = new ActiveXObject("Excel.Application");
                     excel.Visible = false;
                     excel_file = excel.Workbooks.Open(file); //alert(excel_file.worksheets.count);
                     excel_sheet = excel_file.Worksheets("Sheet1");
-                                       
+                    
                     var row_num_start = 1;
                     var row_num_end = excel_sheet.Rows.Count;
                     var col_num_start = 1;
@@ -252,6 +263,7 @@
                     excel = null;
                 }
                 console.log(jsonArray);
+                div.style.visibility = 'hidden';
                 return jsonArray;
             }
         </script>
@@ -269,8 +281,9 @@
             <p><input type="radio" name="input" value="ForeignTradeZone" disabled /> Foreign Trade Zones </p>
             <p><input type="radio" name="input" value="EnforcementAndCompliance" disabled /> Enforcement and Compliance Highlights </p>
             <!-- one more maybe? Petition -->
-            <input type="button" value="Continue" onclick="goToFileUploadForm();"/>
+            <input type="button" name="upload" id="upload" value="Continue" onclick="goToFileUploadForm();"/>
             <button type="reset" value="Reset">Reset</button>
+            
         </form>                
         
         <form name="fileUploadForm" action="" method="post" enctype="multipart/form-data" style="position: absolute; top:50px; left:100px; width:600px; height:25px" >
@@ -284,7 +297,10 @@
             <br/><br/>
             
             <input type="button" value="Upload"  onclick="goToFiltersForm();"/>            
-            <button type="reset" value="Reset">Reset</button>
+            <button type="reset" value="Reset">Cancel</button>
+            <br/>
+            <div id="progressbar" style='visibility: hidden'></div>
+            <br/>
         </form>
         
         <form name="TANCFilterForm" method="get"  action="" style="position: absolute; top:50px; left:100px; width:600px; height:25px">
@@ -651,82 +667,81 @@
             
             <label><strong>Select FTA relevance: </strong></label><br/>
             <p>
-            <select name= "filter7" disabled>
-                <option value = "0" selected>All (Default)</option>
-                <option value = "1">Australia Free Trade Agreement</option>
-                <option value = "2">Bahrain Free Trade Agreement</option>
-                <option value = "3">Central American/Dominican Republic Free Trade Agreement</option>
-                <option value = "4">Chile Free Trade Agreement</option>
-                <option value = "5">Colombia Trade Promotion Agreement</option>
-                <option value = "6">Israel Free Trade Agreement</option>
-                <option value = "7">Jordan Free Trade Agreement</option>
-                <option value = "8">Korea Free Trade Agreement</option>
-                <option value = "9">Morocco Free Trade Agreement</option>
-                <option value = "10">NAFTA Chapter 10, Government Procurement</option>
-                <option value = "11">NAFTA Chapter 11, Investment</option>
-                <option value = "12">NAFTA Chapter 12, Cross Border Trade in Services</option>
-                <option value = "13">NAFTA Chapter 13, Telecom</option>
-                <option value = "14">NAFTA Chapter 14, Financial Services</option>
-                <option value = "15">NAFTA Chapter 15, Competition</option>
-                <option value = "16">NAFTA Chapter 16, Temporary Entry</option>
-                <option value = "17">NAFTA Chapter 17, Intellectual Property Rights</option>
-                <option value = "18">NAFTA Chapter 18, Notification</option>
-                <option value = "19">NAFTA Chapter 19, Anti-Dumping/Countervailing Duties</option>
-                <option value = "20">NAFTA Chapter 20, Dispute Settlement</option>
-                <option value = "21">NAFTA Chapter 3,  National Treatment and Market Access for Goods</option>
-                <option value = "22">NAFTA Chapter 3, Annex 300A Automotive Sector</option>
-                <option value = "23">NAFTA Chapter 3, Annnex 300B Textiles and Apparel</option>
-                <option value = "24">NAFTA Chapter 4, Rules of Origin</option>
-                <option value = "25">NAFTA Chapter 5, Customs Procedures</option>
-                <option value = "26">NAFTA Chapter 6, Energy</option>
-                <option value = "27">NAFTA Chapter 7, Agriculture</option>
-                <option value = "28">NAFTA Chapter 8, Emergency Action</option>
-                <option value = "29">NAFTA Chapter 9, Standards</option>
-                <option value = "30">NAFTA General Provisions</option>
-                <option value = "31">NAFTA Market Access including Article 304/Maquiladoras</option>
-                <option value = "32">North American Free Trade Side Agreement on Environmental Cooperation</option>
-                <option value = "33">North American Free Trade Side Agreement on Labor Cooperation</option>
-                <option value = "34">Oman FTA </option>
-                <option value = "35">Ongoing FTA</option>
-                <option value = "36">Panama Trade Promotion Agreement</option>
-                <option value = "37">Peru Trade Promotion Agreement</option>
-                <option value = "38">Singapore Free Trade Agreement</option>
+            <select name= "tancFTA">
+                <option value = "All" selected>All (Default)</option>
+                <option value = "Australia Free Trade Agreement">Australia Free Trade Agreement</option>
+                <option value = "Bahrain Free Trade Agreement">Bahrain Free Trade Agreement</option>
+                <option value = "Central American/Dominican Republic Free Trade Agreement">Central American/Dominican Republic Free Trade Agreement</option>
+                <option value = "Chile Free Trade Agreement">Chile Free Trade Agreement</option>
+                <option value = "Colombia Trade Promotion Agreement">Colombia Trade Promotion Agreement</option>
+                <option value = "Israel Free Trade Agreement">Israel Free Trade Agreement</option>
+                <option value = "Jordan Free Trade Agreement">Jordan Free Trade Agreement</option>
+                <option value = "Korea Free Trade Agreement">Korea Free Trade Agreement</option>
+                <option value = "Morocco Free Trade Agreement">Morocco Free Trade Agreement</option>
+                <option value = "NAFTA Chapter 10, Government Procurement">NAFTA Chapter 10, Government Procurement</option>
+                <option value = "NAFTA Chapter 11, Investment">NAFTA Chapter 11, Investment</option>
+                <option value = "NAFTA Chapter 12, Cross Border Trade in Services">NAFTA Chapter 12, Cross Border Trade in Services</option>
+                <option value = "NAFTA Chapter 13, Telecom">NAFTA Chapter 13, Telecom</option>
+                <option value = "NAFTA Chapter 14, Financial Services">NAFTA Chapter 14, Financial Services</option>
+                <option value = "NAFTA Chapter 15, Competition">NAFTA Chapter 15, Competition</option>
+                <option value = "NAFTA Chapter 16, Temporary Entry">NAFTA Chapter 16, Temporary Entry</option>
+                <option value = "NAFTA Chapter 17, Intellectual Property Rights">NAFTA Chapter 17, Intellectual Property Rights</option>
+                <option value = "NAFTA Chapter 18, Notification">NAFTA Chapter 18, Notification</option>
+                <option value = "NAFTA Chapter 19, Anti-Dumping/Countervailing Duties">NAFTA Chapter 19, Anti-Dumping/Countervailing Duties</option>
+                <option value = "NAFTA Chapter 20, Dispute Settlement">NAFTA Chapter 20, Dispute Settlement</option>
+                <option value = "NAFTA Chapter 3,  National Treatment and Market Access for Goods">NAFTA Chapter 3,  National Treatment and Market Access for Goods</option>
+                <option value = "NAFTA Chapter 3, Annex 300A Automotive Sector">NAFTA Chapter 3, Annex 300A Automotive Sector</option>
+                <option value = "NAFTA Chapter 3, Annnex 300B Textiles and Apparel">NAFTA Chapter 3, Annnex 300B Textiles and Apparel</option>
+                <option value = "NAFTA Chapter 4, Rules of Origin">NAFTA Chapter 4, Rules of Origin</option>
+                <option value = "NAFTA Chapter 5, Customs Procedures">NAFTA Chapter 5, Customs Procedures</option>
+                <option value = "NAFTA Chapter 6, Energy">NAFTA Chapter 6, Energy</option>
+                <option value = "NAFTA Chapter 7, Agriculture">NAFTA Chapter 7, Agriculture</option>
+                <option value = "NAFTA Chapter 8, Emergency Action">NAFTA Chapter 8, Emergency Action</option>
+                <option value = "NAFTA Chapter 9, Standards">NAFTA Chapter 9, Standards</option>
+                <option value = "NAFTA General Provisions">NAFTA General Provisions</option>
+                <option value = "NAFTA Market Access including Article 304/Maquiladoras">NAFTA Market Access including Article 304/Maquiladoras</option>
+                <option value = "North American Free Trade Side Agreement on Environmental Cooperation">North American Free Trade Side Agreement on Environmental Cooperation</option>
+                <option value = "North American Free Trade Side Agreement on Labor Cooperation">North American Free Trade Side Agreement on Labor Cooperation</option>
+                <option value = "Oman FTA">Oman FTA</option>
+                <option value = "Ongoing FTA">Ongoing FTA</option>
+                <option value = "Panama Trade Promotion Agreement">Panama Trade Promotion Agreement</option>
+                <option value = "Peru Trade Promotion Agreement">Peru Trade Promotion Agreement</option>
+                <option value = "Singapore Free Trade Agreement">Singapore Free Trade Agreement</option>
             </select><p>
             <br/>
             
             <label><strong>Select WTO relevance: </strong></label><br/>
-            <p><select name= "filter8" disabled>
-                <option value = "0" selected>All (Default)</option>
-                <option value = "1">WTO Agreement on Trade in Goods: GATT Article III</option>
-                <option value = "2">WTO: Agreement on Government Procurement</option>
-                <option value = "3">WTO: Agreement on Trade in Civil Aircraft</option>
-                <option value = "4">WTO: Agreement on Trade-related Aspects of Intellectual Property Rights</option>
-                <option value = "5">WTO: Basic Telecommunications Services Agreement</option>
-                <option value = "6">WTO: China Accession Agreement</option>
-                <option value = "7">WTO: Final Act-results of the Uruguay Round</option>
-                <option value = "8">WTO: General Agreement on Trade in Services</option>
-                <option value = "9">WTO: Information Technology Agreement</option>
-                <option value = "10">WTO: Marrakesh Agreement Establishing the World Trade Organization</option>
-                <option value = "11">WTO: Marrakesh Protocol</option>
-                <option value = "12">WTO: Multilateral Agreements on Trade in Goods</option>
-                <option value = "13">WTO: Multilateral Agreements on Trade in Goods - Agriculture</option>
-                <option value = "14">WTO: Multilateral Agreements on Trade in Goods - Antidumping</option>
-                <option value = "15">WTO: Multilateral Agreements on Trade in Goods - Customs Valuation</option>
-                <option value = "16">WTO: Multilateral Agreements on Trade in Goods - GATT 1947</option>
-                <option value = "17">WTO: Multilateral Agreements on Trade in Goods - Preshipment Inspection</option>
-                <option value = "18">WTO: Multilateral Agreements on Trade in Goods - Rules of Origin</option>
-                <option value = "19">WTO: Multilateral Agreements on Trade in Goods - Safeguards</option>
-                <option value = "20">WTO: Multilateral Agreements on Trade in Goods - Sanitary/Phytosanitary</option>
-                <option value = "21">WTO: Multilateral Agreements on Trade in Goods - Subsidies/ Countervailing</option>
-                <option value = "22">WTO: Multilateral Agreements on Trade in Goods - Technical Barriers</option>
-                <option value = "23">WTO: Multilateral Agreements on Trade in Goods - Textiles and Clothing</option>
-                <option value = "24">WTO: Multilateral Agreements on Trade in Goods - TRIMs</option>
-                <option value = "25">WTO: Multilateral Agreements on Trade in Goods--Import Licensing</option>
-                <option value = "26">WTO: Taiwan Accession Agreement</option>
-                <option value = "27">WTO: Understanding on Commitments in Financial Services</option>
-                <option value = "28">WTO: Understanding on Settlement of Disputes</option>
+            <p><select name= "tancWTO">
+                <option value = "All" selected>All (Default)</option>
+                <option value = "WTO Agreement on Trade in Goods: GATT Article III">WTO Agreement on Trade in Goods: GATT Article III</option>
+                <option value = "WTO: Agreement on Government Procurement">WTO: Agreement on Government Procurement</option>
+                <option value = "WTO: Agreement on Trade in Civil Aircraft">WTO: Agreement on Trade in Civil Aircraft</option>
+                <option value = "WTO: Agreement on Trade-related Aspects of Intellectual Property Rights">WTO: Agreement on Trade-related Aspects of Intellectual Property Rights</option>
+                <option value = "WTO: Basic Telecommunications Services Agreement">WTO: Basic Telecommunications Services Agreement</option>
+                <option value = "WTO: China Accession Agreement">WTO: China Accession Agreement</option>
+                <option value = "WTO: Final Act-results of the Uruguay Round">WTO: Final Act-results of the Uruguay Round</option>
+                <option value = "WTO: General Agreement on Trade in Services">WTO: General Agreement on Trade in Services</option>
+                <option value = "WTO: Information Technology Agreement">WTO: Information Technology Agreement</option>
+                <option value = "WTO: Marrakesh Agreement Establishing the World Trade Organization">WTO: Marrakesh Agreement Establishing the World Trade Organization</option>
+                <option value = "WTO: Marrakesh Protocol">WTO: Marrakesh Protocol</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods">WTO: Multilateral Agreements on Trade in Goods</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Agriculture">WTO: Multilateral Agreements on Trade in Goods - Agriculture</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Antidumping">WTO: Multilateral Agreements on Trade in Goods - Antidumping</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Customs Valuation">WTO: Multilateral Agreements on Trade in Goods - Customs Valuation</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - GATT 1947">WTO: Multilateral Agreements on Trade in Goods - GATT 1947</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Preshipment Inspection">WTO: Multilateral Agreements on Trade in Goods - Preshipment Inspection</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Rules of Origin">WTO: Multilateral Agreements on Trade in Goods - Rules of Origin</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Safeguards">WTO: Multilateral Agreements on Trade in Goods - Safeguards</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Sanitary/Phytosanitary">WTO: Multilateral Agreements on Trade in Goods - Sanitary/Phytosanitary</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Subsidies/ Countervailing">WTO: Multilateral Agreements on Trade in Goods - Subsidies/ Countervailing</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Technical Barriers">WTO: Multilateral Agreements on Trade in Goods - Technical Barriers</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Textiles and Clothing">WTO: Multilateral Agreements on Trade in Goods - Textiles and Clothing</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - TRIMs">WTO: Multilateral Agreements on Trade in Goods - TRIMs</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods--Import Licensing">WTO: Multilateral Agreements on Trade in Goods--Import Licensing</option>
+                <option value = "WTO: Taiwan Accession Agreement">WTO: Taiwan Accession Agreement</option>
+                <option value = "WTO: Understanding on Commitments in Financial Services">WTO: Understanding on Commitments in Financial Services</option>
+                <option value = "WTO: Understanding on Settlement of Disputes">WTO: Understanding on Settlement of Disputes</option>
             </select></p>
-            
             <br/>
             
             <label><strong>Select whether to display dollar value of success: </strong></label> <br/>
@@ -741,19 +756,19 @@
             <!-- next two filters disabled as data does not exist yet -->
             <label><strong>Select whether to display dollar value of market access: </strong></label><br/>      
             <p>
-                <input type="radio" checked name="filter10" value="true" disabled /> Do not display (Default)
+                <input type="radio" checked name="tancMAccess" value="true" disabled /> Do not display (Default)
             </p>
             <p>
-                <input type="radio" name="filter10" value="false" disabled /> Display ($ in Millions) 
+                <input type="radio" name="tancMAccess" value="false" disabled /> Display ($ in Millions) 
             </p>
             <br/>
             
             <label><strong>Select whether to display estimated number of employees affected: s</strong></label><br/>      
             <p>
-                <input type="radio" checked name="filter11" value="true" disabled /> Do not display (Default) 
+                <input type="radio" checked name="tancEmployees" value="true" disabled /> Do not display (Default) 
             </p>
             <p>
-                <input type="radio" name="filter11" value="false" disabled /> Display 
+                <input type="radio" name="tancEmployees" value="false" disabled /> Display 
             </p>
             <br/>
             
@@ -792,7 +807,9 @@
         
         <form name="finalmap" method="get" action="" style="position: absolute; top:50px; left:100px; width:400px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">
-            <input type="button" value="Save Map Image" onclick="savemap();"/>
+            <input type="button" value="Export Map Info" onclick="savemap();"/>
+            <input type="button" id="In" value="Zoom In"/>
+            <input type="button" id="Out" value="Zoom Out"/>
             <div id="container" style="position: absolute; top: 180px; width: 1000px; max-height: 700px"></div>            
         </form>
         
@@ -842,15 +859,14 @@
             var industryFilter = null; // String, default = null
             var issueFilter = null; // String, default = null
             var publicityPermissionFilter; // boolean, default = false
-            /*
             var ftaFilter = null; // String, default = null
             var wtoFilter = null; // String, default = null
-            */
-           
-            var valueFilter; // boolean: display or not, default is true
+            var valueFilter; // boolean: display or not, default is true (Display)
             
             /*
-            var affectedEmployeeFilter = false; // which attribute?
+            for the two disabled filters which do not have relevant data records yet
+            var affectedEmployeeFilter = false; // boolean: display or not, default is false (Do not display)
+            var marketAccessFilter = false; // boolean: display or not, default is false (Do not display)
             */
             
             var usOnlyMapFilter; // only show US map, boolean, default = false to show world shaded map
@@ -989,8 +1005,8 @@
                         document.getElementById('file').value='';                       
                     }                    
                     
-                    
-                    dataRecords = readData(fileName);
+                    var div = document.getElementById('progressbar');
+                    dataRecords = readData(fileName, div);
                     //Parse and process json object string created above - retrieving record number of the first element in records array
                     //var contents = jsonParse(dataRecords);
                     alert("File " + fileName + " selected for category " + dataCategory);
@@ -1192,6 +1208,35 @@
                     publicityPermissionFilter = true;
                 }
                 
+                //read FTA relevance filter -- tanc
+                var ftaSelectList = document.forms["TANCFilterForm"].tancFTA;
+                alert("FTA relevance filter selected!");
+                for (var i = 0 ; i<ftaSelectList.length; i++) {
+                    if (ftaSelectList[i].selected) {
+                        if (ftaSelectList[i].value === "all") {
+                            alert("Selected FTA relevance : " + All);   
+                            ftaFilter = "All";
+                        } else  {
+                            ftaFilter = "" + ftaSelectList[i].value;
+                            alert("Selected FTA relevance : " + ftaFilter);
+                        }
+                    }
+                }  
+                
+                //read WTO relevance filter -- tanc
+                var wtoSelectList = document.forms["TANCFilterForm"].tancWTO;
+                alert("WTO relevance filter selected!");
+                for (var i = 0 ; i<wtoSelectList.length; i++) {
+                    if (wtoSelectList[i].selected) {
+                        if (wtoSelectList[i].value === "all") {
+                            alert("Selected WTO relevance : " + All);   
+                            wtoFilter = "All";
+                        } else  {
+                            wtoFilter = "" + wtoSelectList[i].value;
+                            alert("Selected WTO relevance : " + wtoFilter);
+                        }
+                    }
+                }
 /*
                 //read case value display/do not display filter -- tanc
                 var whichinput=document.getElementsByName("tancValueDisplay");
@@ -1276,8 +1321,9 @@
             function drawTancMaps() {
                 drawTancDataMaps(dataRecords, successFilter, dateInitiateFilterFrom, dateInitiateFilterTo, 
                     dateCloseFilterFrom, dateCloseFilterTo, smeFilter, countryList, industryFilter, 
-                    issueFilter, publicityPermissionFilter, usOnlyMapFilter, valueFilter);
+                    issueFilter, publicityPermissionFilter, ftaFilter, wtoFilter, usOnlyMapFilter, true);
             }
+            
             
             /* 
              * --- to take a look at below functions as well as forms 

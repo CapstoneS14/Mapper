@@ -1,5 +1,5 @@
 var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto, smef, 
-            countryList, industryfilter, issuefilter, pubfilter, usMapfilter, valuefilter) {
+            countryList, industryfilter, issuefilter, pubfilter, ftafilter, wtofilter, usMapfilter, valuefilter) {
                 
         var successFilter = sf; // boolean, default = false
 	var dateInitiateFilterFrom = diffrom; // String, default = null
@@ -11,14 +11,16 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
 	var industryFilter = industryfilter; // String, default = null
 	var issueFilter = issuefilter; // String, default = null
         var publicityPermissionFilter = pubfilter; // boolean, default = false
+	var ftaFilter = ftafilter; // String, default = null
+	var wtoFilter = wtofilter; // String, default = null
         /*
-	var ftaFilter = null; // String, default = null
-	var wtoFilter = null; // String, default = null
-
-	var affectedEmployeeFilter = false; // which attribute?
+         for the two disabled filters which do not have relevant data records yet
+         var affectedEmployeeFilter = false; // boolean: display or not, default is false (Do not display)
+         var marketAccessFilter = false; // boolean: display or not, default is false (Do not display)
         */
-	var valueFilter = true; // boolean: display or not, default is true   
-	var usOnlyMapFilter = usMapfilter; // only show US map, boolean, default = false
+       
+	var valueFilter = valuefilter; // boolean: display or not, default is true (Display)
+        var usOnlyMapFilter = usMapfilter; // boolean: display US map or world map, default is false (World Map)
 	
         var countryAbbreviationTable = new HashMap();
 	
@@ -580,17 +582,36 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
 	// go through each record
         for (var record in data) {
             
+            //to eliminate extra rows read from file without data
             if(data[record]["Record Number"] === null || typeof data[record]["Record Number"] === 'undefined') {
                 continue;
             }
             
             // success filter section, assign the success date to case close date filter
-            if (successFilter === true && (data[record]["Status"] !== "Closed" || data[record]["Success"] === "FALSE")) {
-                continue;
+            if (successFilter === true) {
+                if ((data[record]["Status"] === null || typeof data[record]["Status"] === 'undefined')
+                        && (data[record]["Success"] === null || typeof data[record]["Success"] === 'undefined'))  {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+                
+                if (data[record]["Success"] !== "TRUE") {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }            
+                
+                if (data[record]["Status"] !== "Closed") {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }            
             }		  
             
             // case date initiate filter section
             if (dateInitiateFilterFrom !== null && dateInitiateFilterTo !== null) {
+                if(data[record]["Case Initiated Date"] === null || typeof data[record]["Case Initiated Date"] === 'undefined') {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
                 var tmp1 = data[record]["Case Initiated Date"].split(" "); // remove time and keep only date
                 var tmp2 = tmp1[0].split("/"); // split mon/day/year
 		var caseIniDay = parseInt(tmp2[1]);
@@ -605,14 +626,17 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     var filterIniYearFrom = parseInt(tmp[2]);
                     
                     if (caseIniYear < filterIniYearFrom) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                     
                     if (caseIniYear === filterIniYearFrom && caseIniMon < filterIniMonFrom) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                     
                     if (caseIniYear === filterIniYearFrom && caseIniMon === filterIniMonFrom && caseIniDay < filterIniDayFrom) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                 }
@@ -625,14 +649,17 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     var filterIniYearTo = parseInt(tmp[2]);
                     
                     if (caseIniYear > filterIniYearTo) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                     
                     if (caseIniYear === filterIniYearTo && caseIniMon > filterIniMonTo) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                     
                     if (caseIniYear === filterIniYearTo && caseIniMon === filterIniMonTo && caseIniDay > filterIniDayTo) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
 		}                
@@ -640,6 +667,11 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             // case date close filter section
             if (dateCloseFilterFrom !== null && dateCloseFilterTo !== null) {
+                if(data[record]["Date Closed"] === null || typeof data[record]["Date Closed"] === 'undefined') {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+                
                 var tmp1 = data[record]["Date Closed"].split(" "); // remove time and keep only date
 		var tmp2 = tmp1[0].split("/"); // split mon/day/year
 		var caseCloseDay = parseInt(tmp2[1]);
@@ -654,14 +686,17 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     var filterCloseYearFrom = parseInt(tmp[2]);
                     
                     if (caseCloseYear < filterCloseYearFrom) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                     
                     if (caseCloseYear === filterCloseYearFrom && caseCloseMon < filterCloseMonFrom) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                     
                     if (caseCloseYear === filterCloseYearFrom && caseCloseMon === filterCloseMonFrom && caseCloseDay < filterCloseDayFrom) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                 }
@@ -674,14 +709,17 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     var filterCloseYearTo = parseInt(tmp[2]);
                     
                     if (caseCloseYear > filterCloseYearTo) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                     
                     if (caseCloseYear === filterCloseYearTo && caseCloseMon > filterCloseMonTo) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                     
                     if (caseCloseYear === filterCloseYearTo && caseCloseMon === filterCloseMonTo && caseCloseDay > filterCloseDayTo) {
+                        NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         continue;
                     }
                 }
@@ -695,53 +733,88 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             // sme involved filter section, default should be false.
             if (smeFilter === true) {
-                var curSMEValue = data[record]["SME Involved"];
-                if (curSMEValue === "No")
+                if(data[record]["SME Involved"] === null || typeof data[record]["SME Involved"] === 'undefined') {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
+                }
+                
+                var curSMEValue = data[record]["SME Involved"];
+                if (curSMEValue === "No") {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+                    
             }
             
             // industry filter section, default is null, assuming the value is a string
             if (industryFilter !== null && industryFilter !== "All") {
+                if(data[record]["Industry/Sectors"] === null || typeof data[record]["Industry/Sectors"] === 'undefined') {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+                
                 var curIndustry = data[record]["Industry/Sectors"];
                 if (curIndustry !== industryFilter) {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
             }
             
             // issueFilter section
             if (issueFilter !== null && issueFilter !== "All") {
+                if(data[record]["Issue(s)"] === null || typeof data[record]["Issue(s)"] === 'undefined') {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+                
                 var curIssue = data[record]["Issue(s)"];
-                if (curIssue.indexOf(issueFilter) > -1 ) {
+                if (curIssue.indexOf(issueFilter) === -1) {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
             }
             
             // publicity permission filter section, boolean, default = false
             if (publicityPermissionFilter === true) {
+                if(data[record]["Publicity Permission"] === null || typeof data[record]["Publicity Permission"] === 'undefined') {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+                
                 var curPublicityPermValue = data[record]["Publicity Permission"];
                 if (curPublicityPermValue !== "Granted") {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
             }
             
-            /*
-             * 	  // FTA relevant filter
-             * 	  
-             * 	  if (ftaFilter != null) {
-             * 	  var ftaStr = data[record]["Trade Agreement(s)"];
-             * 	  if (ftaStr.indexOf(ftaFilter) < 0) {
-             * 	  continue;
-             * 	  }
-             * 	  }
-             * 	              
-             *    //WTO relevant filter
-             *    if (wtoFilter != null) {
-             *    var wtoStr = data[record]["Trade Agreement(s)"];
-             *    if (wtoStr.indexOf(wtoFilter) < 0) {
-             *    continue;
-             *    }
-             *    }
-             */
+            // FTA relevant filter
+            if (ftaFilter !== null && ftaFilter !== "All") {
+                if(data[record]["Trade Agreement(s)"] === null || typeof data[record]["Trade Agreement(s)"] === 'undefined') {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+                
+                var ftaStr = data[record]["Trade Agreement(s)"];
+                if (ftaStr.indexOf(ftaFilter) === -1) {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+            }
+            
+            // WTO relevant filter
+            if (wtoFilter !== null && wtoFilter !== "All") {
+                if(data[record]["Trade Agreement(s)"] === null || typeof data[record]["Trade Agreement(s)"] === 'undefined') {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+                
+                var wtoStr = data[record]["Trade Agreement(s)"];
+                if (wtoStr.indexOf(wtoFilter) === -1) {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+            }
             
             var NumOfInvalidRecord = 0;
             
