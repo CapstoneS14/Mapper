@@ -608,44 +608,44 @@
                     <option value = "Customs: Procedures">Customs: Procedures</option>
                     <option value = "Customs: Valuation">Customs: Valuation</option>
                     <option value = "Environment">Environment</option>
-                    <option value = "11">Export Measures: General</option>
-                    <option value = "12">Export Measures: Restrictions</option>
-                    <option value = "13">Export Measures: Taxes</option>
-                    <option value = "14">Government procurement</option>
-                    <option value = "15">Import Licensing</option>
-                    <option value = "16">Investment</option>
-                    <option value = "17">IPR: Copyright</option>
-                    <option value = "18">IPR: General</option>
-                    <option value = "19">IPR: Patent</option>
-                    <option value = "20">IPR: Trade Secret</option>
-                    <option value = "21">IPR: Trademark</option>
-                    <option value = "22">Labor</option>
-                    <option value = "23">National treatment</option>
-                    <option value = "24">Other Non-Case Issues: Contract Dispute</option>
-                    <option value = "25">Other Non-Case Issues: Employee Dispute</option>
-                    <option value = "26">Other Non-Case Issues: General</option>
-                    <option value = "27">Other Non-Case Issues: Nonpayment</option>
-                    <option value = "28">Other: Case Issues</option>
-                    <option value = "29">Pre-shipment Inspection</option>
-                    <option value = "30">Pricing/Reimbursement</option>
-                    <option value = "31">Quotas and Import Prohibitions</option>
-                    <option value = "32">Safeguards</option>
-                    <option value = "33">Services</option>
-                    <option value = "34">Standards</option>
-                    <option value = "35">Structural Impediments/Regulatory Reform</option>
-                    <option value = "36">Subsidies</option>
-                    <option value = "37">Tariffs</option>
-                    <option value = "38">Taxes, Not Export</option>
+                    <option value = "Export Measures: General">Export Measures: General</option>
+                    <option value = "Export Measures: Restrictions">Export Measures: Restrictions</option>
+                    <option value = "Export Measures: Taxes">Export Measures: Taxes</option>
+                    <option value = "Government procurement">Government procurement</option>
+                    <option value = "Import Licensing">Import Licensing</option>
+                    <option value = "Investment">Investment</option>
+                    <option value = "IPR: Copyright">IPR: Copyright</option>
+                    <option value = "IPR: General">IPR: General</option>
+                    <option value = "IPR: Patent">IPR: Patent</option>
+                    <option value = "IPR: Trade Secret">IPR: Trade Secret</option>
+                    <option value = "IPR: Trademark">IPR: Trademark</option>
+                    <option value = "Labor">Labor</option>
+                    <option value = "National treatment">National treatment</option>
+                    <option value = "Other Non-Case Issues: Contract Dispute">Other Non-Case Issues: Contract Dispute</option>
+                    <option value = "Other Non-Case Issues: Employee Dispute">Other Non-Case Issues: Employee Dispute</option>
+                    <option value = "Other Non-Case Issues: General">Other Non-Case Issues: General</option>
+                    <option value = "Other Non-Case Issues: Nonpayment">Other Non-Case Issues: Nonpayment</option>
+                    <option value = "Other: Case Issues">Other: Case Issues</option>
+                    <option value = "Pre-shipment Inspection">Pre-shipment Inspection</option>
+                    <option value = "Pricing/Reimbursement">Pricing/Reimbursement</option>
+                    <option value = "Quotas and Import Prohibitions">Quotas and Import Prohibitions</option>
+                    <option value = "Safeguards">Safeguards</option>
+                    <option value = "Services">Services</option>
+                    <option value = "Standards">Standards</option>
+                    <option value = "Structural Impediments/Regulatory Reform">Structural Impediments/Regulatory Reform</option>
+                    <option value = "Subsidies">Subsidies</option>
+                    <option value = "Tariffs">Tariffs</option>
+                    <option value = "Taxes, Not Export">Taxes, Not Export</option>
                 </select>
             </p>
             <br/>
             
             <label><strong>Publicity permission check: </strong></label><br/>      
                 <p>
-                    <input type="radio" checked name="filter6" value="All" disabled/> All (Default) 
+                    <input type="radio" checked name="tancPublicity" value="All"/> All (Default) 
                 </p>
                 <p>
-                    <input type="radio" name="filter6" value="Granted" disabled/> Publicity permission granted 
+                    <input type="radio" name="tancPublicity" value="Granted"/> Publicity permission granted 
                 </p>
             <br/>    
             
@@ -731,10 +731,10 @@
             
             <label><strong>Select whether to display dollar value of success: </strong></label> <br/>
             <p>
-                <input type="radio" checked name="filter9" value="true"/> Display (Default)
+                <input type="radio" checked name="tancValueDisplay" value="true"/> Display (Default)
             </p>
             <p>
-                <input type="radio" name="filter9" value="false" disabled/> Do not display 
+                <input type="radio" name="tancValueDisplay" value="false"/> Do not display 
             </p>
             <br/>
             
@@ -825,8 +825,6 @@
             var companyOption; // all or SME only -- smeFilter used below instead
             
             var countryList; //if list then list of countries selected
-            var industryOption; //all or other specific selected value
-            var issueOption; //all or other specific selected value
             var publicityOption; //granted or not - if not then different values with numbers
             var agreementOption; // either FTA or WTO or both
             var successValueOption; // either true or false on whether or not to display
@@ -843,13 +841,13 @@
             var countryList; //list of selected countries
             var industryFilter = null; // String, default = null
             var issueFilter = null; // String, default = null
+            var publicityPermissionFilter; // boolean, default = false
             /*
-            var publicityPermissionFilter = false; // boolean, default = false
             var ftaFilter = null; // String, default = null
             var wtoFilter = null; // String, default = null
             */
            
-            var valueFilter = true; // boolean: display or not, default is true
+            var valueFilter; // boolean: display or not, default is true
             
             /*
             var affectedEmployeeFilter = false; // which attribute?
@@ -896,6 +894,16 @@
                     document.forms["filterftz"].style.visibility="hidden";
                 }
                     
+            }
+            
+            function enableDescription() {
+                if(document.forms["fileUploadForm"]["file"].value !== "") {
+                    document.forms["fileUploadForm"]["xStart"].disabled = false;
+                    document.forms["fileUploadForm"]["xEnd"].disabled = false;
+                    document.forms["fileUploadForm"]["yStart"].disabled = false;
+                    document.forms["fileUploadForm"]["yEnd"].disabled = false;
+                }
+                
             }
             
             function chkdatetanc() {
@@ -1143,7 +1151,8 @@
                 for (var i = 0 ; i<industrySelectList.length; i++) {
                     if (industrySelectList[i].selected) {
                         if (industrySelectList[i].value === "all") {
-                            alert("Selected Industry : " + All);                            
+                            alert("Selected Industry : " + All);   
+                            industryFilter = "All";
                         } else  {
                             industryFilter = "" + industrySelectList[i].value;
                             alert("Selected Industry : " + industryFilter);
@@ -1157,7 +1166,8 @@
                 for (var i = 0 ; i<issueSelectList.length; i++) {
                     if (issueSelectList[i].selected) {
                         if (issueSelectList[i].value === "all") {
-                            alert("Selected Issues : " + All);                            
+                            alert("Selected Issues : " + All);   
+                            issueFilter = "All";
                         } else  {
                             issueFilter = "" + issueSelectList[i].value;
                             alert("Selected Issue : " + issueFilter);
@@ -1165,7 +1175,41 @@
                     }
                 }                
 
+                //read publicity permission granted/not filter -- tanc
+                var whichinput=document.getElementsByName("tancPublicity");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
                 
+                var pubPermission = whichinput[k].value;
+                if(pubPermission === "All") {
+                    publicityPermissionFilter = false;
+                } else {
+                    publicityPermissionFilter = true;
+                }
+                
+/*
+                //read case value display/do not display filter -- tanc
+                var whichinput=document.getElementsByName("tancValueDisplay");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                
+                var valueInput = whichinput[k].value;
+                if(valueInput === "true") {
+                    valueFilter = true;
+                } else {
+                    valueFilter = false;
+                }
+*/        
                 if (noErrors === true) {
                     document.forms["dataCategoryForm"].style.visibility="hidden";
                     document.forms["fileUploadForm"].style.visibility="hidden";
@@ -1230,8 +1274,9 @@
             }
             
             function drawTancMaps() {
-                drawTancDataMaps(dataRecords, successFilter, dateInitiateFilterFrom, dateInitiateFilterTo, dateCloseFilterFrom, 
-                    dateCloseFilterTo, smeFilter, countryList, industryFilter, issueFilter, usOnlyMapFilter, valueFilter);
+                drawTancDataMaps(dataRecords, successFilter, dateInitiateFilterFrom, dateInitiateFilterTo, 
+                    dateCloseFilterFrom, dateCloseFilterTo, smeFilter, countryList, industryFilter, 
+                    issueFilter, publicityPermissionFilter, usOnlyMapFilter, valueFilter);
             }
             
             /* 

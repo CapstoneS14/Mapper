@@ -1,5 +1,5 @@
 var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto, smef, 
-            countryList, industryfilter, issuefilter, usMapfilter, valuefilter) {
+            countryList, industryfilter, issuefilter, pubfilter, usMapfilter, valuefilter) {
                 
         var successFilter = sf; // boolean, default = false
 	var dateInitiateFilterFrom = diffrom; // String, default = null
@@ -10,8 +10,8 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
 	var countryFilterList = countryList; // NOT Defined yet, Abbreviation
 	var industryFilter = industryfilter; // String, default = null
 	var issueFilter = issuefilter; // String, default = null
+        var publicityPermissionFilter = pubfilter; // boolean, default = false
         /*
-	var publicityPermissionFilter = false; // boolean, default = false
 	var ftaFilter = null; // String, default = null
 	var wtoFilter = null; // String, default = null
 
@@ -580,6 +580,10 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
 	// go through each record
         for (var record in data) {
             
+            if(data[record]["Record Number"] === null || typeof data[record]["Record Number"] === 'undefined') {
+                continue;
+            }
+            
             // success filter section, assign the success date to case close date filter
             if (successFilter === true && (data[record]["Status"] !== "Closed" || data[record]["Success"] === "FALSE")) {
                 continue;
@@ -697,28 +701,30 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             }
             
             // industry filter section, default is null, assuming the value is a string
-            if (industryFilter !== null) {
+            if (industryFilter !== null && industryFilter !== "All") {
                 var curIndustry = data[record]["Industry/Sectors"];
                 if (curIndustry !== industryFilter) {
                     continue;
                 }
             }
-            /*
+            
             // issueFilter section
-            if (issueFilter !== null) {
+            if (issueFilter !== null && issueFilter !== "All") {
                 var curIssue = data[record]["Issue(s)"];
                 if (curIssue.indexOf(issueFilter) > -1 ) {
                     continue;
                 }
             }
-            */
+            
+            // publicity permission filter section, boolean, default = false
+            if (publicityPermissionFilter === true) {
+                var curPublicityPermValue = data[record]["Publicity Permission"];
+                if (curPublicityPermValue !== "Granted") {
+                    continue;
+                }
+            }
+            
             /*
-             * // publicity permission filter section, boolean, default = false
-             * if (publicityPermissionFilter === true && data[record]["Publicity Permission"] != "Granted") {
-             * continue;
-             * }
-             * 	  
-             * 	  
              * 	  // FTA relevant filter
              * 	  
              * 	  if (ftaFilter != null) {
@@ -745,7 +751,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 if (country.indexOf(",") < 0 && country !== "European Union") {
                     var cty = countryAbbreviationTable.get(country);
                     if (cty === null) {
-                        document.write("Invalid record: " + country + "<br>");
+                        //document.write("Invalid record: " + country + "<br>");
                         NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     } 
                     var tmp = mapFre.get(cty) + 1;
@@ -761,7 +767,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     for (var i in countries) {
                         var cty = countryAbbreviationTable.get(countries[i]);
                         if (cty === null) {
-                            document.write("Invalid record: " + countries[i] + "<br>");
+                            //document.write("Invalid record: " + countries[i] + "<br>");
                             NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         }
                         var tmp = mapFre.get(cty) + 1;
@@ -777,7 +783,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     for (var i in countries) {
                         var cty = countryAbbreviationTable.get(countries[i]);
                         if (cty === null) {
-                            document.write("Invalid record: " + countries[i] + "<br>");
+                            //document.write("Invalid record: " + countries[i] + "<br>");
                             NumOfInvalidRecord = NumOfInvalidRecord + 1;
                         }
                         var tmp = mapFre.get(cty) + 1;
@@ -822,7 +828,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             } else if (mapFre.get(mapkeys[i]) >= 5) {
                 myObj[mapkeys[i]]["fillKey"] = 'MEDIUM';
             } else if (mapFre.get(mapkeys[i]) === 0) {
-                myObj[mapkeys[i]]["fillKey"] = 'UNKNOWN';
+                myObj[mapkeys[i]]["fillKey"] = 'UNKNOWN/NONE';
             } else {
                 myObj[mapkeys[i]]["fillKey"] = 'LOW';
             }
@@ -840,18 +846,28 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 HIGH: 'rgb(0,100,0)',
                 MEDIUM: 'rgb(0,255,0)',
                 LOW: 'rgb(144,238,144)',
-                UNKNOWN: 'rgb(192,192,192)',
+                'UNKNOWN/NONE': 'rgb(192,192,192)',
                 defaultFill: 'rgb(192,192,192)'
             },
             data: myObj,
             geographyConfig: {
                 popupTemplate: function(geo, data) {
-                    return ['<div class="hoverinfo"><strong>',
-                        'Number of cases in ' + geo.properties.name,
-                        ': ' + data.numberOfCases,
-                        '<br>Total value of cases in ' + geo.properties.name,
-                        ': ' + data.valueOfCases,
-                        '</strong></div>'].join('');
+                    if(valueFilter) {
+                        return ['<div class="hoverinfo"><strong>',
+                            'Number of cases in ' + geo.properties.name,
+                            ': ' + data.numberOfCases,
+                            '<br>Total value of cases in ' + geo.properties.name,
+                            ': ' + data.valueOfCases,
+                            '<br>Number of unmapped records: ' + NumOfInvalidRecord,
+                            '</strong></div>'].join('');                        
+                    } else {
+                        return ['<div class="hoverinfo"><strong>',
+                            'Number of cases in ' + geo.properties.name,
+                            ': ' + data.numberOfCases,
+                            '<br>Number of unmapped records: ' + NumOfInvalidRecord,
+                            '</strong></div>'].join('');       
+                    }
+                        
                 }
             }
         });
