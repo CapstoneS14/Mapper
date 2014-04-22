@@ -556,6 +556,15 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             map.put("WY", 0);
         };
 
+        var arrayContains = function(a, str) {
+            for (var i = 0; i < a.length; i++) {
+                if (a[i] === str) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        
         var mapFre = new HashMap(); //store frequency of each record on the map
 	var mapValue; //store accumulated value of each record on the map
 	
@@ -826,7 +835,9 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     if (cty === null) {
                         //document.write("Invalid record: " + country + "<br>");
                         NumOfInvalidRecord = NumOfInvalidRecord + 1;
-                    } 
+                    } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                        continue;
+                    }
                     var tmp = mapFre.get(cty) + 1;
                     mapFre.put(cty, tmp);
                     
@@ -842,6 +853,8 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         if (cty === null) {
                             //document.write("Invalid record: " + countries[i] + "<br>");
                             NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                        } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                            continue;
                         }
                         var tmp = mapFre.get(cty) + 1;
                         mapFre.put(cty, tmp);
@@ -858,6 +871,8 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         if (cty === null) {
                             //document.write("Invalid record: " + countries[i] + "<br>");
                             NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                        } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                            continue;
                         }
                         var tmp = mapFre.get(cty) + 1;
                         mapFre.put(cty, tmp);
@@ -874,6 +889,39 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 if (!mapFre.containsKey(state)) {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                 } else {
+                    var country = data[record]["Country(s)"];
+                    if (country.indexOf(",") < 0 && country !== "European Union") {
+                        var cty = countryAbbreviationTable.get(country);
+                        if (cty === null) {
+                            //document.write("Invalid record: " + country + "<br>");
+                            NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                        } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                            continue;
+                        }                        
+                    } else if (country.indexOf("European Union") >= 0) { // EU
+                        var countries = EUlist;
+                        for (var i in countries) {
+                            var cty = countryAbbreviationTable.get(countries[i]);
+                            if (cty === null) {
+                                //document.write("Invalid record: " + countries[i] + "<br>");
+                                NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                            } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                                continue;
+                            }
+                        }
+                    } else if (country.indexOf(",") >= 0) {
+                        var countries = country.split(", ");
+                        for (var i in countries) {
+                            var cty = countryAbbreviationTable.get(countries[i]);
+                            if (cty === null) {
+                                //document.write("Invalid record: " + countries[i] + "<br>");
+                                NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                            } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                                continue;
+                            }
+                        }   
+                    }   
+
                     var tmp = mapFre.get(state) + 1;
                     mapFre.put(state, tmp);
                     if (valueFilter) {
@@ -946,6 +994,6 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
         });
         map.legend();
         
-        
     };
+    
 	 
