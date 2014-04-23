@@ -88,7 +88,7 @@
         
 	</script>
         
-        <!-- script to read data from excel file; requires Hashmap script file; can move this also to a different js file?? -->
+        <!-- script to read data from excel file -->
         <script type="text/javascript">
             function isNum(elem, msg){
                 var numericExpression = /^[0-9]+$/;
@@ -298,6 +298,8 @@
             
             <input type="button" value="Upload"  onclick="goToFiltersForm();"/>            
             <button type="reset" value="Reset">Cancel</button>
+            <br/>
+            <br/>
             <br/>
             <div id="progressbar" style='visibility: hidden'></div>
             <br/>
@@ -807,13 +809,17 @@
         
         <form name="finalmap" method="get" action="" style="position: absolute; top:50px; left:100px; width:400px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">
-            <input type="button" value="Export Map Info" onclick="savemap();"/>
-            <input type="button" id="In" value="Zoom In"/>
-            <input type="button" id="Out" value="Zoom Out"/>
+            <input type="button" value="Export Map Image" onclick="savemap();"/>
+            <!-- <input type="button" id="In" value="Zoom In"/>
+            <input type="button" id="Out" value="Zoom Out"/> -->
+            
+            <div id="mapTitle" style="width:1000px;"></div>
             <div id="resultContainer" style="position: relative">
                 <div id="resultMap"  style="position: absolute; top: 180px; width: 1000px; max-height: 700px"></div>
-                <div id="resultInfo" style="float: bottom"></div>            
-            </div>    
+                <div id="filtersApplied" style="position: relative; top: 550px; width: 1000px;" ></div>                
+                <div id="resultInfo" style="position: relative; top: 600px"></div>                
+            </div>
+            
         </form>
         
         <script src="scripts/d3.min.js"></script>
@@ -863,17 +869,17 @@
             var ftaFilter = null; // String, default = null
             var wtoFilter = null; // String, default = null
             var valueFilter; // boolean: display or not, default is true (Display)
-            
+            var usOnlyMapFilter; // only show US map, boolean, default = false to show world shaded map
             /*
-            for the two disabled filters which do not have relevant data records yet
-            var affectedEmployeeFilter = false; // boolean: display or not, default is false (Do not display)
+            for the two disabled filters which do not have relevant data records yet            
             var marketAccessFilter = false; // boolean: display or not, default is false (Do not display)
             */
+            //still disabled in UI as of now for lack of data
+            var affectedEmployeeFilter = false; // boolean: display or not, default is false (Do not display)
             
-            var usOnlyMapFilter; // only show US map, boolean, default = false to show world shaded map
             var mapFre = new HashMap(); //store frequency of each record on the map
             var mapValue; //store accumulated value of each record on the map
-            var NumOfInvalidRecord;
+            var NumOfInvalidRecord; //records that can't be mapped
             
             function goToFileUploadForm() {
                 var whichinput=document.getElementsByName("input");
@@ -909,8 +915,7 @@
                     document.forms["filtertrade"].style.visibility="hidden";
                     document.forms["filterlaw"].style.visibility="hidden";
                     document.forms["filterftz"].style.visibility="hidden";
-                }
-                    
+                }                    
             }
             
             function enableDescription() {
@@ -919,8 +924,7 @@
                     document.forms["fileUploadForm"]["xEnd"].disabled = false;
                     document.forms["fileUploadForm"]["yStart"].disabled = false;
                     document.forms["fileUploadForm"]["yEnd"].disabled = false;
-                }
-                
+                }                
             }
             
             function chkdatetanc() {
@@ -1063,8 +1067,7 @@
                         document.forms["filtertrade"].style.visibility="hidden";
                         document.forms["filterlaw"].style.visibility="visible";
                         document.forms["filterftz"].style.visibility="hidden";                        
-                    }
-                    
+                    }                    
                 } else {
                     alert('Must Select any of your file for upload!');
                 }
@@ -1152,42 +1155,35 @@
                 if(countryOption === "list") {                    
                     var selectList = document.forms["TANCFilterForm"].tancCountryList;
                     countryList =  [];
-                    alert("Country option Selected: ");
                     for (var i = 0 ; i<selectList.length; i++) {
                         if (selectList[i].selected) {
-                            //alert("Item " + i + ": "  + selectList[i].value);
                             countryList.push(selectList[i].value);
                         }
                     }
-                    alert("Selected Country List : " + countryList);
-                }                
+                } else  {
+                    countryList = "All";
+                }
                 
                 //read industry filter -- tanc
                 var industrySelectList = document.forms["TANCFilterForm"].tancIndustry;
-                alert("Industry filter Selected!");
                 for (var i = 0 ; i<industrySelectList.length; i++) {
                     if (industrySelectList[i].selected) {
-                        if (industrySelectList[i].value === "all") {
-                            alert("Selected Industry : " + All);   
+                        if (industrySelectList[i].value === "all") { 
                             industryFilter = "All";
                         } else  {
                             industryFilter = "" + industrySelectList[i].value;
-                            alert("Selected Industry : " + industryFilter);
                         }
                     }
                 }                
 
                 //read issues filter -- tanc
                 var issueSelectList = document.forms["TANCFilterForm"].tancIssues;
-                alert("Issue filter Selected!");
                 for (var i = 0 ; i<issueSelectList.length; i++) {
                     if (issueSelectList[i].selected) {
-                        if (issueSelectList[i].value === "all") {
-                            alert("Selected Issues : " + All);   
+                        if (issueSelectList[i].value === "all") { 
                             issueFilter = "All";
                         } else  {
                             issueFilter = "" + issueSelectList[i].value;
-                            alert("Selected Issue : " + issueFilter);
                         }
                     }
                 }                
@@ -1211,34 +1207,28 @@
                 
                 //read FTA relevance filter -- tanc
                 var ftaSelectList = document.forms["TANCFilterForm"].tancFTA;
-                alert("FTA relevance filter selected!");
                 for (var i = 0 ; i<ftaSelectList.length; i++) {
                     if (ftaSelectList[i].selected) {
                         if (ftaSelectList[i].value === "all") {
-                            alert("Selected FTA relevance : " + All);   
                             ftaFilter = "All";
                         } else  {
                             ftaFilter = "" + ftaSelectList[i].value;
-                            alert("Selected FTA relevance : " + ftaFilter);
                         }
                     }
                 }  
                 
                 //read WTO relevance filter -- tanc
                 var wtoSelectList = document.forms["TANCFilterForm"].tancWTO;
-                alert("WTO relevance filter selected!");
                 for (var i = 0 ; i<wtoSelectList.length; i++) {
                     if (wtoSelectList[i].selected) {
-                        if (wtoSelectList[i].value === "all") {
-                            alert("Selected WTO relevance : " + All);   
+                        if (wtoSelectList[i].value === "all") {  
                             wtoFilter = "All";
                         } else  {
                             wtoFilter = "" + wtoSelectList[i].value;
-                            alert("Selected WTO relevance : " + wtoFilter);
                         }
                     }
                 }
-/*
+
                 //read case value display/do not display filter -- tanc
                 var whichinput=document.getElementsByName("tancValueDisplay");
                 var k;
@@ -1250,12 +1240,29 @@
                 }
                 
                 var valueInput = whichinput[k].value;
-                if(valueInput === "true") {
+                if(valueInput === "true") {                    
                     valueFilter = true;
                 } else {
                     valueFilter = false;
                 }
-*/        
+                
+                // read employees affected display/do not display filter -- tanc
+                var whichinput=document.getElementsByName("tancEmployees");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                
+                var empInput = whichinput[k].value;
+                if(empInput === "true") { 
+                    affectedEmployeeFilter = false; //do not display - default
+                } else {
+                    affectedEmployeeFilter = true; //display
+                }
+                
                 if (noErrors === true) {
                     document.forms["dataCategoryForm"].style.visibility="hidden";
                     document.forms["fileUploadForm"].style.visibility="hidden";
@@ -1266,13 +1273,11 @@
                     document.forms["filtertrade"].style.visibility="hidden";
                     document.forms["filterlaw"].style.visibility="hidden";
                     document.forms["filterftz"].style.visibility="hidden";                                
-                }
-                
+                }                
             }
             
             
-            function showmap() {
-                
+            function showmap() {                
                 if (dateOption === "success") 
                     successFilter = true;
                 else 
@@ -1298,10 +1303,10 @@
                 }
                                          
                 if (mapOption === "shadeus") {
-                    alert("To display Shaded US Map");
+                    alert("Display Shaded US Map");
                     usOnlyMapFilter = true;
                 } else if (mapOption === "shadeworld") {
-                    alert("To display Shaded World Map");
+                    alert("Display Shaded World Map");
                     usOnlyMapFilter = false;
                 }
                 
@@ -1322,7 +1327,8 @@
             function drawTancMaps() {
                 drawTancDataMaps(dataRecords, successFilter, dateInitiateFilterFrom, dateInitiateFilterTo, 
                     dateCloseFilterFrom, dateCloseFilterTo, smeFilter, countryList, industryFilter, 
-                    issueFilter, publicityPermissionFilter, ftaFilter, wtoFilter, usOnlyMapFilter, true);
+                    issueFilter, publicityPermissionFilter, ftaFilter, wtoFilter, usOnlyMapFilter, 
+                    valueFilter, affectedEmployeeFilter);
             }
             
             
@@ -1407,18 +1413,6 @@
                 }
             }   
             
-            function tanccountry() {
-                var select1 = document.getElementsByName("countryList");
-                var selectCountries = [];
-                for (var i = 0; i < select1.length; i++) {
-                    if (select1.options[i].selected) {
-                        alert("File Selected for " + select1.options[i].value +" ");
-                        selectCountries.push(select1.options[i].value);
-                    }
-                }
-                return selectCountries;
-            } 
-            
             function chkcountrytanc() {
                 var whichinput=document.getElementsByName("country");
                 var k;
@@ -1434,12 +1428,10 @@
                 } else  {   
                     document.TANCFilterForm.countryList.disabled=false;
                     
-                }
-                    
+                }                    
             }
             
         </script>
-
                 
         <form name="adcvdFilterForm" method="get"  action="" style="position: absolute; top:50px; left:100px; width:600px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">

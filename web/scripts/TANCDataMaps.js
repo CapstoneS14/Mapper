@@ -1,5 +1,6 @@
 var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto, smef, 
-            countryList, industryfilter, issuefilter, pubfilter, ftafilter, wtofilter, usMapfilter, valuefilter) {
+            countryList, industryfilter, issuefilter, pubfilter, ftafilter, wtofilter, 
+            usMapfilter, valuefilter, empfilter) {
                 
         var successFilter = sf; // boolean, default = false
 	var dateInitiateFilterFrom = diffrom; // String, default = null
@@ -13,15 +14,18 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
         var publicityPermissionFilter = pubfilter; // boolean, default = false
 	var ftaFilter = ftafilter; // String, default = null
 	var wtoFilter = wtofilter; // String, default = null
+        var affectedEmployeeFilter = empfilter; // boolean: display or not, default is false (Do not display)
         /*
          for the two disabled filters which do not have relevant data records yet
-         var affectedEmployeeFilter = false; // boolean: display or not, default is false (Do not display)
          var marketAccessFilter = false; // boolean: display or not, default is false (Do not display)
         */
        
 	var valueFilter = valuefilter; // boolean: display or not, default is true (Display)
         var usOnlyMapFilter = usMapfilter; // boolean: display US map or world map, default is false (World Map)
-	
+        
+        var title = "";
+	var appliedFilters = "";
+        
         var countryAbbreviationTable = new HashMap();
 	
         countryAbbreviationTable.put("Afghanistan", "AFG");
@@ -502,6 +506,59 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             map.put("ZWE", 0);
         };
     
+        var stateAbbreviationTable = new HashMap();
+        stateAbbreviationTable.put("Alabama", "AL");
+        stateAbbreviationTable.put("Alaska", "AK");
+        stateAbbreviationTable.put("Arizona", "AZ");
+        stateAbbreviationTable.put("Arkansas", "AR");
+        stateAbbreviationTable.put("California", "CA");
+        stateAbbreviationTable.put("Colorado", "CO");
+        stateAbbreviationTable.put("Connecticut", "CT");
+        stateAbbreviationTable.put("Delaware", "DE");
+        stateAbbreviationTable.put("D.C.", "DC");
+        stateAbbreviationTable.put("Florida", "FL");
+        stateAbbreviationTable.put("Georgia", "GA");
+        stateAbbreviationTable.put("Hawaii", "HI");
+        stateAbbreviationTable.put("Idaho", "ID");
+        stateAbbreviationTable.put("Illinois", "IL");
+        stateAbbreviationTable.put("Indiana", "IN");
+        stateAbbreviationTable.put("Iowa", "IA");
+        stateAbbreviationTable.put("Kansas", "KS");
+        stateAbbreviationTable.put("Kentucky", "KY");
+        stateAbbreviationTable.put("Louisiana", "LA");
+        stateAbbreviationTable.put("Maine", "ME");
+        stateAbbreviationTable.put("Maryland", "MD");
+        stateAbbreviationTable.put("Massachusets", "MA");
+        stateAbbreviationTable.put("Michigan", "MI");
+        stateAbbreviationTable.put("Minnesota", "MN");
+        stateAbbreviationTable.put("Mississippi", "MS");
+        stateAbbreviationTable.put("Missouri", "MO");
+        stateAbbreviationTable.put("Montana", "MT");
+        stateAbbreviationTable.put("Nebraska", "NE");
+        stateAbbreviationTable.put("Nevada", "NV");
+        stateAbbreviationTable.put("New Hampshire", "NH");
+        stateAbbreviationTable.put("New Jersey", "NJ");
+        stateAbbreviationTable.put("New Mexico", "NM");
+        stateAbbreviationTable.put("New York", "NY");
+        stateAbbreviationTable.put("North Carolina", "NC");
+        stateAbbreviationTable.put("North Dakota", "ND");
+        stateAbbreviationTable.put("Ohio", "OH");
+        stateAbbreviationTable.put("Oklahoma", "OK");
+        stateAbbreviationTable.put("Oregon", "OR");
+        stateAbbreviationTable.put("Pennsylvania", "PA");
+        stateAbbreviationTable.put("Rhode Island", "RI");
+        stateAbbreviationTable.put("South Carolina", "SC");
+        stateAbbreviationTable.put("South Dakota", "SD");
+        stateAbbreviationTable.put("Tennessee", "TN");
+        stateAbbreviationTable.put("Texas", "TX");
+        stateAbbreviationTable.put("Utah", "UT");
+        stateAbbreviationTable.put("Vermont", "VT");
+        stateAbbreviationTable.put("Virginia", "VA");
+        stateAbbreviationTable.put("Washington", "WA");
+        stateAbbreviationTable.put("West Virginia", "WV");
+        stateAbbreviationTable.put("Wisconsin", "WI");
+        stateAbbreviationTable.put("Wyoming", "WY");
+        
 	var initiateUSMap = function(map) {
             map.put("AL", 0);
             map.put("AK", 0);
@@ -556,20 +613,65 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             map.put("WY", 0);
         };
 
+        var arrayContains = function(a, str) {
+            for (var i = 0; i < a.length; i++) {
+                if (a[i] === str) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        
+        var readDate = function(dateString) { //dateString is of format "WWW MMM DD HH:MM:SS EDT YYYY"
+            var splitDate = dateString.split(" ");
+            var mon = getMonth(splitDate[1]);
+            var day = splitDate[2];
+            var year = splitDate[5];
+            return "" + mon + "/" + day + "/" + year;
+        };
+        
+        var getMonth = function(monthString) {
+          switch(monthString) {
+              case "Jan" : return "01";
+              case "Feb" : return "02";
+              case "Mar" : return "03";
+              case "Apr" : return "04";
+              case "May" : return "05";
+              case "Jun" : return "06";
+              case "Jul" : return "07";
+              case "Aug" : return "08";
+              case "Sep" : return "09";
+              case "Oct" : return "10";
+              case "Nov" : return "11";
+              case "Dec" : return "12";                  
+          }
+        };
+        
         var mapFre = new HashMap(); //store frequency of each record on the map
 	var mapValue; //store accumulated value of each record on the map
-	
+	var empValue; //store total employees affected for a region
+        
 	if (usOnlyMapFilter === false) {
+            title = "<h2>Enforcement and Compliance Information: World Wide - by Countries</h2>";
             initiateWorldMap(mapFre);
             if (valueFilter) {
                 mapValue = new HashMap();
                 initiateWorldMap(mapValue);
             }
+            if(affectedEmployeeFilter) {
+                empValue = new HashMap();
+                initiateWorldMap(empValue);
+            }
         } else {	//calculate frequency of each state on the us map
+            title = "<h2>Enforcement and Compliance Information: US only - by States</h2>";
             initiateUSMap(mapFre);
             if (valueFilter) {
                 mapValue = new HashMap();
                 initiateUSMap(mapValue);
+            }
+            if(affectedEmployeeFilter) {
+                empValue = new HashMap();
+                initiateUSMap(empValue);
             }
         }
         
@@ -579,18 +681,22 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
 		"Slovenia", "Spain", "Sweden", "United Kingdom"];	
         
         var data = jsonParse(dataRecords);
+        
 	// go through each record
         for (var record in data) {
-            
+            appliedFilters = "<strong>Applied Filters:</strong>";
+                
             //to eliminate extra rows read from file without data
-            if(data[record]["Record Number"] === null || typeof data[record]["Record Number"] === 'undefined') {
+            if(data[record]["Record Number"] === null || typeof data[record]["Record Number"] === "undefined") {
                 continue;
             }
             
+            
             // success filter section, assign the success date to case close date filter
             if (successFilter === true) {
-                if ((data[record]["Status"] === null || typeof data[record]["Status"] === 'undefined')
-                        && (data[record]["Success"] === null || typeof data[record]["Success"] === 'undefined'))  {
+                appliedFilters = appliedFilters + "Successful";
+                if ((data[record]["Status"] === null || typeof data[record]["Status"] === "undefined")
+                        && (data[record]["Success"] === null || typeof data[record]["Success"] === "undefined"))  {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
@@ -608,12 +714,15 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             // case date initiate filter section
             if (dateInitiateFilterFrom !== null && dateInitiateFilterTo !== null) {
-                if(data[record]["Case Initiated Date"] === null || typeof data[record]["Case Initiated Date"] === 'undefined') {
+                appliedFilters = appliedFilters + " Cases Initiated between " 
+                        + dateInitiateFilterFrom + " and " + dateInitiateFilterTo + ";";
+                if(data[record]["Case Initiated Date"] === null || typeof data[record]["Case Initiated Date"] === "undefined") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
-                var tmp1 = data[record]["Case Initiated Date"].split(" "); // remove time and keep only date
-                var tmp2 = tmp1[0].split("/"); // split mon/day/year
+                
+                var tmp1 = readDate(data[record]["Case Initiated Date"]); // remove time and keep only date
+                var tmp2 = tmp1.split("/"); // split mon/day/year
 		var caseIniDay = parseInt(tmp2[1]);
 		var caseIniMon = parseInt(tmp2[0]);
 		var caseIniYear = parseInt(tmp2[2]);
@@ -667,13 +776,15 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             // case date close filter section
             if (dateCloseFilterFrom !== null && dateCloseFilterTo !== null) {
-                if(data[record]["Date Closed"] === null || typeof data[record]["Date Closed"] === 'undefined') {
+                appliedFilters = appliedFilters + " Cases Closed between " + 
+                        dateCloseFilterFrom + " and " + dateCloseFilterTo + ";";
+                if(data[record]["Date Closed"] === null || typeof data[record]["Date Closed"] === "undefined") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
                 
-                var tmp1 = data[record]["Date Closed"].split(" "); // remove time and keep only date
-		var tmp2 = tmp1[0].split("/"); // split mon/day/year
+                var tmp1 = readDate(data[record]["Date Closed"]); // remove time and keep only date
+		var tmp2 = tmp1.split("/"); // split mon/day/year
 		var caseCloseDay = parseInt(tmp2[1]);
 		var caseCloseMon = parseInt(tmp2[0]);
 		var caseCloseYear = parseInt(tmp2[2]);
@@ -733,7 +844,8 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             // sme involved filter section, default should be false.
             if (smeFilter === true) {
-                if(data[record]["SME Involved"] === null || typeof data[record]["SME Involved"] === 'undefined') {
+                appliedFilters = appliedFilters + " Only SMEs involved;";
+                if(data[record]["SME Involved"] === null || typeof data[record]["SME Involved"] === "undefined") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
@@ -748,7 +860,8 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             // industry filter section, default is null, assuming the value is a string
             if (industryFilter !== null && industryFilter !== "All") {
-                if(data[record]["Industry/Sectors"] === null || typeof data[record]["Industry/Sectors"] === 'undefined') {
+                appliedFilters = appliedFilters + " Industry: " + industryFilter + ";";
+                if(data[record]["Industry/Sectors"] === null || typeof data[record]["Industry/Sectors"] === "undefined") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
@@ -762,7 +875,8 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             // issueFilter section
             if (issueFilter !== null && issueFilter !== "All") {
-                if(data[record]["Issue(s)"] === null || typeof data[record]["Issue(s)"] === 'undefined') {
+                appliedFilters = appliedFilters + " Issue: " + issueFilter + ";";
+                if(data[record]["Issue(s)"] === null || typeof data[record]["Issue(s)"] === "undefined") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
@@ -776,7 +890,8 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             // publicity permission filter section, boolean, default = false
             if (publicityPermissionFilter === true) {
-                if(data[record]["Publicity Permission"] === null || typeof data[record]["Publicity Permission"] === 'undefined') {
+                appliedFilters = appliedFilters + " With publicity permission granted;";
+                if(data[record]["Publicity Permission"] === null || typeof data[record]["Publicity Permission"] === "undefined") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
@@ -790,7 +905,9 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             // FTA relevant filter
             if (ftaFilter !== null && ftaFilter !== "All") {
-                if(data[record]["Trade Agreement(s)"] === null || typeof data[record]["Trade Agreement(s)"] === 'undefined') {
+                appliedFilters = appliedFilters + " With FTA Relevance: " + 
+                        ftaFilter + ";";
+                if(data[record]["Trade Agreement(s)"] === null || typeof data[record]["Trade Agreement(s)"] === "undefined") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
@@ -804,7 +921,9 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             // WTO relevant filter
             if (wtoFilter !== null && wtoFilter !== "All") {
-                if(data[record]["Trade Agreement(s)"] === null || typeof data[record]["Trade Agreement(s)"] === 'undefined') {
+                appliedFilters = appliedFilters + " With WTO Relevance: " + 
+                        wtoFilter + ";";
+                if(data[record]["Trade Agreement(s)"] === null || typeof data[record]["Trade Agreement(s)"] === "undefined") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }
@@ -826,7 +945,11 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     if (cty === null) {
                         //document.write("Invalid record: " + country + "<br>");
                         NumOfInvalidRecord = NumOfInvalidRecord + 1;
-                    } 
+                    } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                        appliedFilters = appliedFilters + " Country(s) involved: " + 
+                            countryFilterList + ";";
+                        continue;
+                    }
                     var tmp = mapFre.get(cty) + 1;
                     mapFre.put(cty, tmp);
                     
@@ -835,6 +958,11 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         var tmpVal = parseInt(curVal) + mapValue.get(cty);
                         mapValue.put(cty, tmpVal);
                     }
+                    if (affectedEmployeeFilter) {
+                        var curVal = data[record]["Employees Affected"];
+                        var tmpVal = parseInt(curVal) + empValue.get(cty);
+                        empValue.put(cty, tmpVal);
+                    }
                 } else if (country.indexOf("European Union") >= 0) { // EU
                     var countries = EUlist;
                     for (var i in countries) {
@@ -842,6 +970,10 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         if (cty === null) {
                             //document.write("Invalid record: " + countries[i] + "<br>");
                             NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                        } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                            appliedFilters = appliedFilters + " Country(s) involved: " + 
+                                countryFilterList + ";";
+                            continue;
                         }
                         var tmp = mapFre.get(cty) + 1;
                         mapFre.put(cty, tmp);
@@ -850,6 +982,11 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                             var tmpVal = parseInt(curVal) + mapValue.get(cty);
                             mapValue.put(cty, tmpVal);
                         }
+                        if (affectedEmployeeFilter) {
+                            var curVal = data[record]["Employees Affected"];
+                            var tmpVal = parseInt(curVal) + empValue.get(cty);
+                            empValue.put(cty, tmpVal);
+                        }                        
                     }
                 } else if (country.indexOf(",") >= 0) {
                     var countries = country.split(", ");
@@ -858,6 +995,10 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         if (cty === null) {
                             //document.write("Invalid record: " + countries[i] + "<br>");
                             NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                        } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                            appliedFilters = appliedFilters + " Country(s) involved: " + 
+                                countryFilterList + ";";
+                            continue;
                         }
                         var tmp = mapFre.get(cty) + 1;
                         mapFre.put(cty, tmp);
@@ -866,7 +1007,11 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                             var tmpVal = parseInt(curVal) + mapValue.get(cty);
                             mapValue.put(cty, tmpVal);
                         }
-                        
+                        if (affectedEmployeeFilter) {
+                            var curVal = data[record]["Employees Affected"];
+                            var tmpVal = parseInt(curVal) + empValue.get(cty);
+                            empValue.put(cty, tmpVal);
+                        }                        
                     }
                 }
             } else { // us map
@@ -874,15 +1019,64 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 if (!mapFre.containsKey(state)) {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                 } else {
+                    var country = data[record]["Country(s)"];
+                    if (country.indexOf(",") < 0 && country !== "European Union") {
+                        var cty = countryAbbreviationTable.get(country);
+                        if (cty === null) {
+                            //document.write("Invalid record: " + country + "<br>");
+                            NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                        } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                            appliedFilters = appliedFilters + " Country(s) involved: " + 
+                                countryFilterList + ";";
+                            continue;
+                        }                        
+                    } else if (country.indexOf("European Union") >= 0) { // EU
+                        var countries = EUlist;
+                        for (var i in countries) {
+                            var cty = countryAbbreviationTable.get(countries[i]);
+                            if (cty === null) {
+                                //document.write("Invalid record: " + countries[i] + "<br>");
+                                NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                            } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                                appliedFilters = appliedFilters + " Country(s) involved: " + 
+                                    countryFilterList + ";";
+                                continue;
+                            }
+                        }
+                    } else if (country.indexOf(",") >= 0) {
+                        var countries = country.split(", ");
+                        for (var i in countries) {
+                            var cty = countryAbbreviationTable.get(countries[i]);
+                            if (cty === null) {
+                                //document.write("Invalid record: " + countries[i] + "<br>");
+                                NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                            } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                                appliedFilters = appliedFilters + " Country(s) involved: " + 
+                                    countryFilterList + ";";
+                                continue;
+                            }
+                        }   
+                    }   
+
                     var tmp = mapFre.get(state) + 1;
                     mapFre.put(state, tmp);
                     if (valueFilter) {
                         var curVal = data[record]["Case Value (in $ millions)"];
-                        var tmpVal = parseInt(curVal) + mapValue.get(cty);
-                        mapValue.put(cty, tmpVal);
+                        var tmpVal = parseInt(curVal) + mapValue.get(state);
+                        mapValue.put(state, tmpVal);
                     }
+                    if (affectedEmployeeFilter) {
+                        var curVal = data[record]["Employees Affected"];
+                        var tmpVal = parseInt(curVal) + empValue.get(state);
+                        empValue.put(state, tmpVal);
+                    }                    
                 }
             }
+        }
+        if(valueFilter) {
+            appliedFilters = appliedFilters + " Total Value of Cases (in $millions).<br>";
+        } else {
+            appliedFilters = appliedFilters + " Without Total Value of Cases.<br>";            
         }
         
         var mapScope;
@@ -896,14 +1090,16 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
 	var myObj = {};
         for (var i in mapkeys) {
             myObj[mapkeys[i]] = {};
-            if (mapFre.get(mapkeys[i]) >= 10) {
-                myObj[mapkeys[i]]["fillKey"] = 'HIGH';
+            if (mapFre.get(mapkeys[i]) >= 21) {
+                myObj[mapkeys[i]]["fillKey"] = 'VERY HIGH(21&more)';
+            } else if (mapFre.get(mapkeys[i]) >= 10) {
+                myObj[mapkeys[i]]["fillKey"] = 'HIGH(10-20)';
             } else if (mapFre.get(mapkeys[i]) >= 5) {
-                myObj[mapkeys[i]]["fillKey"] = 'MEDIUM';
+                myObj[mapkeys[i]]["fillKey"] = 'MEDIUM(5-9)';
             } else if (mapFre.get(mapkeys[i]) === 0) {
-                myObj[mapkeys[i]]["fillKey"] = 'UNKNOWN/NONE';
+                myObj[mapkeys[i]]["fillKey"] = 'NONE(0)';
             } else {
-                myObj[mapkeys[i]]["fillKey"] = 'LOW';
+                myObj[mapkeys[i]]["fillKey"] = 'LOW(1-4)';
             }
             myObj[mapkeys[i]]["numberOfCases"] = mapFre.get(mapkeys[i]);
             if (valueFilter) {
@@ -916,11 +1112,12 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             scope: mapScope,
             element: document.getElementById('resultMap'),
             fills: {
-                HIGH: 'rgb(0,100,0)',
-                MEDIUM: 'rgb(0,255,0)',
-                LOW: 'rgb(144,238,144)',
-                'UNKNOWN/NONE': 'rgb(192,192,192)',
-                defaultFill: 'rgb(192,192,192)'
+                'VERY HIGH(21&more)': "#003300",
+                'HIGH(10-20)': "#006633",
+                'MEDIUM(5-9)': "#00CC33",
+                'LOW(1-4)': "#66FF33",
+                'NONE(0)': "#C0C0C0",
+                defaultFill: "#C0C0C0"
             },
             data: myObj,
             geographyConfig: {
@@ -931,13 +1128,13 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                             ': ' + data.numberOfCases,
                             '<br>Total value of cases in ' + geo.properties.name,
                             ': ' + data.valueOfCases,
-                            '<br>Number of unmapped records: ' + NumOfInvalidRecord,
+                            '<br>Total unmapped records ' + NumOfInvalidRecord,
                             '</strong></div>'].join('');                        
                     } else {
                         return ['<div class="hoverinfo"><strong>',
                             'Number of cases in ' + geo.properties.name,
                             ': ' + data.numberOfCases,
-                            '<br>Number of unmapped records: ' + NumOfInvalidRecord,
+                            '<br>Total unmapped records ' + NumOfInvalidRecord,
                             '</strong></div>'].join('');       
                     }
                         
@@ -945,82 +1142,145 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             }
         });
         map.legend();
-        
-<<<<<<< HEAD
-        
-=======
-               //draw the map info table
+
+        //draw the map info table
         var doc = window.document;
         
         var table = doc.createElement('table');
-        table.id="#grid";	
+        table.id="#grid";
         var tbody = doc.createElement('tbody');
-
+        
         //Add the HEADER Row
         var thead = doc.createElement('thead');
         var headerRow = doc.createElement('tr');
-               
+        
         //Header: Country Name 
-        var th = doc.createElement('th');				
-        var textNode = doc.createTextNode("Country");				
+        var th = doc.createElement('th');
+        
+        var textNode;
+        if(usOnlyMapFilter) 
+            textNode = doc.createTextNode("State");
+        else 
+            textNode = doc.createTextNode("Country");	
         th.appendChild(textNode);
         th.setAttribute("align","centre");
         headerRow.appendChild(th);	
         
         //Header: Number of Cases
-        th = doc.createElement('th');				
-        textNode = doc.createTextNode("# of Cases");				
+        th = doc.createElement('th');	
+        textNode = doc.createTextNode("# of Cases");	
         th.appendChild(textNode);
         th.setAttribute("align","centre");
         headerRow.appendChild(th);	
-        
+                
         //Header: Total Value of Cases
-        th = doc.createElement('th');				
-        textNode = doc.createTextNode("Total Value of Cases");				
-        th.appendChild(textNode);
-        th.setAttribute("align","centre");
-        headerRow.appendChild(th);	
-        
+        if(valueFilter) {
+            th = doc.createElement('th');	
+            textNode = doc.createTextNode("Total Value of Cases");
+            th.appendChild(textNode);
+            th.setAttribute("align","centre");
+            headerRow.appendChild(th);	
+        }
         thead.appendChild(headerRow);
-	
+        
         var ctyMapFreKeys = mapFre.keys();
-        var ctyMapValueKeys = mapValue.keys();
-        for(var c in ctyMapFreKeys){
-            //console.log("ctyMapFreKeys[c]"+c+"::"+ctyMapFreKeys[c]);
-            var cName = countryAbbreviationTable.getKey(ctyMapFreKeys[c]);
-            var cNumIssues =  mapFre.get(ctyMapFreKeys[c]);
-            var cValue = mapValue.get(ctyMapValueKeys[c]);
-            if(cNumIssues > 0 || (cValue > 0)){
-                var row = doc.createElement('tr');
-               
-                //country name
-                var td = doc.createElement('td');				
-                var textNode = doc.createTextNode(cName);				
-                td.appendChild(textNode);
-                td.setAttribute("align","right");
-                row.appendChild(td);	            
+        var ctyMapValueKeys;
+        if (valueFilter) {
+            ctyMapValueKeys = mapValue.keys();
+        }
+            
+        if (usOnlyMapFilter) {
+            for(var c in ctyMapFreKeys){
+                //console.log("ctyMapFreKeys[c]"+c+"::"+ctyMapFreKeys[c]);
+                var cName = stateAbbreviationTable.getKey(ctyMapFreKeys[c]);
+                var cNumIssues =  mapFre.get(ctyMapFreKeys[c]);
+                var cValue=0;
+                if (valueFilter) {
+                    cValue = mapValue.get(ctyMapValueKeys[c]);
+                }
                 
-                //number of issues
-                var td = doc.createElement('td');				
-                var textNode = doc.createTextNode(cNumIssues);				
-                td.appendChild(textNode);
-                td.setAttribute("align","right");
-                row.appendChild(td);	            
+                if(cNumIssues > 0 || (cValue > 0)){
+                    var row = doc.createElement('tr');
                 
-                //Value
-                var td = doc.createElement('td');				
-                var textNode = doc.createTextNode(cValue);				
-                td.appendChild(textNode);
-                td.setAttribute("align","right");
-                row.appendChild(td);	            
+                    //country name
+                    var td = doc.createElement('td');
+                    var textNode = doc.createTextNode(cName);
+                    td.appendChild(textNode);
+                    td.setAttribute("align","right");
+                    row.appendChild(td);
                 
-                tbody.appendChild(row);
+                    //number of issues
+                    var td = doc.createElement('td');	
+                    var textNode = doc.createTextNode(cNumIssues);
+                    td.appendChild(textNode);
+                    td.setAttribute("align","right");
+                    row.appendChild(td);
+                
+                    //Value
+                    if (valueFilter) {
+                        var td = doc.createElement('td');
+                        var textNode = doc.createTextNode(cValue);
+                        td.appendChild(textNode);
+                        td.setAttribute("align","right");
+                        row.appendChild(td);
+                    }
+                
+                    tbody.appendChild(row);
+                }
+            }            
+        } else {
+            for(var c in ctyMapFreKeys){
+                //console.log("ctyMapFreKeys[c]"+c+"::"+ctyMapFreKeys[c]);
+                var cName = countryAbbreviationTable.getKey(ctyMapFreKeys[c]);
+                var cNumIssues =  mapFre.get(ctyMapFreKeys[c]);
+                var cValue=0;
+                if (valueFilter) {
+                    cValue = mapValue.get(ctyMapValueKeys[c]);
+                }
+
+                if(cNumIssues > 0 || (cValue > 0)){
+                    var row = doc.createElement('tr');
+                
+                    //country name
+                    var td = doc.createElement('td');
+                    var textNode = doc.createTextNode(cName);
+                    td.appendChild(textNode);
+                    td.setAttribute("align","right");
+                    row.appendChild(td);
+                
+                    //number of issues
+                    var td = doc.createElement('td');	
+                    var textNode = doc.createTextNode(cNumIssues);
+                    td.appendChild(textNode);
+                    td.setAttribute("align","right");
+                    row.appendChild(td);
+                
+                    //Value
+                    if (valueFilter) {
+                        var td = doc.createElement('td');
+                        var textNode = doc.createTextNode(cValue);
+                        td.appendChild(textNode);
+                        td.setAttribute("align","right");
+                        row.appendChild(td);                        
+                    }
+                
+                    tbody.appendChild(row);
+                }
             }
         }
-        
         table.appendChild(thead);
         table.appendChild(tbody);
-	document.getElementById('resultInfo').appendChild(table);        
->>>>>>> f62cb761db444e7dea837fe2aa0c913633849d52
+        
+        document.getElementById('mapTitle').innerHTML = document.getElementById('mapTitle').innerHTML + title;
+        document.getElementById('filtersApplied').innerHTML = document.getElementById('filtersApplied').innerHTML 
+            + appliedFilters;
+        document.getElementById('resultInfo').appendChild(table);    
+        
     };
-	 
+    
+
+var TancDrawBubbleMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto, smef, 
+            countryList, industryfilter, issuefilter, pubfilter, ftafilter, wtofilter, usMapfilter, valuefilter) {
+
+    
+};  

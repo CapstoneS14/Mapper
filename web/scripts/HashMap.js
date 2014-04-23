@@ -97,21 +97,21 @@ HashMap.prototype = {
     }
     return values;
   },
-
-   /**
-   * Return the first key that matches the value
-   * Note that values are not required to be unique.
-   */
-  getKey: function(value) {
-    for (var key in this._map) {
-      if (this._map.hasOwnProperty(key)) {
-        if (this._map[key] === value) {
-          return key;
-        }
-      }
-    }
-  },          
           
+   /**
+    * Return the first key that matches the value
+    * Note that values are not required to be unique.
+    */
+   getKey: function(value) {
+       for (var key in this._map) {
+           if (this._map.hasOwnProperty(key)) {
+               if (this._map[key] === value) {
+                   return key;
+               }
+           }
+       }
+   },
+           
   /**
    * Returns the size of the map, which is
    * the number of keys.
