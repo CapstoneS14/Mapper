@@ -699,9 +699,9 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         && (data[record]["Success"] === null || typeof data[record]["Success"] === "undefined"))  {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
-                }
+                }                
                 
-                if (data[record]["Success"] !== "TRUE") {
+                if (data[record]["Success"] === "FALSE") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
                 }            
@@ -709,7 +709,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 if (data[record]["Status"] !== "Closed") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                     continue;
-                }            
+                } 
             }		  
             
             // case date initiate filter section
