@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <form name="filterftz" method="get"  action="" style="position: absolute; top:30px; left:100px; width:600px; height:25px">
+            <input type="button" value="Home" onClick="goToHomeForm();">
+            <h3>Apply Filters</h3>
+            <label><strong>Select date</strong></label><br/>    
+            <p><input type="radio" name="filter2ftz" value="init" /> Case Initiated </p>
+            <input type="date" name="to" /> to  <input type="date" name="initendad" /><br/>
+            <br/>
+            <label><strong>Filter Company</strong></label><br/>    
+            <p><input type="radio" name="filter3ftz" value="export" /> Exports ($ millions) </p>
+            <p><input type="radio" checked name="filter3ftz" value="All" /> Imports ($ millions) </p>
+            <p><input type="radio" checked name="filter3ftz" value="All" /> All- default </p>
+            <br/>
+            <label><strong>Filter Jobs Facilitated</strong></label><br/>    
+            <p><input type="radio" name="filter4ftz" value="jobs" /> Jobs Facilitated </p>      
+
+            <input type="button" value="Continue" onclick="mapview();" >
+            <button type="reset" value="Reset">Reset</button>
+        </form>
+
+    </body>
+</html>

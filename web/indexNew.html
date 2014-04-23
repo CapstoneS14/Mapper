@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        <title>Department of Commerce - Mapping Software</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE10">
+        <style>
+            label { float: left; width: 600px; }
+            display:block
+            input[type=text] { float: left; width: 400px; }
+                .clear { clear: both; height: 0; line-height: 0; }
+                .floatright { float: right; }
+            #progressbar .ui-progressbar-value {
+                background-color: #ccc;
+            }
+        </style>
+        
+        <link rel="stylesheet" href="stylesheets/jquery.ui.all.css">
+	<script src="scripts/jquery-1.10.2.js"></script>
+	<script src="ui/jquery.ui.core.js"></script>
+	<script src="ui/jquery.ui.widget.js"></script>	
+	<link rel="stylesheet" href="stylesheets/local.css">
+        
+	<script>
+            $(function() {
+                $("#dataCategory").load("dataCategory.html");
+                $("#fileUpload").load("fileUpload.html");
+                $("#tancFilter").load("tancFilter.html");
+                $("#mapDisplayType").load("mapDisplayType.html");
+                $("#finalMap").load("finalMap.html");
+                $("#adcvdFilter").load("adcvdFilter.html");
+                $("#filterTrade").load("filterTrade.html");
+                $("#filterLaw").load("filterLaw.html");
+                $("#filterFtz").load("filterFtz.html");                                 
+	});        
+	</script>
+        
+        <!-- script to read data from excel file; requires Hashmap script file; can move this also to a different js file?? -->
+        <script type="text/javascript">
+            function isNum(elem, msg){
+                var numericExpression = /^[0-9]+$/;
+                if(elem.value.match(numericExpression)) {
+                    return true;
+                } else {
+                    alert(msg);
+                    elem.focus();
+                    return false;
+                }
+            }
+            
+            //read data from the file
+            function readData(file, div) {
+                var excel;
+                var excel_file;
+                var excel_sheet;
+                var data;
+                var headers = new Array();
+                var jsonArray = " [ ";
+                
+                try {
+                    div.style.visibility = 'visible'; 
+                    excel = new ActiveXObject("Excel.Application");
+                    excel.Visible = false;
+                    excel_file = excel.Workbooks.Open(file); //alert(excel_file.worksheets.count);
+                    excel_sheet = excel_file.Worksheets("Sheet1");
+                    
+                    var row_num_start = 1;
+                    var row_num_end = excel_sheet.Rows.Count;
+                    var col_num_start = 1;
+                    var col_num_end = excel_sheet.UsedRange.Columns.Count;
+                    
+                    var curr_row_num = row_num_start;                   
+                                      
+                    //Identify Header Row
+                    var dataCounter =0; // dataCounter=1 => Title; dataCounter=2 => Header                                        
+                    while(curr_row_num <= row_num_end  && dataCounter < 2){
+                        var curr_col_num = col_num_start;
+                        var dataFound = false;
+                        while(curr_col_num <= col_num_end && !dataFound){ 
+                            var data = excel_sheet.Cells(curr_row_num, curr_col_num).Value;
+                            //console.log("["+curr_row_num+","+curr_col_num+"]  :"+data+":");
+                            if(data !== undefined && data !== null && data.toString().trim() !== ""){
+                                //Data Found. increment the data counter and come out of the inner while loop(column loop)
+                                dataCounter++;
+                                row_num_start=curr_row_num;
+                                dataFound = true;
+                            }
+                            curr_col_num++;
+                        }
+                        curr_row_num++;
+                    }
+                    
+                    console.log("Header Row Number = "+row_num_start);
+                                                           
+                    var xStart = row_num_start;
+                    var yStart = col_num_start;
+                    
+                    var yEnd = col_num_end;
+                
+                    var xVal = row_num_start;
+                    var yVal = col_num_start;
+                                        
+                    //read headers
+                    var emptyRowCount=1;
+                    while (yVal <= yEnd) {
+                        data = excel_sheet.Cells(xVal,yVal).Value;
+                        if(data === undefined || data === null || data.toString().trim() === ""){
+                            data = "EMPTY"+emptyRowCount++;
+                        }
+                        headers.push(data);
+                        yVal++;
+                    }
+                    
+                    //Test headers array
+                    /*for(var i = 0; i<headers.length; i++) {
+                        console.log(headers[i]);
+                    }*/
+                    
+                    //Read data in chunks of 10 rows
+                    var chunk_size = 10;
+                    var total_num_of_rows = row_num_end - xStart + 1;
+                    var num_of_chunks = Math.ceil(total_num_of_rows/chunk_size);
+                    console.log("Number of possible chunks to read = " + num_of_chunks+". Each chunk is of size = "+chunk_size);
+                    
+                    xVal = xVal + 1;
+                    
+                    var chunkHasData = true; //initialize chunk to have data,so that it enters the following for loop
+                    
+                    for(var chunk=1; chunk<=num_of_chunks && chunkHasData; chunk++){                        
+                        
+                        //check whether this chunk has data
+                        var xEnd = xVal + chunk_size - 1;    
+                        
+                        for(var check_xVal = xVal; check_xVal <= xEnd; check_xVal++) {
+                            
+                            var check_yVal = yStart;
+                            dataFound = false;
+                            
+                            while(check_yVal <= yEnd){ 
+                                var data = excel_sheet.Cells(check_xVal, check_yVal).Value;
+                                if(data !== undefined && data !== null && data.toString().trim() !== ""){
+                                    dataFound = true;
+                                    break; //data found. current chunk has data.
+                                }
+                                check_yVal++;
+                            }
+                            if(dataFound){ 
+                                chunkHasData = true;
+                                break; //data is found. chunk has data. break from check loop.
+                            }else{
+                                chunkHasData = false; // continue to check next row in the chunk.
+                            }
+                        }  
+                        
+                        if(chunkHasData){
+                            console.log("Parsing chunk = "+chunk);
+                                                
+                            //read each row into a hashmap and push each hashmap into an array                   
+                            while (xVal <= xEnd) {
+                                var currentHash = new HashMap();
+                                yVal = yStart;
+                                var values = new Array();
+                                while (yVal <= yEnd) {
+                                    data = excel_sheet.Cells(xVal,yVal).Value;
+                                    values.push(data);
+                                    yVal = yVal + 1;
+                                }
+                                                               
+                                for(var i=0; i<headers.length;i++) {
+                                    currentHash.put(headers[i], values[i]);
+                                }
+                                var header = currentHash.keys();
+                                
+                                jsonArray = jsonArray + "{";
+                                
+                                for(var i=0; i<currentHash.size()-1;i++) {                                    
+                                    jsonArray = jsonArray + "\"" + header[i] + "\":\"" + currentHash.get(header[i]) + "\",";
+                                }
+                                
+                                jsonArray = jsonArray + "\"" + header[i] + "\":\"" + currentHash.get(header[i]) + "\"}, ";
+                     
+                                xVal = xVal + 1;
+                                
+                            }  //while
+                            
+                        }  //if(chunkHasData)                            
+                        
+                        xVal = xEnd + 1;
+                        
+                     }//chunk for loop
+                     
+                     //Remove the last comma and space
+                     var jsonArrayLength = jsonArray.length;
+                     var lastTwoCharsOfJsonArray = jsonArray.substr(jsonArrayLength-2);
+                     if(lastTwoCharsOfJsonArray === ", "){
+                         jsonArray = jsonArray.substring(0, jsonArray.length-2);
+                     }
+                     
+                     //close te jsonArray
+                     jsonArray = jsonArray + " ]";
+                     
+                } catch (ex) {
+                    alert(ex);
+                } finally {
+                    data = null;
+                    excel_sheet = null;
+                    excel_file.Close();    // important
+                    excel_file = null;
+                    excel.Application.Quit();
+                    excel = null;
+                }
+                console.log(jsonArray);
+                div.style.visibility = 'hidden';
+                return jsonArray;
+            }
+        </script>
+        
+    </head>
+
+    <body bgcolor="#E6E6FA">
+        
+        <div id="dataCategory"></div>
+        <div id="fileUpload"></div>
+        <div id="tancFilter"></div>
+        <div id="mapDisplayType"></div>
+        <div id="finalMap"></div>
+        <div id="adcvdFilter"></div>
+        <div id="filterTrade"></div>
+        <div id="filterLaw"></div>
+        <div id="filterFtz"></div>      
+        
+<!--        <script src="scripts/d3.min.js"></script>
+        <script src="scripts/topojson.v1.min.js"></script>
+        <script src="scripts/datamaps.all.min.js"></script>-->
+        
+        <script type="text/javascript" >
+            
+            window.onload = function () {                
+                showPage("#dataCategory");
+            };
+                        
+            var dataCategory; //category of data from first form - set in goToFileUploadForm
+            var dataRecords;  //JSON object string containing excel file records
+            
+            //TANC Filter Options variables
+            var dateOption; //either init, close, success - pass true onto method if its success
+            var companyOption; // all or SME only -- smeFilter used below instead
+            
+            var countryList; //if list then list of countries selected
+            var publicityOption; //granted or not - if not then different values with numbers
+            var agreementOption; // either FTA or WTO or both
+            var successValueOption; // either true or false on whether or not to display
+            var marketAccessOption;
+            var empAffectedOption;
+            
+            var successFilter = false; // boolean, default = false
+            var dateInitiateFilterFrom = null; // String, default = null
+            var dateInitiateFilterTo = null; // String, default = null
+            var dateCloseFilterFrom = null; // String, default = null
+            var dateCloseFilterTo = null; // String, default = null
+            var smeFilter; // boolean, default = false; -- indu            
+            var countryOption; //all or list
+            var countryList; //list of selected countries
+            var industryFilter = null; // String, default = null
+            var issueFilter = null; // String, default = null
+            var publicityPermissionFilter; // boolean, default = false
+            var ftaFilter = null; // String, default = null
+            var wtoFilter = null; // String, default = null
+            var valueFilter; // boolean: display or not, default is true (Display)
+            
+            /*
+            for the two disabled filters which do not have relevant data records yet
+            var affectedEmployeeFilter = false; // boolean: display or not, default is false (Do not display)
+            var marketAccessFilter = false; // boolean: display or not, default is false (Do not display)
+            */
+            
+            var usOnlyMapFilter; // only show US map, boolean, default = false to show world shaded map
+            var mapFre = new HashMap(); //store frequency of each record on the map
+            var mapValue; //store accumulated value of each record on the map
+            var NumOfInvalidRecord;
+            
+            function showPage(pageDivId){
+                $("#dataCategory").hide();
+                $("#fileUpload").hide();
+                $("#tancFilter").hide();
+                $("#mapDisplayType").hide();
+                $("#finalMap").hide();
+                $("#adcvdFilter").hide();
+                $("#filterTrade").hide();
+                $("#filterLaw").hide();
+                $("#filterFtz").hide();
+                $(pageDivId).show();                
+            }
+            
+            function goToFileUploadForm() {
+                var whichinput=document.getElementsByName("input");
+                var k;
+                var len=whichinput.length;
+                var checked = false;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                        checked = true;
+                    }
+                }
+                
+                if (checked === false) {
+                    alert("No input selected - Select one of the data categories");
+                    showPage("#dataCategory");
+                } else {
+                    dataCategory = whichinput[k].value;
+                    showPage("#fileUpload");
+                }
+                    
+            }            
+            
+            function chkdatetanc() {
+                var whichinput=document.getElementsByName("filter2tanc");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                dateOption = whichinput[k].value;
+                if(dateOption==="close") {   
+                    document.TANCFilterForm.totanc1.disabled=true;
+                    document.TANCFilterForm.fromtanc1.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=true;
+                    document.TANCFilterForm.fromtanc3.disabled=true;
+                    document.TANCFilterForm.totanc2.disabled=false;
+                    document.TANCFilterForm.fromtanc2.disabled=false;
+                    
+                    document.TANCFilterForm.totanc1.value="";
+                    document.TANCFilterForm.fromtanc1.value="";
+                    document.TANCFilterForm.totanc3.value="";
+                    document.TANCFilterForm.fromtanc3.value="";
+                    document.TANCFilterForm.totanc2.value="";
+                    document.TANCFilterForm.fromtanc2.value="";
+                } else if(dateOption==="init") {   
+                    document.TANCFilterForm.totanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc3.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=true;
+                    document.TANCFilterForm.totanc1.disabled=false;
+                    document.TANCFilterForm.fromtanc1.disabled=false;
+                    
+                    document.TANCFilterForm.totanc1.value="";
+                    document.TANCFilterForm.fromtanc1.value="";
+                    document.TANCFilterForm.totanc3.value="";
+                    document.TANCFilterForm.fromtanc3.value="";
+                    document.TANCFilterForm.totanc2.value="";
+                    document.TANCFilterForm.fromtanc2.value="";
+                } else if(dateOption==="success") {   
+                    document.TANCFilterForm.totanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc2.disabled=true;
+                    document.TANCFilterForm.totanc1.disabled=true;
+                    document.TANCFilterForm.fromtanc1.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=false;
+                    document.TANCFilterForm.fromtanc3.disabled=false;
+                    
+                    document.TANCFilterForm.totanc1.value="";
+                    document.TANCFilterForm.fromtanc1.value="";
+                    document.TANCFilterForm.totanc3.value="";
+                    document.TANCFilterForm.fromtanc3.value="";
+                    document.TANCFilterForm.totanc2.value="";
+                    document.TANCFilterForm.fromtanc2.value="";
+                } else {
+                    document.TANCFilterForm.totanc1.disabled=true;
+                    document.TANCFilterForm.fromtanc1.disabled=true;
+                    document.TANCFilterForm.totanc3.disabled=true;
+                    document.TANCFilterForm.fromtanc3.disabled=true;
+                    document.TANCFilterForm.totanc2.disabled=true;
+                    document.TANCFilterForm.fromtanc2.disabled=true;
+                    
+                    document.TANCFilterForm.totanc1.value="";
+                    document.TANCFilterForm.fromtanc1.value="";
+                    document.TANCFilterForm.totanc3.value="";
+                    document.TANCFilterForm.fromtanc3.value="";
+                    document.TANCFilterForm.totanc2.value="";
+                    document.TANCFilterForm.fromtanc2.value="";
+                }
+            }               
+            
+            function goToFiltersForm() {
+                var fileName = document.getElementById("myFile").value;
+                
+                if(document.forms["fileUploadForm"]["file"].value !== "") {
+                    // you have a file - check file extension .xls or .xlsx                   
+                    str=document.forms["fileUploadForm"]["file"].value.toUpperCase();
+                    suffix1=".XLSX";
+                    suffix2=".XLS";
+                    if(!(str.indexOf(suffix2, str.length - suffix2.length) !== -1) 
+                            && !(str.indexOf(suffix1, str.length - suffix1.length) !== -1 )) {
+                        alert('File of this extension type not allowed,\nAllowed file: *.xls or *.xlsx');
+                        document.getElementById('file').value='';                       
+                    }                    
+                    
+                    var div = document.getElementById('progressbar');
+                    dataRecords = readData(fileName, div);
+                    //Parse and process json object string created above - retrieving record number of the first element in records array
+                    //var contents = jsonParse(dataRecords);
+                    alert("File " + fileName + " selected for category " + dataCategory);
+                            //+"\nPartial Content: First record number - " +  contents["records"][0]["Record Number"]);
+
+                    if(dataCategory==="TancCases") {
+                        showPage("#tancFilter");
+                    } else if(dataCategory==="AdCvdActions") {
+                        showPage("#adcvdFilter");
+                    } else if(dataCategory==="TradeRemedyActions") {
+                        showPage("#filterTrade");
+                    } else if(dataCategory==="Foreign tarde zone") {
+                        showPage("#filterFtz");
+                    } else if(dataCategory==="EnforcementAndCompliance") {
+                        showPage("#filterLaw");
+                    }
+                    
+                } else {
+                    alert('Must Select any of your file for upload!');
+                }
+            }  
+            
+            function goToHomeForm() {
+                location.reload();
+                location.reload();
+            }
+            
+            function mapview() {                
+                                
+                /*
+                 * ---- to implement
+                 * move all these read if blocks to a function called read filters 
+                 *      that decides which form to use based on data category to read filters
+                 *      populates appropriate global filter variables which need to be passed to
+                 *      drawDataMaps later
+                 *      and returns a noErrors value
+                 */
+                var noErrors = true;
+                //read date range filters -- Tanc
+                if (dateOption === "init") {
+                    dateInitiateFilterFrom = document.getElementById("fromtanc1").value;
+                    dateInitiateFilterTo = document.getElementById("totanc1").value;
+                    
+                    if (dateInitiateFilterFrom==="" || dateInitiateFilterTo==="") {
+                        alert("Date initiated cannot be empty. Reset values or enter a date!");
+                        noErrors = false;
+                        if (dateInitiateFrom === "") 
+                            document.forms["TANCFilterForm"].fromtanc1.focus();
+                        else 
+                            document.forms["TANCFilterForm"].totanc1.focus();
+                    } else {
+                        alert("Date initiated from " + dateInitiateFilterFrom + " to " + dateInitiateFilterTo);
+                    }
+                } else if (dateOption === "close") {
+                    dateCloseFilterFrom = document.getElementById("fromtanc2").value;
+                    dateCloseFilterTo = document.getElementById("totanc2").value;
+                    
+                    if (dateCloseFilterFrom==="" || dateCloseFilterTo==="") {
+                        alert("Date closed cannot be empty. Reset values or enter a date!");
+                        noErrors = false;
+                        if (dateCloseFilterFrom === "") 
+                            document.forms["TANCFilterForm"].fromtanc2.focus();
+                        else 
+                            document.forms["TANCFilterForm"].totanc2.focus();
+                    } else {
+                        alert("Date closed from " + dateCloseFilterFrom + " to " + dateCloseFilterTo);
+                    }                
+                } else if (dateOption === "success") {
+                    dateCloseFilterFrom = document.getElementById("fromtanc3").value;
+                    dateCloseFilterTo = document.getElementById("totanc3").value;
+                            
+                    if (dateCloseFilterFrom==="" || dateCloseFilterTo==="") {
+                        alert("Date success cannot be empty. Reset values or enter a date!");
+                        noErrors = false;
+                        if (dateCloseFilterFrom === "") 
+                            document.forms["TANCFilterForm"].fromtanc3.focus();
+                        else 
+                            document.forms["TANCFilterForm"].totanc3.focus();
+                    } else {
+                        alert("Date success from " + dateCloseFilterFrom + " to " + dateCloseFilterTo);
+                    }                    
+                }
+                
+                //read sme/ all organizations filter -- tanc
+                var whichinput=document.getElementsByName("tancSMEFilter");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                
+                var smeInput = whichinput[k].value;
+                if(smeInput === "All") {
+                    smeFilter = false;
+                } else {
+                    smeFilter = true;
+                }
+                
+                //read country list selected -- tanc
+                if(countryOption === "list") {                    
+                    var selectList = document.forms["TANCFilterForm"].tancCountryList;
+                    countryList =  [];
+                    alert("Country option Selected: ");
+                    for (var i = 0 ; i<selectList.length; i++) {
+                        if (selectList[i].selected) {
+                            //alert("Item " + i + ": "  + selectList[i].value);
+                            countryList.push(selectList[i].value);
+                        }
+                    }
+                    alert("Selected Country List : " + countryList);
+                } else  {
+                    countryList = "All";
+                }                
+                
+                //read industry filter -- tanc
+                var industrySelectList = document.forms["TANCFilterForm"].tancIndustry;
+                alert("Industry filter Selected!");
+                for (var i = 0 ; i<industrySelectList.length; i++) {
+                    if (industrySelectList[i].selected) {
+                        if (industrySelectList[i].value === "all") {
+                            alert("Selected Industry : " + All);   
+                            industryFilter = "All";
+                        } else  {
+                            industryFilter = "" + industrySelectList[i].value;
+                            alert("Selected Industry : " + industryFilter);
+                        }
+                    }
+                }                
+
+                //read issues filter -- tanc
+                var issueSelectList = document.forms["TANCFilterForm"].tancIssues;
+                alert("Issue filter Selected!");
+                for (var i = 0 ; i<issueSelectList.length; i++) {
+                    if (issueSelectList[i].selected) {
+                        if (issueSelectList[i].value === "all") {
+                            alert("Selected Issues : " + All);   
+                            issueFilter = "All";
+                        } else  {
+                            issueFilter = "" + issueSelectList[i].value;
+                            alert("Selected Issue : " + issueFilter);
+                        }
+                    }
+                }                
+
+                //read publicity permission granted/not filter -- tanc
+                var whichinput=document.getElementsByName("tancPublicity");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                
+                var pubPermission = whichinput[k].value;
+                if(pubPermission === "All") {
+                    publicityPermissionFilter = false;
+                } else {
+                    publicityPermissionFilter = true;
+                }
+                
+                //read FTA relevance filter -- tanc
+                var ftaSelectList = document.forms["TANCFilterForm"].tancFTA;
+                alert("FTA relevance filter selected!");
+                for (var i = 0 ; i<ftaSelectList.length; i++) {
+                    if (ftaSelectList[i].selected) {
+                        if (ftaSelectList[i].value === "all") {
+                            alert("Selected FTA relevance : " + All);   
+                            ftaFilter = "All";
+                        } else  {
+                            ftaFilter = "" + ftaSelectList[i].value;
+                            alert("Selected FTA relevance : " + ftaFilter);
+                        }
+                    }
+                }  
+                
+                //read WTO relevance filter -- tanc
+                var wtoSelectList = document.forms["TANCFilterForm"].tancWTO;
+                alert("WTO relevance filter selected!");
+                for (var i = 0 ; i<wtoSelectList.length; i++) {
+                    if (wtoSelectList[i].selected) {
+                        if (wtoSelectList[i].value === "all") {
+                            alert("Selected WTO relevance : " + All);   
+                            wtoFilter = "All";
+                        } else  {
+                            wtoFilter = "" + wtoSelectList[i].value;
+                            alert("Selected WTO relevance : " + wtoFilter);
+                        }
+                    }
+                }
+
+                //read case value display/do not display filter -- tanc
+                var whichinput=document.getElementsByName("tancValueDisplay");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                
+                var valueInput = whichinput[k].value;
+                if(valueInput === "true") {
+                    valueFilter = true;
+                } else {
+                    valueFilter = false;
+                }
+                alert("Value filter :" + valueFilter);
+        
+                if (noErrors === true) {
+                    showPage("#mapDisplayType");
+                }
+                
+            }
+            
+            
+            function showmap() {
+                
+                if (dateOption === "success") 
+                    successFilter = true;
+                else 
+                    successFilter = false;
+                
+                var whichinput=document.getElementsByName("output");
+                var k;
+                var len=whichinput.length;
+                var checked = false;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                        checked = true;
+                    }
+                }
+                var mapOption;
+                var noErrors = true;
+                if (checked === false) {
+                    alert("Select one of the options to display maps");
+                    noErrors = false;
+                } else {
+                    mapOption = whichinput[k].value;
+                }
+                                         
+                if (mapOption === "shadeus") {
+                    alert("To display Shaded US Map");
+                    usOnlyMapFilter = true;
+                } else if (mapOption === "shadeworld") {
+                    alert("To display Shaded World Map");
+                    usOnlyMapFilter = false;
+                }
+                
+                if (noErrors === true) {
+                    drawTancMaps();
+                    showPage("#finalMap");
+                }
+            }
+            
+            function drawTancMaps() {
+                drawTancDataMaps(dataRecords, successFilter, dateInitiateFilterFrom, dateInitiateFilterTo, 
+                    dateCloseFilterFrom, dateCloseFilterTo, smeFilter, countryList, industryFilter, 
+                    issueFilter, publicityPermissionFilter, ftaFilter, wtoFilter, usOnlyMapFilter, valueFilter);
+            }
+            
+            
+            /* 
+             * --- to take a look at below functions as well as forms 
+             * and modify as above for other case data -----
+             */
+            function chkdateadcase() {
+                var whichinput=document.getElementsByName("filter2adcase");         
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                if(whichinput[k].value==="close") {   
+                    document.filter.toadcase1.disabled=true;
+                    document.filter.fromadcase1.disabled=true;
+                    document.filter.toadcase2.disabled=false;
+                    document.filter.fromadcase2.disabled=false;
+                } else if(whichinput[k].value==="init") {   
+                    document.filter.toadcase2.disabled=true;
+                    document.filter.fromadcase2.disabled=true;
+                    document.filter.toadcase1.disabled=false;
+                    document.filter.fromadcase1.disabled=false;
+                }
+            }
+            
+            function chkdatetrade() {
+                var whichinput=document.getElementsByName("filter2trade");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                if(whichinput[k].value==="close") {   
+                    document.filter.totrade1.disabled=true;
+                    document.filter.fromtrade1.disabled=true;
+                    document.filter.totrade2.disabled=false;
+                    document.filter.fromtrade2.disabled=false;
+                } else if(whichinput[k].value==="init") {   
+                    document.filter.totrade2.disabled=true;
+                    document.filter.fromtrade2.disabled=true;
+                    document.filter.totrade1.disabled=false;
+                    document.filter.fromtrade1.disabled=false;
+                }
+            }
+            
+            function chkdatelaw() {
+                var whichinput=document.getElementsByName("filter2law");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                if(whichinput[k].value==="close") {   
+                    document.TANCFilterForm.tolaw1.disabled=true;
+                    document.TANCFilterForm.fromlaw1.disabled=true;
+                    document.TANCFilterForm.tolaw3.disabled=true;
+                    document.TANCFilterForm.fromlaw3.disabled=true;
+                    document.TANCFilterForm.tolaw2.disabled=false;
+                    document.TANCFilterForm.fromlaw2.disabled=false;
+                } else if(whichinput[k].value==="init") {   
+                    document.TANCFilterForm.tolaw2.disabled=true;
+                    document.TANCFilterForm.fromlaw2.disabled=true;
+                    document.TANCFilterForm.tolaw3.disabled=true;
+                    document.TANCFilterForm.fromlaw3.disabled=true;
+                    document.TANCFilterForm.tolaw1.disabled=false;
+                    document.TANCFilterForm.fromlaw1.disabled=false;
+                } else if(whichinput[k].value==="success") {   
+                    document.TANCFilterForm.tolaw2.disabled=true;
+                    document.TANCFilterForm.fromlaw2.disabled=true;
+                    document.TANCFilterForm.tolaw1.disabled=true;
+                    document.TANCFilterForm.fromlaw1.disabled=true;
+                    document.TANCFilterForm.tolaw.disabled=false;
+                    document.TANCFilterForm.fromlaw3.disabled=false;
+                }
+            }   
+            
+            function tanccountry() {
+                var select1 = document.getElementsByName("countryList");
+                var selectCountries = [];
+                for (var i = 0; i < select1.length; i++) {
+                    if (select1.options[i].selected) {
+                        alert("File Selected for " + select1.options[i].value +" ");
+                        selectCountries.push(select1.options[i].value);
+                    }
+                }
+                return selectCountries;
+            } 
+            
+            function chkcountrytanc() {
+                var whichinput=document.getElementsByName("country");
+                var k;
+                var len=whichinput.length;
+                for (i=0;i<len;i++) {
+                    if(whichinput[i].checked) {
+                        k=i;
+                    }
+                }
+                countryOption = whichinput[k].value;
+                if(countryOption==="all") {   
+                    document.TANCFilterForm.countryList.disabled=true;
+                } else  {   
+                    document.TANCFilterForm.countryList.disabled=false;
+                    
+                }
+                    
+            }
+        </script>       
+ 
+    </body>
+
+</html>

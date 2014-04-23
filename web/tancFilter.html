@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="ui/jquery.ui.datepicker.js"></script>
+        <script>
+            $(function() {        
+                
+                $( "#fromtanc1" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#totanc1" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});		
+                $( "#totanc1" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#fromtanc1" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});
+                
+                $( "#fromtanc2" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#totanc2" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});
+		$( "#totanc2" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#fromtanc2" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});
+                
+                $( "#fromtanc3" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#totanc3" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});
+		$( "#totanc3" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#fromtanc3" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});                             
+                
+            });        
+	</script>
+
+        
+    </head>
+    <body>
+  <form name="TANCFilterForm" method="get"  action="" style="position: absolute; top:50px; left:100px; width:600px; height:25px">
+            
+            <input type="button" value="Home" onClick="goToHomeForm();"/>    
+            
+            <h1>Filters to apply on TANC Casework Data</h1>
+            <br/>
+            
+            <label><strong>Select a type of date as well as the date range: </strong></label><br/>    
+            <p>
+                <input type="radio" name="filter2tanc" value="init" onClick="chkdatetanc();"/> Cases Initiated      
+                <input type="text" name="fromtanc1" id="fromtanc1" disabled /> to  <input type="text" name="totanc1" id="totanc1" disabled />
+            </p>
+            <p>
+                <input type="radio" name="filter2tanc" value="close" onClick="chkdatetanc();"/> Cases Closed        
+                <input type="date" name="fromtanc2" id="fromtanc2" disabled/> to  <input type="date" name="totanc2" id="totanc2" disabled /><br/>
+            </p>                
+            <p>
+                <input type="radio" name="filter2tanc" value="success" onClick="chkdatetanc();"/> Cases of Success      
+                <input type="date" name="fromtanc3" id="fromtanc3" disabled/> to  <input type="date" name="totanc3" id="totanc3" disabled /><br/>
+            </p>
+            <br/>
+            
+            <label><strong>Select a company type:</strong></label><br/>    
+            <p>
+                <input type="radio" checked name="tancSMEFilter" value="All"/> All Organizations (Default) 
+            </p>
+            <p>
+                <input type="radio" name="tancSMEFilter" value="SME"/> Small and Medium Sized Enterprises only 
+            
+            </p>
+            <br/>
+            
+            <label><strong>Select the country(s) involved: </strong></label><br/>
+            <p>
+                <input type="radio" checked name="country" value="all" onClick="chkcountrytanc();"/> All (Default)                
+            </p>
+            <p>
+                <input type="radio" name="country" value="list" onClick="chkcountrytanc();"/>   
+                <select name="tancCountryList" multiple="multiple">   
+                <option value = "AFG">Afghanistan</option>
+                <option value = "ALB">Albania</option>
+                <option value = "DZA">Algeria</option>
+                <option value = "ASM">American Samoa</option>                
+                <option value = "AND">Andorra</option>
+                <option value = "AGO">Angola</option>
+                <option value = "AIA">Anguilla</option>
+                <option value = "ATA">Antarctica</option>
+                <option value = "ATG">Antigua and Barbuda</option>
+                <option value = "ARG">Argentina</option>
+                <option value = "ARM">Armenia</option>
+                <option value = "ABW">Aruba</option>
+                <option value = "AUS">Australia</option>
+                <option value = "AUT">Austria</option>
+                <option value = "AZE">Azerbaijan</option>
+                <option value = "BHS">Bahamas</option>
+                <option value = "BHR">Bahrain</option>
+                <option value = "BGD">Bangladesh</option>
+                <option value = "BRB">Barbados</option>
+                <option value = "BLR">Belarus</option>
+                <option value = "BEL">Belgium</option>
+                <option value = "BLZ">Belize</option>
+                <option value = "BEN">Benin</option>
+                <option value = "BMU">Bermuda</option>
+                <option value = "BTN">Bhutan</option>
+                <option value = "BOL">Bolivia</option>
+                <option value = "BIH">Bosnia Herzegovina</option>
+                <option value = "BWA">Botswana</option>
+                <option value = "BVT">Bouvet Island</option>
+                <option value = "BRA">Brazil</option>
+                <option value = "IOT">British Indian Ocean Territory</option>
+                <option value = "BRN">Brunei</option>
+                <option value = "BGR">Bulgaria</option>
+                <option value = "BFA">Burkina Faso</option>
+                <option value = "BDI">Burundi</option>
+                <option value = "KHM">Cambodia</option>
+                <option value = "CMR">Cameroon</option>
+                <option value = "CAN">Canada</option>
+                <option value = "CPV">Cape Verde</option>
+                <option value = "CYM">Cayman Islands</option>
+                <option value = "CAF">Central African Republic</option>
+                <option value = "TCD">Chad</option>
+                <option value = "CHL">Chile</option>
+                <option value = "CHN">China</option>
+                <option value = "COL">Colombia</option>
+                <option value = "COM">Comoros</option>
+                <option value = "COD">Congo (Democratic Republic)</option>
+                <option value = "COG">Congo (Republic)</option>
+                <option value = "COK">Cook Islands</option>
+                <option value = "CRI">Costa Rica</option>
+                <option value = "CIV">Cote d'Ivoire</option>
+                <option value = "HRV">Croatia</option>
+                <option value = "CUB">Cuba</option>
+                <option value = "CYP">Cyprus</option>
+                <option value = "CZE">Czech Republic</option>
+                <option value = "DNK">Denmark</option>
+                <option value = "DJI">Djibouti</option>
+                <option value = "DMA">Dominica</option>
+                <option value = "DOM">Dominican Republic</option>
+                <option value = "TMP">East Timor</option>
+                <option value = "ECU">Ecuador</option>
+                <option value = "EGY">Egypt</option>
+                <option value = "SLV">El Salvador</option>
+                <option value = "GNQ">Equatorial Guinea</option>
+                <option value = "ERI">Eritrea</option>
+                <option value = "EST">Estonia</option>
+                <option value = "ETH">Ethiopia</option>
+                <option value = "EUN">European Union</option>
+                <option value = "FNK">Falkland Islands (Malvinas)</option>
+                <option value = "FRO">Faroe Islands</option>
+                <option value = "FJI">Fiji</option>
+                <option value = "FIN">Finland</option>
+                <option value = "FRA">France</option>
+                <option value = "FXX">France, Metropolitan</option>
+                <option value = "GUF">French Guiana</option>
+                <option value = "PYF">French Polynesia</option>
+                <option value = "ATF">French Southern Territories</option>
+                <option value = "GAB">Gabon</option>
+                <option value = "GMB">Gambia</option>
+                <option value = "GEO">Georgia</option>
+                <option value = "DEU">Germany</option>
+                <option value = "GHA">Ghana</option>
+                <option value = "GIB">Gibraltar</option>
+                <option value = "GRC">Greece</option>
+                <option value = "GRL">Greenland</option>
+                <option value = "GRD">Grenada</option>
+                <option value = "GLP">Guadeloupe</option>
+                <option value = "GUM">Guam</option>
+                <option value = "GTM">Guatemala</option>
+                <option value = "GIN">Guinea</option>
+                <option value = "GNB">Guinea-Bissau</option>
+                <option value = "GUY">Guyana</option>
+                <option value = "HTI">Haiti</option>
+                <option value = "HMD">Heard and Mc Donald Islands</option>
+                <option value = "VAT">Holy See (Vatican City State)</option>
+                <option value = "HND">Honduras</option>
+                <option value = "HKG">Hong Kong</option>
+                <option value = "HUN">Hungary</option>
+                <option value = "ISL">Iceland</option>
+                <option value = "IND">India</option>
+                <option value = "IDN">Indonesia</option>
+                <option value = "IRN">Iran</option>
+                <option value = "IRQ">Iraq</option>
+                <option value = "IRL">Ireland</option>
+                <option value = "ISR">Israel</option>
+                <option value = "ITA">Italy</option>
+                <option value = "JAM">Jamaica</option>
+                <option value = "JPN">Japan</option>
+                <option value = "JOR">Jordan</option>
+                <option value = "KAZ">Kazakhstan</option>
+                <option value = "KEN">Kenya</option>
+                <option value = "KIR">Kiribati</option>
+                <option value = "PRK">Korea, D.P.R.O</option>
+                <option value = "KOR">Korea (South)</option>
+                <option value = "KOS">Kosovo</option>
+                <option value = "KWT">Kuwait</option>
+                <option value = "KGZ">Kyrgyzstan</option>
+                <option value = "LAO">Laos</option>
+                <option value = "LVA">Latvia</option>
+                <option value = "LBN">Lebanon</option>
+                <option value = "LSO">Lesotho</option>
+                <option value = "LBR">Liberia</option>
+                <option value = "LBY">Libya</option>
+                <option value = "LIE">Liechtenstein</option>
+                <option value = "LTU">Lithuania</option>
+                <option value = "LUX">Luxembourg</option>
+                <option value = "MAC">Macau</option>
+                <option value = "MKD">Macedonia</option>
+                <option value = "MDG">Madagascar</option>
+                <option value = "MWI">Malawi</option>
+                <option value = "MYS">Malaysia</option>
+                <option value = "MDV">Maldives</option>
+                <option value = "MLI">Mali</option>
+                <option value = "MLT">Malta</option>
+                <option value = "MHL">Marshall Islands</option>
+                <option value = "MTQ">Martinique</option>
+                <option value = "MRT">Mauritania</option>
+                <option value = "MUS">Mauritius</option>
+                <option value = "MYT">Mayotte</option>
+                <option value = "MEX">Mexico</option>
+                <option value = "FSM">Micronesia</option>
+                <option value = "MDA">Moldova</option>
+                <option value = "MCO">Monaco</option>
+                <option value = "MNG">Mongolia</option>
+                <option value = "MNE">Montenegro</option>
+                <option value = "MSR">Montserrat</option>
+                <option value = "MAR">Morocco</option>
+                <option value = "MOZ">Mozambique</option>
+                <option value = "MMR">Myanmar</option>
+                <option value = "NAM">Namibia</option>
+                <option value = "NRU">Nauru</option>
+                <option value = "NPL">Nepal</option>
+                <option value = "NLD">Netherlands</option>
+                <option value = "ANT">Netherlands Antilles</option>
+                <option value = "NCL">New Caledonia</option>
+                <option value = "NZL">New Zealand</option>
+                <option value = "NIC">Nicaragua</option>
+                <option value = "NER">Niger</option>
+                <option value = "NGA">Nigeria</option>
+                <option value = "NIU">Niue</option>
+                <option value = "NFK">Norfolk Island</option>
+                <option value = "MNP">Northern Mariana Islands</option>
+                <option value = "NOR">Norway</option>
+                <option value = "OMN">Oman</option>
+                <option value = "PAK">Pakistan</option>
+                <option value = "PLW">Palau</option>
+                <option value = "PAN">Panama</option>
+                <option value = "PNG">Papua New Guinea</option>
+                <option value = "PRY">Paraguay</option>
+                <option value = "PER">Peru</option>
+                <option value = "PHL">Philippines</option>
+                <option value = "POL">Poland</option>
+                <option value = "PRT">Portugal</option>
+                <option value = "PRI">Puerto Rico</option>
+                <option value = "QAT">Qatar</option>
+                <option value = "REU">Reunion</option>
+                <option value = "ROM">Romania</option>
+                <option value = "RUS">Russia</option>
+                <option value = "RWA">Rwanda</option>
+                <option value = "KNA">St Kitts and Nevis</option>
+                <option value = "LCA">St Lucia</option>
+                <option value = "VCT">Saint Vincent and the Grenadines</option>
+                <option value = "WSM">Samoa</option>
+                <option value = "SMR">San Marino</option>
+                <option value = "STP">Sao Tome and Principe</option>
+                <option value = "SAU">Saudi Arabia</option>
+                <option value = "SEN">Senegal</option>
+                <option value = "SRB">Serbia</option>
+                <option value = "SRM">Serbia and Montenegro</option>
+                <option value = "SYC">Seychelles</option>
+                <option value = "SLE">Sierra Leone</option>
+                <option value = "SGP">Singapore</option>
+                <option value = "SVK">Slovak Republic</option>
+                <option value = "SVN">Slovenia</option>
+                <option value = "SLB">Solomon Islands</option>
+                <option value = "SOM">Somalia</option>
+                <option value = "ZAF">South Africa</option>
+                <option value = "SSD">South Sudan</option>
+                <option value = "SGS">South Georgia and South S.S.</option>
+                <option value = "ESP">Spain</option>
+                <option value = "LKA">Sri Lanka</option>
+                <option value = "SHN">St. Helena</option>
+                <option value = "SPM">St. Pierre and Miquelon</option>
+                <option value = "SDN">Sudan</option>
+                <option value = "SUR">Suriname</option>
+                <option value = "SJM">Svalbard and Jan Mayen Islands</option>
+                <option value = "SWZ">Swaziland</option>
+                <option value = "SWE">Sweden</option>
+                <option value = "CHE">Switzerland</option>
+                <option value = "SYR">Syria</option>
+                <option value = "TWN">Taiwan</option>
+                <option value = "TJK">Tajikistan</option>
+                <option value = "TZA">Tanzania</option>
+                <option value = "THA">Thailand</option>
+                <option value = "TGO">Togo</option>
+                <option value = "TKL">Tokelau</option>
+                <option value = "TON">Tonga</option>
+                <option value = "TTO">Trinidad and Tobago</option>
+                <option value = "TUN">Tunisia</option>
+                <option value = "TUR">Turkey</option>
+                <option value = "TKM">Turkmenistan</option>
+                <option value = "TCA">Turks and Caicos Islands</option>
+                <option value = "TUV">Tuvalu</option>
+                <option value = "UGA">Uganda</option>
+                <option value = "UKR">Ukraine</option>
+                <option value = "ARE">United Arab Emirates</option>
+                <option value = "GBR">United Kingdom</option>
+                <option value = "USA">United States</option>
+                <option value = "UMI">U.S. Minor Islands</option>
+                <option value = "URY">Uruguay</option>
+                <option value = "UZB">Uzbekistan</option>
+                <option value = "VUT">Vanuatu</option>
+                <option value = "VEN">Venezuela</option>
+                <option value = "VNM">Vietnam</option>
+                <option value = "YEM">Yemen</option>
+                <option value = "ZMB">Zambia</option>
+                <option value = "ZWE">Zimbabwe</option>
+            </select>
+            </p>      
+            <br/>
+            
+            <label><strong>Select an industry: </strong></label><br/>
+            <p>
+                <select name="tancIndustry">
+                    <option value = "All" selected>All (Default)</option>
+                    <option value = "Aerospace">Aerospace</option>
+                    <option value = "Automobiles">Automobiles</option>
+                    <option value = "Consumer Goods">Consumer Goods</option>
+                    <option value = "E-Commerce">E-Commerce</option>
+                    <option value = "Energy">Energy</option>
+                    <option value = "Environmental technologies">Environmental technologies</option>
+                    <option value = "Financial services">Financial services</option>
+                    <option value = "Healthcare products">Healthcare products</option>
+                    <option value = "Information Technologies">Information Technologies</option>
+                    <option value = "Legacy Record">Legacy Record</option>
+                    <option value = "Machinery">Machinery</option>
+                    <option value = "Materials">Materials</option>
+                    <option value = "Services industries">Services industries</option>
+                    <option value = "Telecommunications">Telecommunications</option>
+                    <option value = "Textiles and apparel, footwear">Textiles and apparel, footwear</option>
+                    <option value = "Textiles and apparel, leather products">Textiles and apparel, leather products</option>
+                    <option value = "Textiles and apparel, textiles and apparel">Textiles and apparel, textiles and apparel</option>
+                    <option value = "Travel goods">Travel goods</option>
+                    <option value = "Travel and tourism">Travel and tourism</option>
+                    <option value = "Other">Other</option>
+                </select>
+            </p>
+            <br/>
+            
+            <label><strong>Select an issue: </strong></label><br/>
+            <p>
+                <select name="tancIssues">
+                    <option value = "All" selected>All (Default)</option>
+                    <option value = "Antidumping">Antidumping</option>
+                    <option value = "Competition with SOEs">Competition with SOEs</option>
+                    <option value = "Country of Origin">Country of Origin</option>
+                    <option value = "Customs: Classification">Customs: Classification</option>
+                    <option value = "Customs: Fees and Formalities">Customs: Fees and Formalities</option>
+                    <option value = "Customs: General">Customs: General</option>
+                    <option value = "Customs: Procedures">Customs: Procedures</option>
+                    <option value = "Customs: Valuation">Customs: Valuation</option>
+                    <option value = "Environment">Environment</option>
+                    <option value = "Export Measures: General">Export Measures: General</option>
+                    <option value = "Export Measures: Restrictions">Export Measures: Restrictions</option>
+                    <option value = "Export Measures: Taxes">Export Measures: Taxes</option>
+                    <option value = "Government procurement">Government procurement</option>
+                    <option value = "Import Licensing">Import Licensing</option>
+                    <option value = "Investment">Investment</option>
+                    <option value = "IPR: Copyright">IPR: Copyright</option>
+                    <option value = "IPR: General">IPR: General</option>
+                    <option value = "IPR: Patent">IPR: Patent</option>
+                    <option value = "IPR: Trade Secret">IPR: Trade Secret</option>
+                    <option value = "IPR: Trademark">IPR: Trademark</option>
+                    <option value = "Labor">Labor</option>
+                    <option value = "National treatment">National treatment</option>
+                    <option value = "Other Non-Case Issues: Contract Dispute">Other Non-Case Issues: Contract Dispute</option>
+                    <option value = "Other Non-Case Issues: Employee Dispute">Other Non-Case Issues: Employee Dispute</option>
+                    <option value = "Other Non-Case Issues: General">Other Non-Case Issues: General</option>
+                    <option value = "Other Non-Case Issues: Nonpayment">Other Non-Case Issues: Nonpayment</option>
+                    <option value = "Other: Case Issues">Other: Case Issues</option>
+                    <option value = "Pre-shipment Inspection">Pre-shipment Inspection</option>
+                    <option value = "Pricing/Reimbursement">Pricing/Reimbursement</option>
+                    <option value = "Quotas and Import Prohibitions">Quotas and Import Prohibitions</option>
+                    <option value = "Safeguards">Safeguards</option>
+                    <option value = "Services">Services</option>
+                    <option value = "Standards">Standards</option>
+                    <option value = "Structural Impediments/Regulatory Reform">Structural Impediments/Regulatory Reform</option>
+                    <option value = "Subsidies">Subsidies</option>
+                    <option value = "Tariffs">Tariffs</option>
+                    <option value = "Taxes, Not Export">Taxes, Not Export</option>
+                </select>
+            </p>
+            <br/>
+            
+            <label><strong>Publicity permission check: </strong></label><br/>      
+                <p>
+                    <input type="radio" checked name="tancPublicity" value="All"/> All (Default) 
+                </p>
+                <p>
+                    <input type="radio" name="tancPublicity" value="Granted"/> Publicity permission granted 
+                </p>
+            <br/>    
+            
+            <label><strong>Select FTA relevance: </strong></label><br/>
+            <p>
+            <select name= "tancFTA">
+                <option value = "All" selected>All (Default)</option>
+                <option value = "Australia Free Trade Agreement">Australia Free Trade Agreement</option>
+                <option value = "Bahrain Free Trade Agreement">Bahrain Free Trade Agreement</option>
+                <option value = "Central American/Dominican Republic Free Trade Agreement">Central American/Dominican Republic Free Trade Agreement</option>
+                <option value = "Chile Free Trade Agreement">Chile Free Trade Agreement</option>
+                <option value = "Colombia Trade Promotion Agreement">Colombia Trade Promotion Agreement</option>
+                <option value = "Israel Free Trade Agreement">Israel Free Trade Agreement</option>
+                <option value = "Jordan Free Trade Agreement">Jordan Free Trade Agreement</option>
+                <option value = "Korea Free Trade Agreement">Korea Free Trade Agreement</option>
+                <option value = "Morocco Free Trade Agreement">Morocco Free Trade Agreement</option>
+                <option value = "NAFTA Chapter 10, Government Procurement">NAFTA Chapter 10, Government Procurement</option>
+                <option value = "NAFTA Chapter 11, Investment">NAFTA Chapter 11, Investment</option>
+                <option value = "NAFTA Chapter 12, Cross Border Trade in Services">NAFTA Chapter 12, Cross Border Trade in Services</option>
+                <option value = "NAFTA Chapter 13, Telecom">NAFTA Chapter 13, Telecom</option>
+                <option value = "NAFTA Chapter 14, Financial Services">NAFTA Chapter 14, Financial Services</option>
+                <option value = "NAFTA Chapter 15, Competition">NAFTA Chapter 15, Competition</option>
+                <option value = "NAFTA Chapter 16, Temporary Entry">NAFTA Chapter 16, Temporary Entry</option>
+                <option value = "NAFTA Chapter 17, Intellectual Property Rights">NAFTA Chapter 17, Intellectual Property Rights</option>
+                <option value = "NAFTA Chapter 18, Notification">NAFTA Chapter 18, Notification</option>
+                <option value = "NAFTA Chapter 19, Anti-Dumping/Countervailing Duties">NAFTA Chapter 19, Anti-Dumping/Countervailing Duties</option>
+                <option value = "NAFTA Chapter 20, Dispute Settlement">NAFTA Chapter 20, Dispute Settlement</option>
+                <option value = "NAFTA Chapter 3,  National Treatment and Market Access for Goods">NAFTA Chapter 3,  National Treatment and Market Access for Goods</option>
+                <option value = "NAFTA Chapter 3, Annex 300A Automotive Sector">NAFTA Chapter 3, Annex 300A Automotive Sector</option>
+                <option value = "NAFTA Chapter 3, Annnex 300B Textiles and Apparel">NAFTA Chapter 3, Annnex 300B Textiles and Apparel</option>
+                <option value = "NAFTA Chapter 4, Rules of Origin">NAFTA Chapter 4, Rules of Origin</option>
+                <option value = "NAFTA Chapter 5, Customs Procedures">NAFTA Chapter 5, Customs Procedures</option>
+                <option value = "NAFTA Chapter 6, Energy">NAFTA Chapter 6, Energy</option>
+                <option value = "NAFTA Chapter 7, Agriculture">NAFTA Chapter 7, Agriculture</option>
+                <option value = "NAFTA Chapter 8, Emergency Action">NAFTA Chapter 8, Emergency Action</option>
+                <option value = "NAFTA Chapter 9, Standards">NAFTA Chapter 9, Standards</option>
+                <option value = "NAFTA General Provisions">NAFTA General Provisions</option>
+                <option value = "NAFTA Market Access including Article 304/Maquiladoras">NAFTA Market Access including Article 304/Maquiladoras</option>
+                <option value = "North American Free Trade Side Agreement on Environmental Cooperation">North American Free Trade Side Agreement on Environmental Cooperation</option>
+                <option value = "North American Free Trade Side Agreement on Labor Cooperation">North American Free Trade Side Agreement on Labor Cooperation</option>
+                <option value = "Oman FTA">Oman FTA</option>
+                <option value = "Ongoing FTA">Ongoing FTA</option>
+                <option value = "Panama Trade Promotion Agreement">Panama Trade Promotion Agreement</option>
+                <option value = "Peru Trade Promotion Agreement">Peru Trade Promotion Agreement</option>
+                <option value = "Singapore Free Trade Agreement">Singapore Free Trade Agreement</option>
+            </select><p>
+            <br/>
+            
+            <label><strong>Select WTO relevance: </strong></label><br/>
+            <p><select name= "tancWTO">
+                <option value = "All" selected>All (Default)</option>
+                <option value = "WTO Agreement on Trade in Goods: GATT Article III">WTO Agreement on Trade in Goods: GATT Article III</option>
+                <option value = "WTO: Agreement on Government Procurement">WTO: Agreement on Government Procurement</option>
+                <option value = "WTO: Agreement on Trade in Civil Aircraft">WTO: Agreement on Trade in Civil Aircraft</option>
+                <option value = "WTO: Agreement on Trade-related Aspects of Intellectual Property Rights">WTO: Agreement on Trade-related Aspects of Intellectual Property Rights</option>
+                <option value = "WTO: Basic Telecommunications Services Agreement">WTO: Basic Telecommunications Services Agreement</option>
+                <option value = "WTO: China Accession Agreement">WTO: China Accession Agreement</option>
+                <option value = "WTO: Final Act-results of the Uruguay Round">WTO: Final Act-results of the Uruguay Round</option>
+                <option value = "WTO: General Agreement on Trade in Services">WTO: General Agreement on Trade in Services</option>
+                <option value = "WTO: Information Technology Agreement">WTO: Information Technology Agreement</option>
+                <option value = "WTO: Marrakesh Agreement Establishing the World Trade Organization">WTO: Marrakesh Agreement Establishing the World Trade Organization</option>
+                <option value = "WTO: Marrakesh Protocol">WTO: Marrakesh Protocol</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods">WTO: Multilateral Agreements on Trade in Goods</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Agriculture">WTO: Multilateral Agreements on Trade in Goods - Agriculture</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Antidumping">WTO: Multilateral Agreements on Trade in Goods - Antidumping</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Customs Valuation">WTO: Multilateral Agreements on Trade in Goods - Customs Valuation</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - GATT 1947">WTO: Multilateral Agreements on Trade in Goods - GATT 1947</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Preshipment Inspection">WTO: Multilateral Agreements on Trade in Goods - Preshipment Inspection</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Rules of Origin">WTO: Multilateral Agreements on Trade in Goods - Rules of Origin</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Safeguards">WTO: Multilateral Agreements on Trade in Goods - Safeguards</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Sanitary/Phytosanitary">WTO: Multilateral Agreements on Trade in Goods - Sanitary/Phytosanitary</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Subsidies/ Countervailing">WTO: Multilateral Agreements on Trade in Goods - Subsidies/ Countervailing</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Technical Barriers">WTO: Multilateral Agreements on Trade in Goods - Technical Barriers</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - Textiles and Clothing">WTO: Multilateral Agreements on Trade in Goods - Textiles and Clothing</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods - TRIMs">WTO: Multilateral Agreements on Trade in Goods - TRIMs</option>
+                <option value = "WTO: Multilateral Agreements on Trade in Goods--Import Licensing">WTO: Multilateral Agreements on Trade in Goods--Import Licensing</option>
+                <option value = "WTO: Taiwan Accession Agreement">WTO: Taiwan Accession Agreement</option>
+                <option value = "WTO: Understanding on Commitments in Financial Services">WTO: Understanding on Commitments in Financial Services</option>
+                <option value = "WTO: Understanding on Settlement of Disputes">WTO: Understanding on Settlement of Disputes</option>
+            </select></p>
+            <br/>
+            
+            <label><strong>Select whether to display dollar value of success: </strong></label> <br/>
+            <p>
+                <input type="radio" checked name="tancValueDisplay" value="true"/> Display (Default)
+            </p>
+            <p>
+                <input type="radio" name="tancValueDisplay" value="false"/> Do not display 
+            </p>
+            <br/>
+            
+            <!-- next two filters disabled as data does not exist yet -->
+            <label><strong>Select whether to display dollar value of market access: </strong></label><br/>      
+            <p>
+                <input type="radio" checked name="tancMAccess" value="true" disabled /> Do not display (Default)
+            </p>
+            <p>
+                <input type="radio" name="tancMAccess" value="false" disabled /> Display ($ in Millions) 
+            </p>
+            <br/>
+            
+            <label><strong>Select whether to display estimated number of employees affected: s</strong></label><br/>      
+            <p>
+                <input type="radio" checked name="tancEmployees" value="true" disabled /> Do not display (Default) 
+            </p>
+            <p>
+                <input type="radio" name="tancEmployees" value="false" disabled /> Display 
+            </p>
+            <br/>
+            
+            <input type="button" value="Continue" onclick="mapview();" />
+            <button type="reset" value="Reset">Reset</button>
+            
+        </form>
+        
+    </body>
+</html>
