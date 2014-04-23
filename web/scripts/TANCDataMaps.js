@@ -962,7 +962,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
         
         var map = new Datamap({
             scope: mapScope,
-            element: document.getElementById('container'),
+            element: document.getElementById('resultMap'),
             fills: {
                 HIGH: 'rgb(0,100,0)',
                 MEDIUM: 'rgb(0,255,0)',
@@ -994,6 +994,78 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
         });
         map.legend();
         
+               //draw the map info table
+        var doc = window.document;
+        
+        var table = doc.createElement('table');
+        table.id="#grid";	
+        var tbody = doc.createElement('tbody');
+
+        //Add the HEADER Row
+        var thead = doc.createElement('thead');
+        var headerRow = doc.createElement('tr');
+               
+        //Header: Country Name 
+        var th = doc.createElement('th');				
+        var textNode = doc.createTextNode("Country");				
+        th.appendChild(textNode);
+        th.setAttribute("align","centre");
+        headerRow.appendChild(th);	
+        
+        //Header: Number of Cases
+        th = doc.createElement('th');				
+        textNode = doc.createTextNode("# of Cases");				
+        th.appendChild(textNode);
+        th.setAttribute("align","centre");
+        headerRow.appendChild(th);	
+        
+        //Header: Total Value of Cases
+        th = doc.createElement('th');				
+        textNode = doc.createTextNode("Total Value of Cases");				
+        th.appendChild(textNode);
+        th.setAttribute("align","centre");
+        headerRow.appendChild(th);	
+        
+        thead.appendChild(headerRow);
+	
+        var ctyMapFreKeys = mapFre.keys();
+        var ctyMapValueKeys = mapValue.keys();
+        for(var c in ctyMapFreKeys){
+            //console.log("ctyMapFreKeys[c]"+c+"::"+ctyMapFreKeys[c]);
+            var cName = countryAbbreviationTable.getKey(ctyMapFreKeys[c]);
+            var cNumIssues =  mapFre.get(ctyMapFreKeys[c]);
+            var cValue = mapValue.get(ctyMapValueKeys[c]);
+            if(cNumIssues > 0 || (cValue > 0)){
+                var row = doc.createElement('tr');
+               
+                //country name
+                var td = doc.createElement('td');				
+                var textNode = doc.createTextNode(cName);				
+                td.appendChild(textNode);
+                td.setAttribute("align","right");
+                row.appendChild(td);	            
+                
+                //number of issues
+                var td = doc.createElement('td');				
+                var textNode = doc.createTextNode(cNumIssues);				
+                td.appendChild(textNode);
+                td.setAttribute("align","right");
+                row.appendChild(td);	            
+                
+                //Value
+                var td = doc.createElement('td');				
+                var textNode = doc.createTextNode(cValue);				
+                td.appendChild(textNode);
+                td.setAttribute("align","right");
+                row.appendChild(td);	            
+                
+                tbody.appendChild(row);
+            }
+        }
+        
+        table.appendChild(thead);
+        table.appendChild(tbody);
+	document.getElementById('resultInfo').appendChild(table);        
     };
     
 	 
