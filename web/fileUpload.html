@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="ui/jquery.ui.progressbar.js"></script>
+        <script>
+            $(function() {        
+                    $( "#progressbar" ).progressbar({
+                                value: Math.floor( Math.random() * 100 )
+                    });
+            });        
+	</script>
+    </head>
+    <body>
+        <form name="fileUploadForm" action="" method="post" enctype="multipart/form-data" style="position: absolute; top:50px; left:100px; width:600px; height:25px" >
+            
+            <input type="button" value="Home" onClick="goToHomeForm();" />
+            <h1>File Upload</h1>
+            <br />
+            Browse to select an input Excel data file in order to proceed: 
+            <br />
+            <input type="file" name="file" id="myFile"> <br/>
+            <br/><br/>
+            
+            <input type="button" value="Upload"  onclick="goToFiltersForm();"/>            
+            <button type="reset" value="Reset">Cancel</button>
+            <br/>
+            <br/>
+            <br/>
+            <div id="progressbar" style='visibility: hidden'></div>
+            <br/>
+        </form>
+        
+    </body>
+</html>
