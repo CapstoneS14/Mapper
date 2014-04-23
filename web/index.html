@@ -299,8 +299,6 @@
             <input type="button" value="Upload"  onclick="goToFiltersForm();"/>            
             <button type="reset" value="Reset">Cancel</button>
             <br/>
-            <br/>
-            <br/>
             <div id="progressbar" style='visibility: hidden'></div>
             <br/>
         </form>
@@ -1161,9 +1159,7 @@
                         }
                     }
                     alert("Selected Country List : " + countryList);
-                } else  {
-                    countryList = "All";
-                }
+                }                
                 
                 //read industry filter -- tanc
                 var industrySelectList = document.forms["TANCFilterForm"].tancIndustry;
@@ -1241,7 +1237,7 @@
                         }
                     }
                 }
-
+/*
                 //read case value display/do not display filter -- tanc
                 var whichinput=document.getElementsByName("tancValueDisplay");
                 var k;
@@ -1253,13 +1249,12 @@
                 }
                 
                 var valueInput = whichinput[k].value;
-                if(valueInput === "true") {                    
+                if(valueInput === "true") {
                     valueFilter = true;
                 } else {
                     valueFilter = false;
                 }
-                alert("Value filter :" + valueFilter);
-                
+*/        
                 if (noErrors === true) {
                     document.forms["dataCategoryForm"].style.visibility="hidden";
                     document.forms["fileUploadForm"].style.visibility="hidden";
@@ -1326,7 +1321,7 @@
             function drawTancMaps() {
                 drawTancDataMaps(dataRecords, successFilter, dateInitiateFilterFrom, dateInitiateFilterTo, 
                     dateCloseFilterFrom, dateCloseFilterTo, smeFilter, countryList, industryFilter, 
-                    issueFilter, publicityPermissionFilter, ftaFilter, wtoFilter, usOnlyMapFilter, valueFilter);
+                    issueFilter, publicityPermissionFilter, ftaFilter, wtoFilter, usOnlyMapFilter, true);
             }
             
             
