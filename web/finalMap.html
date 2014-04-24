@@ -14,9 +14,15 @@
         <form name="finalmap" method="get" action="" style="position: absolute; top:50px; left:100px; width:400px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">
             <input type="button" value="Export Map Info" onclick="savemap();"/>
-            <input type="button" id="In" value="Zoom In"/>
-            <input type="button" id="Out" value="Zoom Out"/>
-            <div id="container" style="position: absolute; top: 180px; width: 1000px; max-height: 700px"></div>            
+            <!--<input type="button" id="In" value="Zoom In"/>
+            <input type="button" id="Out" value="Zoom Out"/>-->
+
+            <div id="mapTitle" style="width:1000px;"></div>
+            <div id="resultContainer" style="position: relative">
+                <div id="resultMap"  style="position: absolute; top: 180px; width: 1000px; max-height: 700px"></div>
+                <div id="filtersApplied" style="position: relative; top: 550px; width: 1000px;" ></div>                
+                <div id="resultInfo" style="position: relative; top: 600px"></div>                
+            </div>
         </form>
     </body>
 </html>
