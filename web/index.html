@@ -19,6 +19,8 @@
         <script type="text/javascript" src="scripts/HashMap.js"></script>
         <script type="text/javascript" src="scripts/TANCDataMaps.js"></script>
         <script type="text/javascript" src="scripts/json_eval.js"></script>
+        <script type="text/javascript" src="scripts/rgbcolor.js"></script>
+        <script type="text/javascript" src="scripts/canvg.js"></script>
 	<link rel="stylesheet" href="stylesheets/jquery.ui.all.css">
 	<script src="scripts/jquery-1.10.2.js"></script>
 	<script src="ui/jquery.ui.core.js"></script>
@@ -818,9 +820,11 @@
             
             <div id="mapTitle" style="width:1000px;"></div>
             <div id="resultContainer" style="position: relative">
-                <div id="resultMap"  style="position: absolute; top: 180px; width: 1000px; max-height: 700px"></div>
+                <svg id="resultMap"  style="position: absolute; top: 180px; width: 1000px; max-height: 700px"></svg>
                 <div id="filtersApplied" style="position: relative; top: 550px; width: 1000px;" ></div>                
-                <div id="resultInfo" style="position: relative; top: 600px"></div>                
+                <div id="resultInfo" style="position: relative; top: 600px"></div>   
+                <canvas id="myMap" style="position: relative; width: 1000px; height:600px; display:none;" ></canvas>
+                <canvas id="canvasMap" style="top: 0px; width: 1000px; height: 600px; display:none;" ></canvas>             
             </div>
             
         </form>
@@ -1436,6 +1440,32 @@
                     document.TANCFilterForm.countryList.disabled=false;
                     
                 }                    
+            }
+
+            function savemap(){
+                var $container = $('#resultMap');
+                var svg = $container.html().trim();
+
+                var canvas = document.getElementById("myMap");
+
+                canvg(canvas,svg);
+
+                var destinationCanvas = document.getElementById("canvasMap");
+                destinationCanvas.width = canvas.width;
+                destinationCanvas.height = canvas.height;
+                
+
+                var destCtx = destinationCanvas.getContext('2d');
+
+                //create a rectangle with the desired color
+                destCtx.fillStyle = "#FFFFFF";
+                destCtx.fillRect(0,0,canvas.width,canvas.height);
+
+                //draw the original canvas onto the destination canvas
+                destCtx.drawImage(canvas, 0, 0);
+                destinationCanvas.style.display="block";
+                var theImage = destinationCanvas.toDataURL('image/jpg');
+                window.open(theImage);
             }
             
         </script>
