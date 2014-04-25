@@ -1,6 +1,6 @@
 var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto, smef, 
             countryList, industryfilter, issuefilter, pubfilter, ftafilter, wtofilter, 
-            usMapfilter, valuefilter, empfilter) {
+            usMapfilter, valuefilter, empfilter, workersmap) {
                 
         var successFilter = sf; // boolean, default = false
 	var dateInitiateFilterFrom = diffrom; // String, default = null
@@ -22,7 +22,8 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
        
 	var valueFilter = valuefilter; // boolean: display or not, default is true (Display)
         var usOnlyMapFilter = usMapfilter; // boolean: display US map or world map, default is false (World Map)
-        
+        var workersMapFilter = workersmap; //boolean: display US map shaded based on workers count, default is false
+                                           //set to true only when workers map display option is selected
         var title = "";
 	var appliedFilters = "";
         
@@ -690,8 +691,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             if(data[record]["Record Number"] === null || typeof data[record]["Record Number"] === "undefined") {
                 continue;
             }
-            
-            
+                        
             // success filter section, assign the success date to case close date filter
             if (successFilter === true) {
                 appliedFilters = appliedFilters + "Successful";
@@ -940,6 +940,10 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             //default (false) world map
             if (usOnlyMapFilter === false) {
                 var country = data[record]["Country(s)"];
+                if(country === null || typeof country === "undefined") {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
                 if (country.indexOf(",") < 0 && country !== "European Union") {
                     var cty = countryAbbreviationTable.get(country);
                     if (cty === null) {
@@ -955,13 +959,23 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     
                     if (valueFilter) {
                         var curVal = data[record]["Case Value (in $ millions)"];
-                        var tmpVal = parseInt(curVal) + mapValue.get(cty);
-                        mapValue.put(cty, tmpVal);
+                        if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
+                            var tmpVal = 0 + mapValue.get(cty);
+                            mapValue.put(cty, tmpVal);
+                        } else {
+                            var tmpVal = parseInt(curVal) + mapValue.get(cty);
+                            mapValue.put(cty, tmpVal);
+                        }
                     }
                     if (affectedEmployeeFilter) {
-                        var curVal = data[record]["Employees Affected"];
-                        var tmpVal = parseInt(curVal) + empValue.get(cty);
-                        empValue.put(cty, tmpVal);
+                        var curVal = data[record]["Employees"];
+                        if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
+                            var tmpVal = 0 + empValue.get(cty);
+                            empValue.put(cty, tmpVal);
+                        } else {
+                            var tmpVal = parseInt(curVal) + empValue.get(cty);
+                            empValue.put(cty, tmpVal);
+                        }
                     }
                 } else if (country.indexOf("European Union") >= 0) { // EU
                     var countries = EUlist;
@@ -979,13 +993,23 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         mapFre.put(cty, tmp);
                         if (valueFilter) {
                             var curVal = data[record]["Case Value (in $ millions)"];
-                            var tmpVal = parseInt(curVal) + mapValue.get(cty);
-                            mapValue.put(cty, tmpVal);
+                            if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
+                                var tmpVal = 0 + mapValue.get(cty);
+                                mapValue.put(cty, tmpVal);
+                            } else {
+                                var tmpVal = parseInt(curVal) + mapValue.get(cty);
+                                mapValue.put(cty, tmpVal);
+                            }
                         }
                         if (affectedEmployeeFilter) {
-                            var curVal = data[record]["Employees Affected"];
-                            var tmpVal = parseInt(curVal) + empValue.get(cty);
-                            empValue.put(cty, tmpVal);
+                            var curVal = data[record]["Employees"];
+                            if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
+                                var tmpVal = 0 + empValue.get(cty);
+                                empValue.put(cty, tmpVal);
+                            } else {
+                                var tmpVal = parseInt(curVal) + empValue.get(cty);
+                                empValue.put(cty, tmpVal);
+                            }
                         }                        
                     }
                 } else if (country.indexOf(",") >= 0) {
@@ -1004,18 +1028,32 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         mapFre.put(cty, tmp);
                         if (valueFilter) {
                             var curVal = data[record]["Case Value (in $ millions)"];
-                            var tmpVal = parseInt(curVal) + mapValue.get(cty);
-                            mapValue.put(cty, tmpVal);
+                            if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
+                                var tmpVal = 0 + mapValue.get(cty);
+                                mapValue.put(cty, tmpVal);
+                            } else {
+                                var tmpVal = parseInt(curVal) + mapValue.get(cty);
+                                mapValue.put(cty, tmpVal);
+                            }                            
                         }
                         if (affectedEmployeeFilter) {
-                            var curVal = data[record]["Employees Affected"];
-                            var tmpVal = parseInt(curVal) + empValue.get(cty);
-                            empValue.put(cty, tmpVal);
+                            var curVal = data[record]["Employees"];
+                            if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
+                                var tmpVal = 0 + empValue.get(cty);
+                                empValue.put(cty, tmpVal);
+                            } else {
+                                var tmpVal = parseInt(curVal) + empValue.get(cty);
+                                empValue.put(cty, tmpVal);
+                            }                            
                         }                        
                     }
                 }
             } else { // us map
                 var state = data[record]["Case Address: State"];
+                if(state === null || typeof state === "undefined") {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
                 if (!mapFre.containsKey(state)) {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
                 } else {
@@ -1062,17 +1100,32 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     mapFre.put(state, tmp);
                     if (valueFilter) {
                         var curVal = data[record]["Case Value (in $ millions)"];
-                        var tmpVal = parseInt(curVal) + mapValue.get(state);
-                        mapValue.put(state, tmpVal);
+                        if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
+                            var tmpVal = 0 + mapValue.get(state);
+                            mapValue.put(state, tmpVal);
+                        } else {
+                            var tmpVal = parseInt(curVal) + mapValue.get(state);
+                            mapValue.put(state, tmpVal);
+                        }
                     }
                     if (affectedEmployeeFilter) {
-                        var curVal = data[record]["Employees Affected"];
-                        var tmpVal = parseInt(curVal) + empValue.get(state);
-                        empValue.put(state, tmpVal);
+                        var curVal = data[record]["Employees"];
+                        if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
+                            var tmpVal = 0 + empValue.get(state);
+                            empValue.put(state, tmpVal);
+                        } else {
+                            var tmpVal = parseInt(curVal) + empValue.get(state);
+                            empValue.put(state, tmpVal);
+                        }
                     }                    
                 }
             }
         }
+        
+        if(affectedEmployeeFilter) {
+            appliedFilters = appliedFilters + " Total Number of Employees Affected;";
+        }
+                
         if(valueFilter) {
             appliedFilters = appliedFilters + " Total Value of Cases (in $millions).<br>";
         } else {
@@ -1105,6 +1158,10 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             if (valueFilter) {
                 myObj[mapkeys[i]]["valueOfCases"] = mapValue.get(mapkeys[i]);
             }
+            if (affectedEmployeeFilter) {
+                myObj[mapkeys[i]]["employees"] = empValue.get(mapkeys[i]);
+            }
+            
         }
         
         
@@ -1122,22 +1179,27 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             data: myObj,
             geographyConfig: {
                 popupTemplate: function(geo, data) {
-                    if(valueFilter) {
+                    if(valueFilter && affectedEmployeeFilter) {
                         return ['<div class="hoverinfo"><strong>',
                             'Number of cases in ' + geo.properties.name,
                             ': ' + data.numberOfCases,
-                            '<br>Total value of cases in ' + geo.properties.name,
+                            '<br>Total value of cases (in $millions) in ' + geo.properties.name,
                             ': ' + data.valueOfCases,
-                            '<br>Total unmapped records ' + NumOfInvalidRecord,
+                            '<br>Number of employees affected: ' + data.employees,
+                            '</strong></div>'].join('');                        
+                    } else if (valueFilter) {
+                        return ['<div class="hoverinfo"><strong>',
+                            'Number of cases in ' + geo.properties.name,
+                            ': ' + data.numberOfCases,
+                            '<br>Total value of cases (in $millions) in ' + geo.properties.name,
+                            ': ' + data.valueOfCases,
                             '</strong></div>'].join('');                        
                     } else {
                         return ['<div class="hoverinfo"><strong>',
                             'Number of cases in ' + geo.properties.name,
                             ': ' + data.numberOfCases,
-                            '<br>Total unmapped records ' + NumOfInvalidRecord,
                             '</strong></div>'].join('');       
-                    }
-                        
+                    }                        
                 }
             }
         });
@@ -1181,14 +1243,28 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             th.setAttribute("align","centre");
             headerRow.appendChild(th);	
         }
+        
+        if(affectedEmployeeFilter) {
+            th = doc.createElement('th');	
+            textNode = doc.createTextNode("Employees Affected");
+            th.appendChild(textNode);
+            th.setAttribute("align","centre");
+            headerRow.appendChild(th);	            
+        }
+        
         thead.appendChild(headerRow);
         
         var ctyMapFreKeys = mapFre.keys();
         var ctyMapValueKeys;
+        var ctyEmpValueKeys;
         if (valueFilter) {
             ctyMapValueKeys = mapValue.keys();
         }
-            
+        if (affectedEmployeeFilter) {
+            ctyEmpValueKeys = empValue.keys();
+        }
+         
+        
         if (usOnlyMapFilter) {
             for(var c in ctyMapFreKeys){
                 //console.log("ctyMapFreKeys[c]"+c+"::"+ctyMapFreKeys[c]);
@@ -1197,6 +1273,10 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 var cValue=0;
                 if (valueFilter) {
                     cValue = mapValue.get(ctyMapValueKeys[c]);
+                }
+                var eValue = 0;
+                if (affectedEmployeeFilter) {
+                    eValue = empValue.get(ctyEmpValueKeys[c]);
                 }
                 
                 if(cNumIssues > 0 || (cValue > 0)){
@@ -1225,6 +1305,19 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         row.appendChild(td);
                     }
                 
+                    //employees affected count
+                    if (affectedEmployeeFilter) {
+                        var td = doc.createElement('td');
+                        var textNode;
+                        if (eValue === null) 
+                            textNode = doc.createTextNode("0");
+                        else 
+                            textNode = doc.createTextNode(eValue);
+                        td.appendChild(textNode);
+                        td.setAttribute("align","right");
+                        row.appendChild(td);
+                    }
+                    
                     tbody.appendChild(row);
                 }
             }            
@@ -1236,6 +1329,11 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 var cValue=0;
                 if (valueFilter) {
                     cValue = mapValue.get(ctyMapValueKeys[c]);
+                }
+
+                var eValue=0;
+                if (affectedEmployeeFilter) {
+                    eValue = empValue.get(ctyEmpValueKeys[c]);
                 }
 
                 if(cNumIssues > 0 || (cValue > 0)){
@@ -1264,6 +1362,19 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         row.appendChild(td);                        
                     }
                 
+                    //employees affected count
+                    if (affectedEmployeeFilter) {
+                        var td = doc.createElement('td');
+                        var textNode;
+                        if (eValue === null) 
+                            textNode = doc.createTextNode("0");
+                        else 
+                            textNode = doc.createTextNode(eValue);
+                        td.appendChild(textNode);
+                        td.setAttribute("align","right");
+                        row.appendChild(td);
+                    }
+                    
                     tbody.appendChild(row);
                 }
             }

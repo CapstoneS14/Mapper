@@ -767,10 +767,10 @@
             
             <label><strong>Select whether to display estimated number of employees affected: s</strong></label><br/>      
             <p>
-                <input type="radio" checked name="tancEmployees" value="true" disabled /> Do not display (Default) 
+                <input type="radio" checked name="tancEmployees" value="true" /> Do not display (Default) 
             </p>
             <p>
-                <input type="radio" name="tancEmployees" value="false" disabled /> Display 
+                <input type="radio" name="tancEmployees" value="false" /> Display 
             </p>
             <br/>
             
@@ -797,6 +797,9 @@
             </p>
             <p>
                 <input type="radio" name="output" value="shadeus"/> Shaded State USA map 
+            </p>
+            <p>
+                <input type="radio" name="output" value="shadeusWorkers"/> Shaded State USA map - Workers Affected
             </p>
             <p>
                 <input type="radio" name="output" value="shadeworld"/> Shaded Country Worldwide map 
@@ -847,8 +850,6 @@
             //TANC Filter Options variables
             var dateOption; //either init, close, success - pass true onto method if its success
             var companyOption; // all or SME only -- smeFilter used below instead
-            
-            var countryList; //if list then list of countries selected
             var publicityOption; //granted or not - if not then different values with numbers
             var agreementOption; // either FTA or WTO or both
             var successValueOption; // either true or false on whether or not to display
@@ -870,6 +871,9 @@
             var wtoFilter = null; // String, default = null
             var valueFilter; // boolean: display or not, default is true (Display)
             var usOnlyMapFilter; // only show US map, boolean, default = false to show world shaded map
+            var workersMapFilter = false; // only show US map shaded based on workers count, 
+                                          //boolean default = false to not show US map shaded based on workers count
+                                          
             /*
             for the two disabled filters which do not have relevant data records yet            
             var marketAccessFilter = false; // boolean: display or not, default is false (Do not display)
@@ -916,6 +920,15 @@
                     document.forms["filterlaw"].style.visibility="hidden";
                     document.forms["filterftz"].style.visibility="hidden";
                 }                    
+            }
+            
+            function enableDescription() {
+                if(document.forms["fileUploadForm"]["file"].value !== "") {
+                    document.forms["fileUploadForm"]["xStart"].disabled = false;
+                    document.forms["fileUploadForm"]["xEnd"].disabled = false;
+                    document.forms["fileUploadForm"]["yStart"].disabled = false;
+                    document.forms["fileUploadForm"]["yEnd"].disabled = false;
+                }                
             }
             
             function chkdatetanc() {
@@ -1299,6 +1312,9 @@
                 } else if (mapOption === "shadeworld") {
                     alert("Display Shaded World Map");
                     usOnlyMapFilter = false;
+                } else if (mapOption === "shadeusWorkers") {
+                    usOnlyMapFilter = true;
+                    workersMapFilter = true;
                 }
                 
                 if (noErrors === true) {
@@ -1319,7 +1335,7 @@
                 drawTancDataMaps(dataRecords, successFilter, dateInitiateFilterFrom, dateInitiateFilterTo, 
                     dateCloseFilterFrom, dateCloseFilterTo, smeFilter, countryList, industryFilter, 
                     issueFilter, publicityPermissionFilter, ftaFilter, wtoFilter, usOnlyMapFilter, 
-                    valueFilter, affectedEmployeeFilter);
+                    valueFilter, affectedEmployeeFilter, workersMapFilter);
             }
             
             
