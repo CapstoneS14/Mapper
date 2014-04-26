@@ -814,7 +814,9 @@
         
         <form name="finalmap" method="get" action="" style="position: absolute; top:50px; left:100px; width:400px; height:25px">
             <input type="button" value="Home" onClick="goToHomeForm();">
-            <input type="button" value="Export Map Image" onclick="savemap();"/>
+            <div id="divMapImg">
+                <input type="button" value="Export Map Image"/>
+            </div>
             <!-- <input type="button" id="In" value="Zoom In"/>
             <input type="button" id="Out" value="Zoom Out"/> -->
             
@@ -1442,7 +1444,7 @@
                 }                    
             }
 
-            function savemap(){
+            $('#divMapImg input:button').on("click", function(){
                 var $container = $('#resultMap');
                 var svg = $container.html().trim();
 
@@ -2321,7 +2323,6 @@
                <option value = "21">Other</option>
             </select><br/>
             <br/>
-
             <input type="button" value="Continue" onclick="mapview();" >
             <button type="reset" value="Reset">Reset</button>
         </form>
