@@ -2,41 +2,39 @@
 <html>
     <head>
         
-        <title>Department of Commerce - Mapping Software</title>
+        <title>U.S. Department of Commerce - Mapping Software</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE10">
-        <style>
-            label { float: left; width: 600px; }
-            display:block
-            input[type=text] { float: left; width: 400px; }
-                .clear { clear: both; height: 0; line-height: 0; }
-                .floatright { float: right; }
-            #progressbar .ui-progressbar-value {
-                background-color: #ccc;
-            }
-        </style>
         
-        <link rel="stylesheet" href="stylesheets/jquery.ui.all.css">
-        <script type="text/javascript" src="scripts/HashMap.js"></script>
-        <script type="text/javascript" src="scripts/TANCDataMaps.js"></script>
-        <script type="text/javascript" src="scripts/json_eval.js"></script>
-	<script src="scripts/jquery-1.10.2.js"></script>
-	<script src="ui/jquery.ui.core.js"></script>
-	<script src="ui/jquery.ui.widget.js"></script>	
-	<link rel="stylesheet" href="stylesheets/local.css">
+        <!--Style Sheets-->
+        <link rel="stylesheet" href="../stylesheets/jquery.ui.all.css">
+        <link rel="stylesheet" href="../stylesheets/local.css"> 
         
-	<script>
+        <!--Java scripts-->
+        <script type="text/javascript" src="../scripts/jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="../ui/jquery.ui.core.js"></script>
+	<script type="text/javascript" src="../ui/jquery.ui.widget.js"></script>
+        <script type="text/javascript" src="../scripts/d3.min.js"></script>
+        <script type="text/javascript" src="../scripts/topojson.v1.min.js"></script>
+        <script type="text/javascript" src="../scripts/datamaps.all.min.js"></script>
+        <script type="text/javascript" src="../scripts/HashMap.js"></script>
+        <script type="text/javascript" src="../scripts/TANCDataMaps.js"></script>
+        <script type="text/javascript" src="../scripts/json_eval.js"></script>        
+        <script type="text/javascript" src="../scripts/rgbcolor.js"></script>
+        <script type="text/javascript" src="../scripts/canvg.js"></script>
+        
+	<script type="text/javascript">
             $(function() {
                 $("#dataCategory").load("dataCategory.html");
                 $("#fileUpload").load("fileUpload.html");
                 $("#tancFilter").load("tancFilter.html");
                 $("#mapDisplayType").load("mapDisplayType.html");
-                //$("#finalMap").load("finalMap.html");
+                $("#finalMap").load("finalMap.html");
                 $("#adcvdFilter").load("adcvdFilter.html");
                 $("#filterTrade").load("filterTrade.html");
                 $("#filterLaw").load("filterLaw.html");
                 $("#filterFtz").load("filterFtz.html");                                 
-	});        
+            });        
 	</script>
         
         <!-- script to read data from excel file -->
@@ -61,9 +59,10 @@
                 var headers = new Array();
                 var jsonArray = " [ ";
                 
-                try {
-                    div.style.visibility = 'visible'; 
-                    excel = new ActiveXObject("Excel.Application");
+                try {                                        
+                    div.style.visibility = 'visible';                     
+                    progress('start');                    
+                    excel = new ActiveXObject("Excel.Application");                    
                     excel.Visible = false;
                     excel_file = excel.Workbooks.Open(file); //alert(excel_file.worksheets.count);
                     excel_sheet = excel_file.Worksheets("Sheet1");
@@ -208,12 +207,13 @@
                 } finally {
                     data = null;
                     excel_sheet = null;
-                    excel_file.Close();    // important
+                    if(excel_file !== undefined && excel_file !== null) excel_file.Close();    // important
                     excel_file = null;
-                    excel.Application.Quit();
+                    if(excel !== undefined && excel !==  null) excel.Application.Quit();
                     excel = null;
                 }
                 console.log(jsonArray);
+                progress('done');
                 div.style.visibility = 'hidden';
                 return jsonArray;
             }
@@ -221,35 +221,21 @@
         
     </head>
 
-    <body bgcolor="#E6E6FA">
-        
+    <body>
+        <h3>U.S. Department of Commerce</h3>
+        <h1>Enforcement and Compliance (E&C) Mapping Software</h1>
+        <hr>
+        <br>
+        <input class="homeButtonClass" type="button" value="Home" onClick="goToHomeForm();" />
         <div id="dataCategory"></div>
         <div id="fileUpload"></div>
         <div id="tancFilter"></div>
         <div id="mapDisplayType"></div>
-        <div id="finalMap" style="visibility: hidden">
-            <form name="finalmap" method="get" action="" style="position: absolute; top:50px; left:100px; width:400px; height:25px">
-                <input type="button" value="Home" onClick="goToHomeForm();">
-                <input type="button" value="Export Map Info" onclick="savemap();"/>
-                <!--<input type="button" id="In" value="Zoom In"/>
-                <input type="button" id="Out" value="Zoom Out"/>-->
-                
-                <div id="mapTitle" style="width:1000px;"></div>
-                <div id="resultContainer" style="position: relative">
-                    <div id="resultMap"  style="position: absolute; top: 180px; width: 1000px; max-height: 700px"></div>
-                    <div id="filtersApplied" style="position: relative; top: 550px; width: 1000px;" ></div>                
-                    <div id="resultInfo" style="position: relative; top: 600px"></div>                
-                </div>
-            </form>
-        </div>
+        <div id="finalMap"></div>
         <div id="adcvdFilter"></div>
         <div id="filterTrade"></div>
         <div id="filterLaw"></div>
         <div id="filterFtz"></div>      
-        
-        <script src="scripts/d3.min.js"></script>
-        <script src="scripts/topojson.v1.min.js"></script>
-        <script src="scripts/datamaps.all.min.js"></script>
         
         <script type="text/javascript" >
             
@@ -286,7 +272,10 @@
             var wtoFilter = null; // String, default = null
             var valueFilter; // boolean: display or not, default is true (Display)
             var usOnlyMapFilter; // only show US map, boolean, default = false to show world shaded map
-            /*            
+            var workersMapFilter = false; // only show US map shaded based on workers count, 
+                                          //boolean default = false to not show US map shaded based on workers count
+            
+			/*          
             for the two disabled filters which do not have relevant data records yet            
             var marketAccessFilter = false; // boolean: display or not, default is false (Do not display)
             */
@@ -302,13 +291,12 @@
                 $("#fileUpload").hide();
                 $("#tancFilter").hide();
                 $("#mapDisplayType").hide();
-                //$("#finalMap").hide();
+                $("#finalMap").hide();
                 $("#adcvdFilter").hide();
                 $("#filterTrade").hide();
                 $("#filterLaw").hide();
                 $("#filterFtz").hide();
-                $(pageDivId).show();            
-                
+                $(pageDivId).show();                
             }
             
             function goToFileUploadForm() {
@@ -420,7 +408,7 @@
                     dataRecords = readData(fileName, div);
                     //Parse and process json object string created above - retrieving record number of the first element in records array
                     //var contents = jsonParse(dataRecords);
-                    alert("File " + fileName + " selected for category " + dataCategory);
+                    
                             //+"\nPartial Content: First record number - " +  contents["records"][0]["Record Number"]);
 
                     if(dataCategory==="TancCases") {
@@ -670,19 +658,14 @@
                 } else if (mapOption === "shadeworld") {
                     alert("Display Shaded World Map");
                     usOnlyMapFilter = false;
-                }
+				} else if (mapOption === "shadeusWorkers") {
+                    usOnlyMapFilter = true;
+                    workersMapFilter = true;
+                }                
                 
-                if (noErrors === true) {
-                    drawTancMaps();
-                    document.getElementById("dataCategory").style.visibility = "hidden";
-                    document.getElementById("fileUpload").style.visibility = "hidden";
-                    document.getElementById("tancFilter").style.visibility = "hidden";
-                    document.getElementById("mapDisplayType").style.visibility = "hidden";
-                    document.getElementById("adcvdFilter").style.visibility = "hidden";
-                    document.getElementById("filterTrade").style.visibility = "hidden";
-                    document.getElementById("filterLaw").style.visibility = "hidden";
-                    document.getElementById("filterFtz").style.visibility = "hidden";
-                    document.getElementById("finalMap").style.visibility = "visible";                    
+                if (noErrors === true) {                    
+                    showPage("#finalMap");
+                    drawTancMaps();                    
                 }
             }
             
@@ -690,7 +673,7 @@
                 drawTancDataMaps(dataRecords, successFilter, dateInitiateFilterFrom, dateInitiateFilterTo, 
                     dateCloseFilterFrom, dateCloseFilterTo, smeFilter, countryList, industryFilter, 
                     issueFilter, publicityPermissionFilter, ftaFilter, wtoFilter, usOnlyMapFilter, 
-                    valueFilter, affectedEmployeeFilter);
+                    valueFilter, affectedEmployeeFilter, workersMapFilter);
             }
             
             
@@ -793,8 +776,7 @@
                 }
                     
             }
-        </script>       
- 
+        </script>
+        
     </body>
-
 </html>

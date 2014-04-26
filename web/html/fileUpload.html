@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="../ui/jquery.ui.progressbar.js"></script>
+        <script>
+            
+            $(function() {        
+                    $( "#progressbar-widget" ).progressbar({
+                                value: Math.floor( Math.random() * 50 ),                                
+                              	complete: function() {
+                                            $( "#progressbar-text").text( "Loading Complete!" );
+                        }
+                    });
+                    $( "#progressbar-widget" ).css({'background':'white'});
+                    $( "#progressbar-widget > div" ).css({'background':'green'});
+                    
+            });
+                    
+            function progress(doneFlag) {
+                if(doneFlag === 'start'){                    
+                    
+//                    $( "#progressbar-widget").progressbar( "value", getRandomNumberGreaterThan25());
+//                    
+//                    function getRandomNumberGreaterThan25(){
+//                        var num = Math.floor( Math.random() * 100);
+//                        while(num<=25){
+//                           num = Math.floor( Math.random() * 100);
+//                        }
+//                        return num;
+//                    }                    
+                    
+                }if(doneFlag === 'done'){
+                    $( "#progressbar-widget").progressbar( "value", 100 );
+                }
+            }
+            
+        </script>
+    </head>
+    <body>
+        <form class="formClass" name="fileUploadForm" action="" method="post" enctype="multipart/form-data" >
+            
+            <h2>File Upload</h2>
+            <br>
+            Browse to select an input Excel data file in order to proceed: 
+            <br><br>
+            <input class="fileSelectClass" type="file" name="file" id="myFile"> <br>
+            <br><br>
+            
+            <input class="buttonClass"  type="button" value="Upload"  onclick="goToFiltersForm();"/>            
+            <button class="buttonClass" type="reset" value="Reset">Cancel</button>
+            <br/>
+            <br/>
+            <br/>
+            <div id="progressbar" style='visibility: hidden;'>
+                <div id="progressbar-text" style="font-weight: bold;">Loading...</div>
+                <div id="progressbar-widget">
+                    <div id="progressbar-dummy"></div>                
+                </div>                
+            </div>            
+            <br/>            
+        </form>
+        
+    </body>
+</html>

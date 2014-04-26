@@ -5,11 +5,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-  <form name="mapDisplayTypeForm" method="get" action="" style="position: absolute; top:50px; left:100px; width:400px; height:25px">
+  <form class="formClass" name="mapDisplayTypeForm" method="get" action="">
             
-            <input type="button" value="Home" onClick="goToHomeForm();"/>
-            
-            <h1>I want to display data by</h1>
+              
+            <h2>Display data by</h2>
             
             <p>
                 <input type="radio" name="output" value="pins" disabled/> Pins of locations USA map 
@@ -27,8 +26,8 @@
                 <input type="radio" name="output" value="shadeworld"/> Shaded Country Worldwide map 
             </p>
             <br/>
-            <input type="button" value="Continue" onclick="showmap();"/>
-            <button type="reset" value="Reset">Reset</button>
+            <input class="buttonClass" type="button" value="Continue" onclick="showmap();"/>
+            <button class="buttonClass" type="reset" value="Reset">Reset</button>
             
         </form>
     </body>
