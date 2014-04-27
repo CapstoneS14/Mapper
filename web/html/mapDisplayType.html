@@ -3,13 +3,10 @@
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-    <body>
-  <form class="formClass" name="mapDisplayTypeForm" method="get" action="">
-            
-              
-            <h2>Display data by</h2>
-            
+            </head>
+        <body>
+        <form class="formClass" name="mapDisplayTypeForm" method="get" action="">              
+            <h2>Display data by</h2>            
             <p>
                 <input type="radio" name="output" value="pins" disabled/> Pins of locations USA map 
             </p>
@@ -23,12 +20,14 @@
                 <input type="radio" name="output" value="shadeus"/> Shaded State USA map 
             </p>
             <p>
+                <input type="radio" name="output" value="shadeusWorkers"/> Shaded State USA map - Workers Affected
+            </p>
+            <p>
                 <input type="radio" name="output" value="shadeworld"/> Shaded Country Worldwide map 
             </p>
             <br/>
             <input class="buttonClass" type="button" value="Continue" onclick="showmap();"/>
-            <button class="buttonClass" type="reset" value="Reset">Reset</button>
-            
+            <button class="buttonClass" type="reset" value="Reset">Reset</button>            
         </form>
     </body>
 </html>

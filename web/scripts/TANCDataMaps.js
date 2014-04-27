@@ -652,25 +652,30 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
 	var mapValue; //store accumulated value of each record on the map
 	var empValue; //store total employees affected for a region
         
-	if (usOnlyMapFilter === false) {
-            title = "<h2>Enforcement and Compliance Information: World Wide - by Countries</h2>";
+	if (usOnlyMapFilter === false && workersMapFilter === false) {
+            title = "<h2>Enforcement and Compliance Information (Case count): World Wide - by Countries</h2>";
             initiateWorldMap(mapFre);
             if (valueFilter) {
                 mapValue = new HashMap();
                 initiateWorldMap(mapValue);
             }
-            if(affectedEmployeeFilter) {
+            if(affectedEmployeeFilter || workersMapFilter) {
                 empValue = new HashMap();
                 initiateWorldMap(empValue);
             }
         } else {	//calculate frequency of each state on the us map
-            title = "<h2>Enforcement and Compliance Information: US only - by States</h2>";
+            if(workersMapFilter) {
+                title = "<h2>Enforcement and Compliance Information (Workers Affected Count): US only - by States</h2>";
+            } else {
+                title = "<h2>Enforcement and Compliance Information (Case Count): US only - by States</h2>";    
+            }
+            
             initiateUSMap(mapFre);
             if (valueFilter) {
                 mapValue = new HashMap();
                 initiateUSMap(mapValue);
             }
-            if(affectedEmployeeFilter) {
+            if(affectedEmployeeFilter || workersMapFilter) {
                 empValue = new HashMap();
                 initiateUSMap(empValue);
             }
@@ -937,8 +942,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             
             var NumOfInvalidRecord = 0;
             
-            //default (false) world map
-            if (usOnlyMapFilter === false) {
+            if (usOnlyMapFilter === false && workersMapFilter === false) { //default world map - shade by case count
                 var country = data[record]["Country(s)"];
                 if(country === null || typeof country === "undefined") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
@@ -967,7 +971,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                             mapValue.put(cty, tmpVal);
                         }
                     }
-                    if (affectedEmployeeFilter) {
+                    if (affectedEmployeeFilter||workersMapFilter) {
                         var curVal = data[record]["Employees"];
                         if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
                             var tmpVal = 0 + empValue.get(cty);
@@ -1001,7 +1005,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                                 mapValue.put(cty, tmpVal);
                             }
                         }
-                        if (affectedEmployeeFilter) {
+                        if (affectedEmployeeFilter || workersMapFilter) {
                             var curVal = data[record]["Employees"];
                             if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
                                 var tmpVal = 0 + empValue.get(cty);
@@ -1036,7 +1040,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                                 mapValue.put(cty, tmpVal);
                             }                            
                         }
-                        if (affectedEmployeeFilter) {
+                        if (affectedEmployeeFilter || workersMapFilter) {
                             var curVal = data[record]["Employees"];
                             if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
                                 var tmpVal = 0 + empValue.get(cty);
@@ -1048,7 +1052,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         }                        
                     }
                 }
-            } else { // us map
+            } else if (usOnlyMapFilter === true || workersMapFilter === true) { // us map - shade by case count
                 var state = data[record]["Case Address: State"];
                 if(state === null || typeof state === "undefined") {
                     NumOfInvalidRecord = NumOfInvalidRecord + 1;
@@ -1108,7 +1112,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                             mapValue.put(state, tmpVal);
                         }
                     }
-                    if (affectedEmployeeFilter) {
+                    if (affectedEmployeeFilter || workersMapFilter) {
                         var curVal = data[record]["Employees"];
                         if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
                             var tmpVal = 0 + empValue.get(state);
@@ -1119,7 +1123,78 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         }
                     }                    
                 }
-            }
+            } /*else if (usOnlyMapFilter === false && workersMapFilter === true) { // us map - shade by employees affected
+                var state = data[record]["Case Address: State"];
+                if(state === null || typeof state === "undefined") {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                    continue;
+                }
+                if (!mapFre.containsKey(state)) {
+                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                } else {
+                    var country = data[record]["Country(s)"];
+                    if (country.indexOf(",") < 0 && country !== "European Union") {
+                        var cty = countryAbbreviationTable.get(country);
+                        if (cty === null) {
+                            //document.write("Invalid record: " + country + "<br>");
+                            NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                        } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                            appliedFilters = appliedFilters + " Country(s) involved: " + 
+                                countryFilterList + ";";
+                            continue;
+                        }                        
+                    } else if (country.indexOf("European Union") >= 0) { // EU
+                        var countries = EUlist;
+                        for (var i in countries) {
+                            var cty = countryAbbreviationTable.get(countries[i]);
+                            if (cty === null) {
+                                //document.write("Invalid record: " + countries[i] + "<br>");
+                                NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                            } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                                appliedFilters = appliedFilters + " Country(s) involved: " + 
+                                    countryFilterList + ";";
+                                continue;
+                            }
+                        }
+                    } else if (country.indexOf(",") >= 0) {
+                        var countries = country.split(", ");
+                        for (var i in countries) {
+                            var cty = countryAbbreviationTable.get(countries[i]);
+                            if (cty === null) {
+                                //document.write("Invalid record: " + countries[i] + "<br>");
+                                NumOfInvalidRecord = NumOfInvalidRecord + 1;
+                            } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
+                                appliedFilters = appliedFilters + " Country(s) involved: " + 
+                                    countryFilterList + ";";
+                                continue;
+                            }
+                        }   
+                    }   
+
+                    var tmp = mapFre.get(state) + 1;
+                    mapFre.put(state, tmp);
+                    if (valueFilter) {
+                        var curVal = data[record]["Case Value (in $ millions)"];
+                        if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
+                            var tmpVal = 0 + mapValue.get(state);
+                            mapValue.put(state, tmpVal);
+                        } else {
+                            var tmpVal = parseInt(curVal) + mapValue.get(state);
+                            mapValue.put(state, tmpVal);
+                        }
+                    }
+                    if (affectedEmployeeFilter || workersMapFilter) {
+                        var curVal = data[record]["Employees"];
+                        if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
+                            var tmpVal = 0 + empValue.get(state);
+                            empValue.put(state, tmpVal);
+                        } else {
+                            var tmpVal = parseInt(curVal) + empValue.get(state);
+                            empValue.put(state, tmpVal);
+                        }
+                    }                    
+                }
+            }   */         
         }
         
         if(affectedEmployeeFilter) {
@@ -1133,39 +1208,39 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
         }
         
         var mapScope;
-	if (!usOnlyMapFilter) {
+	if (usOnlyMapFilter ===false && workersMapFilter === false) {
             mapScope = 'world';
         } else {
             mapScope = 'usa';
         }
 	
-	var mapkeys = mapFre.keys();
+	var mapkeys;
 	var myObj = {};
-        for (var i in mapkeys) {
-            myObj[mapkeys[i]] = {};
-            if (mapFre.get(mapkeys[i]) >= 21) {
-                myObj[mapkeys[i]]["fillKey"] = 'VERY HIGH(21&more)';
-            } else if (mapFre.get(mapkeys[i]) >= 10) {
-                myObj[mapkeys[i]]["fillKey"] = 'HIGH(10-20)';
-            } else if (mapFre.get(mapkeys[i]) >= 5) {
-                myObj[mapkeys[i]]["fillKey"] = 'MEDIUM(5-9)';
-            } else if (mapFre.get(mapkeys[i]) === 0) {
-                myObj[mapkeys[i]]["fillKey"] = 'NONE(0)';
-            } else {
-                myObj[mapkeys[i]]["fillKey"] = 'LOW(1-4)';
-            }
-            myObj[mapkeys[i]]["numberOfCases"] = mapFre.get(mapkeys[i]);
-            if (valueFilter) {
-                myObj[mapkeys[i]]["valueOfCases"] = mapValue.get(mapkeys[i]);
-            }
-            if (affectedEmployeeFilter) {
-                myObj[mapkeys[i]]["employees"] = empValue.get(mapkeys[i]);
+        if (workersMapFilter === false) {
+            mapkeys = mapFre.keys();
+            for (var i in mapkeys) {
+                myObj[mapkeys[i]] = {};
+                if (mapFre.get(mapkeys[i]) >= 21) {
+                    myObj[mapkeys[i]]["fillKey"] = 'VERY HIGH(21&more)';
+                } else if (mapFre.get(mapkeys[i]) >= 10) {
+                    myObj[mapkeys[i]]["fillKey"] = 'HIGH(10-20)';
+                } else if (mapFre.get(mapkeys[i]) >= 5) {
+                    myObj[mapkeys[i]]["fillKey"] = 'MEDIUM(5-9)';
+                } else if (mapFre.get(mapkeys[i]) === 0) {
+                    myObj[mapkeys[i]]["fillKey"] = 'NONE(0)';
+                } else {
+                    myObj[mapkeys[i]]["fillKey"] = 'LOW(1-4)';
+                }
+                myObj[mapkeys[i]]["numberOfCases"] = mapFre.get(mapkeys[i]);
+                if (valueFilter) {
+                    myObj[mapkeys[i]]["valueOfCases"] = mapValue.get(mapkeys[i]);
+                }
+                if (affectedEmployeeFilter||workersMapFilter) {
+                    myObj[mapkeys[i]]["employees"] = empValue.get(mapkeys[i]);
+                }
             }
             
-        }
-        
-        
-        var map = new Datamap({
+            var map = new Datamap({
             scope: mapScope,
             element: document.getElementById('resultMap'),
             fills: {
@@ -1180,30 +1255,170 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             geographyConfig: {
                 popupTemplate: function(geo, data) {
                     if(valueFilter && affectedEmployeeFilter) {
-                        return ['<div class="hoverinfo"><strong>',
-                            'Number of cases in ' + geo.properties.name,
-                            ': ' + data.numberOfCases,
-                            '<br>Total value of cases (in $millions) in ' + geo.properties.name,
-                            ': ' + data.valueOfCases,
-                            '<br>Number of employees affected: ' + data.employees,
-                            '</strong></div>'].join('');                        
+                        if(workersMapFilter) {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of employees affected: ' + data.employees,
+                                '<br>Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '<br>Total value of cases (in $millions) in ' + geo.properties.name,
+                                ': ' + data.valueOfCases,
+                                '</strong></div>'].join('');                                                                                
+                        } else {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '<br>Total value of cases (in $millions) in ' + geo.properties.name,
+                                ': ' + data.valueOfCases,
+                                '<br>Number of employees affected: ' + data.employees,
+                                '</strong></div>'].join('');                                                    
+                        }
                     } else if (valueFilter) {
-                        return ['<div class="hoverinfo"><strong>',
-                            'Number of cases in ' + geo.properties.name,
-                            ': ' + data.numberOfCases,
-                            '<br>Total value of cases (in $millions) in ' + geo.properties.name,
-                            ': ' + data.valueOfCases,
-                            '</strong></div>'].join('');                        
+                        if (workersMapFilter) {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of employees affected: ' + data.employees,
+                                '<br>Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '<br>Total value of cases (in $millions) in ' + geo.properties.name,
+                                ': ' + data.valueOfCases,
+                                '</strong></div>'].join('');                                                                                
+                        } else {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '<br>Total value of cases (in $millions) in ' + geo.properties.name,
+                                ': ' + data.valueOfCases,
+                                '</strong></div>'].join('');                                                    
+                        }
                     } else {
-                        return ['<div class="hoverinfo"><strong>',
-                            'Number of cases in ' + geo.properties.name,
-                            ': ' + data.numberOfCases,
-                            '</strong></div>'].join('');       
+                        if (workersMapFilter) {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of employees affected: ' + data.employees,
+                                '<br>Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '</strong></div>'].join('');                                   
+                        } else {
+                            if(affectedEmployeeFilter) {
+                                return ['<div class="hoverinfo"><strong>',
+                                    'Number of cases in ' + geo.properties.name,
+                                    ': ' + data.numberOfCases,
+                                    '<br>Number of employees affected: ' + data.employees,
+                                    '</strong></div>'].join('');                                                                   
+                            } else {
+                                return ['<div class="hoverinfo"><strong>',
+                                    'Number of cases in ' + geo.properties.name,
+                                    ': ' + data.numberOfCases,
+                                    '</strong></div>'].join('');                                                                   
+                            }
+                        }
                     }                        
                 }
             }
         });
         map.legend();
+
+        } else {
+            mapkeys = empValue.keys();
+            for (var i in mapkeys) {                
+                myObj[mapkeys[i]] = {};
+                if (empValue.get(mapkeys[i]) >= 10001) {
+                    myObj[mapkeys[i]]["fillKey"] = 'VERY HIGH(10,001&more)';
+                } else if (empValue.get(mapkeys[i]) >= 1001 && empValue.get(mapkeys[i]) < 10001) {
+                    myObj[mapkeys[i]]["fillKey"] = 'HIGH(1,001-10,000)';
+                } else if (empValue.get(mapkeys[i]) >= 101 && empValue.get(mapkeys[i]) < 1001) {
+                    myObj[mapkeys[i]]["fillKey"] = 'MEDIUM(101-1,000)';
+                } else if (empValue.get(mapkeys[i]) === 0) {
+                    myObj[mapkeys[i]]["fillKey"] = 'NONE(0)';
+                } else if (empValue.get(mapkeys[i]) >= 1 && empValue.get(mapkeys[i]) < 101){
+                    myObj[mapkeys[i]]["fillKey"] = 'LOW(1-100)';
+                }
+                myObj[mapkeys[i]]["numberOfCases"] = mapFre.get(mapkeys[i]);
+                myObj[mapkeys[i]]["employees"] = empValue.get(mapkeys[i]);
+                if (valueFilter) {
+                    myObj[mapkeys[i]]["valueOfCases"] = mapValue.get(mapkeys[i]);
+                }                
+                
+            }
+            
+            var map = new Datamap({
+            scope: mapScope,
+            element: document.getElementById('resultMap'),
+            fills: {
+                'VERY HIGH(10,001&more)': "#003300",
+                'HIGH(1,001-10,000)': "#006633",
+                'MEDIUM(101-1,000)': "#00CC33",
+                'LOW(1-100)': "#66FF33",
+                'NONE(0)': "#C0C0C0",
+                defaultFill: "#C0C0C0"
+            },
+            data: myObj,
+            geographyConfig: {
+                popupTemplate: function(geo, data) {
+                    if(valueFilter && affectedEmployeeFilter) {
+                        if(workersMapFilter) {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of employees affected: ' + data.employees,
+                                '<br>Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '<br>Total value of cases (in $millions) in ' + geo.properties.name,
+                                ': ' + data.valueOfCases,
+                                '</strong></div>'].join('');                                                                                
+                        } else {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '<br>Total value of cases (in $millions) in ' + geo.properties.name,
+                                ': ' + data.valueOfCases,
+                                '<br>Number of employees affected: ' + data.employees,
+                                '</strong></div>'].join('');                                                    
+                        }
+                    } else if (valueFilter) {
+                        if (workersMapFilter) {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of employees affected: ' + data.employees,
+                                '<br>Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '<br>Total value of cases (in $millions) in ' + geo.properties.name,
+                                ': ' + data.valueOfCases,
+                                '</strong></div>'].join('');                                                                                
+                        } else {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '<br>Total value of cases (in $millions) in ' + geo.properties.name,
+                                ': ' + data.valueOfCases,
+                                '</strong></div>'].join('');                                                    
+                        }
+                    } else {
+                        if (workersMapFilter) {
+                            return ['<div class="hoverinfo"><strong>',
+                                'Number of employees affected: ' + data.employees,
+                                '<br>Number of cases in ' + geo.properties.name,
+                                ': ' + data.numberOfCases,
+                                '</strong></div>'].join('');                                   
+                        } else {
+                            if(affectedEmployeeFilter) {
+                                return ['<div class="hoverinfo"><strong>',
+                                    'Number of cases in ' + geo.properties.name,
+                                    ': ' + data.numberOfCases,
+                                    '<br>Number of employees affected: ' + data.employees,
+                                    '</strong></div>'].join('');                                                                   
+                            } else {
+                                return ['<div class="hoverinfo"><strong>',
+                                    'Number of cases in ' + geo.properties.name,
+                                    ': ' + data.numberOfCases,
+                                    '</strong></div>'].join('');                                                                   
+                            }
+                        }
+                    }                        
+                }
+            }
+        });
+        map.legend();
+
+        }
+
+        
+        
 
         //draw the map info table
         var doc = window.document;
@@ -1219,7 +1434,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
         var numOfAttributesToShow = 1; 
         if(valueFilter) {
             numOfAttributesToShow++;
-        }if(affectedEmployeeFilter) {
+        }if(affectedEmployeeFilter || workersMapFilter) {
             numOfAttributesToShow++;
         }
         var repeatColumnsCount = 6;  //numOfAttributesToShow === 1  (6*(1+1) = 12)        
@@ -1239,7 +1454,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             var th = doc.createElement('th');
 
             var textNode;
-            if(usOnlyMapFilter) 
+            if(usOnlyMapFilter || workersMapFilter) 
                 textNode = doc.createTextNode("State");
             else 
                 textNode = doc.createTextNode("Country");	
@@ -1263,7 +1478,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 headerRow.appendChild(th);	                
             }
 
-            if(affectedEmployeeFilter) {
+            if(affectedEmployeeFilter || workersMapFilter) {
                 th = doc.createElement('th');	
                 textNode = doc.createTextNode("Employees Affected");
                 th.appendChild(textNode);
@@ -1280,12 +1495,12 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
         if (valueFilter) {
             ctyMapValueKeys = mapValue.keys();
         }
-        if (affectedEmployeeFilter) {
+        if (affectedEmployeeFilter || workersMapFilter) {
             ctyEmpValueKeys = empValue.keys();
         }
          
         
-        if (usOnlyMapFilter) {
+        if (usOnlyMapFilter || workersMapFilter) {
             var cnt=0;
             for(var c in ctyMapFreKeys){
                 //console.log("ctyMapFreKeys[c]"+c+"::"+ctyMapFreKeys[c]);
@@ -1300,7 +1515,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     cValue = mapValue.get(ctyMapValueKeys[c]);
                 }
                 var eValue = 0;
-                if (affectedEmployeeFilter) {
+                if (affectedEmployeeFilter || workersMapFilter) {
                     eValue = empValue.get(ctyEmpValueKeys[c]);
                 }
                 
@@ -1336,7 +1551,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     }
                 
                     //employees affected count
-                    if (affectedEmployeeFilter) {
+                    if (affectedEmployeeFilter || workersMapFilter) {
                         var td = doc.createElement('td');
                         var textNode;
                         if (eValue === null) 
@@ -1367,7 +1582,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 }
 
                 var eValue=0;
-                if (affectedEmployeeFilter) {
+                if (affectedEmployeeFilter || workersMapFilter) {
                     eValue = empValue.get(ctyEmpValueKeys[c]);                    
                 }
 
@@ -1402,7 +1617,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                     }
                 
                     //employees affected count
-                    if (affectedEmployeeFilter) {
+                    if (affectedEmployeeFilter || workersMapFilter) {
                         var td = doc.createElement('td');
                         var textNode;
                         if (eValue === null) 
