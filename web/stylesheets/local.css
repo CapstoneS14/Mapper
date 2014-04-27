@@ -1,8 +1,8 @@
 body {
-    	font-family: "Trebuchet MS", "Arial", "Helvetica", "Verdana", "sans-serif";
-	font-size: 80%;
-	color: rgb(0,0,0);			 /* Black */
-	background-color: rgb(60,60,60);	 /* Gray */	
+    font-family: "Trebuchet MS", "Arial", "Helvetica", "Verdana", "sans-serif";
+    font-size: 80%;
+    color: rgb(0,0,0);			 /* Black */
+    background-color: rgb(60,60,60);	 /* Gray */	
 }
 
 h1 {
@@ -25,78 +25,90 @@ h3 {
 }
 
 .formClass {
-        margin-top : 20px;
-        margin-bottom : 50px;
-        margin-left : 50px;
-        margin-right : 50px;
-        background-color: rgb(255,255,255);   /*Main White*/
-	border-radius: 15px 15px 15px 15px / 10px 10px 10px 10px;
-	padding-top: 5px;	
-        padding-bottom: 50px;
-        padding-right: 20px;
-        padding-left: 20px;        
+    margin-top : 20px;
+    margin-bottom : 50px;
+    margin-left : 50px;
+    margin-right : 50px;
+    background-color: rgb(255,255,255);   /*Main White*/
+    border-radius: 15px 15px 15px 15px / 10px 10px 10px 10px;
+    padding-top: 5px;	
+    padding-bottom: 50px;
+    padding-right: 20px;
+    padding-left: 20px;        
 }
 
 .buttonClass {
-        font-size: 1.2em;
-        height: 25px;        
-        width: 100px;
-    	border-radius: 10px 10px 10px 10px / 5px 5px 5px 5px;
-	background-color: rgb(60,60,60); /*Gray*/		
-	color: rgb(255,255,255);         /*White*/		 
+    font-size: 1.2em;
+    height: 25px;        
+    width: 100px;
+    border-radius: 10px 10px 10px 10px / 5px 5px 5px 5px;
+    background-color: rgb(60,60,60); /*Gray*/		
+    color: rgb(255,255,255);         /*White*/		 
 }
 
 .fileSelectClass {
-        font-size: 1.2em;
-        height: 25px;        
-        width: 700px;
-    	border-radius: 10px 10px 10px 10px / 5px 5px 5px 5px;
-	background-color: rgb(60,60,60); /*Gray*/		
-	color: rgb(255,255,255);	 /*White*/		 
+    font-size: 1.2em;
+    height: 25px;        
+    width: 700px;
+    border-radius: 10px 10px 10px 10px / 5px 5px 5px 5px;
+    background-color: rgb(60,60,60); /*Gray*/		
+    color: rgb(255,255,255);	 /*White*/		 
 }
+
 .homeButtonClass {
-        font-weight: bold;
-        font-size: 1em;
-        height: 25px;        
-        width: 100px;
-        border-radius: 10px 10px 10px 10px / 5px 5px 5px 5px;
-    	background-color: white;
-	color: rgb(60,60,60);        
-        margin-left: 50px;
+    font-weight: bold;
+    font-size: 1em;
+    height: 25px;        
+    width: 100px;
+    border-radius: 10px 10px 10px 10px / 5px 5px 5px 5px;
+    background-color: white;
+    color: rgb(60,60,60);        
+    margin-left: 50px;
 }
 
 .fieldsetClass {
-        width: 80%;
-        border-color: gray;
-        padding: 25px;        
+    width: 80%;
+    border-color: gray;
+    padding: 25px;        
 }
 
 .fieldsetClass label{
-	float: left;
-	width: 18%;
-        font-size: 1.2em;
+    float: left;
+    width: 18%;
+    font-size: 1.2em;
+}
+
+.tableClass {
+    border-collapse: separate;
+    width: 50%;    
+    border-spacing: 2px 2px;       
+}
+
+.tableClass tr, .tableClass td  {
+    vertical-align: top;
 }
 
 .colRadioClass{
-        width: 30%;
+    width: 30%;
 }
 
 .colRadioClassUnequal {
-        width: 15%;
+    width: 15%;
 }
+
 .selectClass {
-        width: 60%
+    width: 60%
 }
 
 .demo-description {
-	clear: both;
-	padding: 12px;
-	font-size: 1.3em;
-	line-height: 1.4em;
+    clear: both;
+    padding: 12px;
+    font-size: 1.3em;
+    line-height: 1.4em;
 }
 
 .ui-draggable, .ui-droppable {
-	background-position: top;
+    background-position: top;
 }
 
 .datamaps-legend {
@@ -104,34 +116,148 @@ h3 {
     top: 300px;
 }
 
-/*
-.resultInfoClass > tbody,thead,table,th,td,tr {
+#resultInfo table, #resultInfo thead, #resultInfo tbody,  #resultInfo th, #resultInfo td, #resultInfo tr {
     border: 1px solid rgb(34, 34, 34); 
     border-collapse: collapse;
     padding:10px;
 }
 
-.resultInfoClass > thead,th {
-    background: linear-gradient(to bottom, rgb(200,200,200), rgb(175,175,175));
-    color: rgb(0,0,0);
+#resultInfo thead, #resultInfo th {
+/*    background-color: rgb(245,245,245); */
+    border: 2px solid rgb(0, 0, 0); 
+    color: rgb(0,0,255);
     text-align: center;
 }
 
-.resultInfoClass > tbody,tr:nth-child(2n) {
-    background-color: rgb(238,238,238); /*Table Odd Number Row Light Gray*/
-/*}*/
-/*
-.resultInfoClass > tbody,tr:nth-child(2n+1) {
-    background-color: rgb(255,255,255); /*Table Even Number Row White
-}
-*/
-
-.tableClass {
-        border-collapse: separate;
-        width: 50%;    
-        border-spacing: 2px 2px;       
+#resultInfo tr:nth-child(2n) {
+/*    background-color: rgb(238,238,238);     */
+    font-size: 12px;
 }
 
-.tableClass >  tr,td  {
-        vertical-align: top;
+#resultInfo tr:nth-child(2n+1) {
+/*    background-color: rgb(255,255,255);    */
+    font-size: 12px;
+}
+
+#resultInfo {
+    overflow: scroll;
+    height: 200px;
+}
+
+/*STYLE 1 header set 1*/
+#repeatStyle1 th:nth-child(1), 
+#repeatStyle1 th:nth-child(2),
+#repeatStyle1 th:nth-child(5),
+#repeatStyle1 th:nth-child(6),
+#repeatStyle1 th:nth-child(9),
+#repeatStyle1 th:nth-child(10) {
+    background-color: rgb(238,238,238);    
+}
+
+/*STYLE 1 columns set 1*/
+#repeatStyle1 td:nth-child(1), 
+#repeatStyle1 td:nth-child(2),
+#repeatStyle1 td:nth-child(5),
+#repeatStyle1 td:nth-child(6),
+#repeatStyle1 td:nth-child(9),
+#repeatStyle1 td:nth-child(10) {
+    background-color: rgb(238,238,238);    
+}
+
+/*STYLE 1 header set 2*/
+#repeatStyle1 th:nth-child(3), 
+#repeatStyle1 th:nth-child(4),
+#repeatStyle1 th:nth-child(7),
+#repeatStyle1 th:nth-child(8),
+#repeatStyle1 th:nth-child(11),
+#repeatStyle1 th:nth-child(12) {
+    background-color: rgb(255,255,255);    
+}
+
+/*STYLE 1 columns set 2*/
+#repeatStyle1 td:nth-child(3), 
+#repeatStyle1 td:nth-child(4),
+#repeatStyle1 td:nth-child(7),
+#repeatStyle1 td:nth-child(8),
+#repeatStyle1 td:nth-child(11),
+#repeatStyle1 td:nth-child(12) {
+    background-color: rgb(255,255,255);    
+}
+
+/*STYLE 2 header set 1*/
+#repeatStyle2 th:nth-child(1), 
+#repeatStyle2 th:nth-child(2),
+#repeatStyle2 th:nth-child(3),
+#repeatStyle2 th:nth-child(7),
+#repeatStyle2 th:nth-child(8),
+#repeatStyle2 th:nth-child(9) {
+    background-color: rgb(238,238,238);    
+}
+/*STYLE 2 columns set 1*/
+#repeatStyle2 td:nth-child(1), 
+#repeatStyle2 td:nth-child(2),
+#repeatStyle2 td:nth-child(3),
+#repeatStyle2 td:nth-child(7),
+#repeatStyle2 td:nth-child(8),
+#repeatStyle2 td:nth-child(9) {
+    background-color: rgb(238,238,238);    
+}
+/*STYLE 2 header set 2*/
+#repeatStyle2 th:nth-child(4), 
+#repeatStyle2 th:nth-child(5),
+#repeatStyle2 th:nth-child(6),
+#repeatStyle2 th:nth-child(10),
+#repeatStyle2 th:nth-child(11),
+#repeatStyle2 th:nth-child(12) {
+    background-color: rgb(255,255,255);    
+}
+/*STYLE 2 columns set 2*/
+#repeatStyle2 td:nth-child(4), 
+#repeatStyle2 td:nth-child(5),
+#repeatStyle2 td:nth-child(6),
+#repeatStyle2 td:nth-child(10),
+#repeatStyle2 td:nth-child(11),
+#repeatStyle2 td:nth-child(12) {
+    background-color: rgb(255,255,255);    
+}
+
+/*STYLE 3 header set 1*/
+#repeatStyle3 th:nth-child(1), 
+#repeatStyle3 th:nth-child(2),
+#repeatStyle3 th:nth-child(3),
+#repeatStyle3 th:nth-child(4),
+#repeatStyle3 th:nth-child(9), 
+#repeatStyle3 th:nth-child(10),
+#repeatStyle3 th:nth-child(11),
+#repeatStyle3 th:nth-child(12) {
+    background-color: rgb(238,238,238);    
+    
+}
+
+/*STYLE 3 header set 1*/
+#repeatStyle3 td:nth-child(1), 
+#repeatStyle3 td:nth-child(2),
+#repeatStyle3 td:nth-child(3),
+#repeatStyle3 td:nth-child(4),
+#repeatStyle3 td:nth-child(9), 
+#repeatStyle3 td:nth-child(10),
+#repeatStyle3 td:nth-child(11),
+#repeatStyle3 td:nth-child(12) {    
+    background-color: rgb(238,238,238);    
+}
+
+/*STYLE 3 header set 2*/
+#repeatStyle3 th:nth-child(5), 
+#repeatStyle3 th:nth-child(6),
+#repeatStyle3 th:nth-child(7),
+#repeatStyle3 th:nth-child(8) {
+    background-color: rgb(255,255,255);    
+}
+
+/*STYLE 3 columns set 2*/
+#repeatStyle3 td:nth-child(5), 
+#repeatStyle3 td:nth-child(6),
+#repeatStyle3 td:nth-child(7),
+#repeatStyle3 td:nth-child(8) {
+    background-color: rgb(255,255,255);    
 }

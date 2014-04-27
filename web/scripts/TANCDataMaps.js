@@ -1208,52 +1208,72 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
         //draw the map info table
         var doc = window.document;
         
-        var table = doc.createElement('table');
-        table.id="#grid";
+        var table = doc.createElement('table');        
         var tbody = doc.createElement('tbody');
+        
         
         //Add the HEADER Row
         var thead = doc.createElement('thead');
         var headerRow = doc.createElement('tr');
         
-        //Header: Country Name 
-        var th = doc.createElement('th');
-        
-        var textNode;
-        if(usOnlyMapFilter) 
-            textNode = doc.createTextNode("State");
-        else 
-            textNode = doc.createTextNode("Country");	
-        th.appendChild(textNode);
-        th.setAttribute("align","centre");
-        headerRow.appendChild(th);	
-        
-        //Header: Number of Cases
-        th = doc.createElement('th');	
-        textNode = doc.createTextNode("# of Cases");	
-        th.appendChild(textNode);
-        th.setAttribute("align","centre");
-        headerRow.appendChild(th);	
-                
-        //Header: Total Value of Cases
+        var numOfAttributesToShow = 1; 
         if(valueFilter) {
-            th = doc.createElement('th');	
-            textNode = doc.createTextNode("Total Value of Cases");
+            numOfAttributesToShow++;
+        }if(affectedEmployeeFilter) {
+            numOfAttributesToShow++;
+        }
+        var repeatColumnsCount = 6;  //numOfAttributesToShow === 1  (6*(1+1) = 12)        
+        table.id="repeatStyle1";
+        if(numOfAttributesToShow === 2){
+            repeatColumnsCount = 4;   //(4*(2+1) = 12)
+            table.id="repeatStyle2";
+        }else if(numOfAttributesToShow === 3){
+            repeatColumnsCount = 3;   //(3*(3+1) = 12)
+            table.id="repeatStyle3";
+        }
+        
+        //alert("numOfAttributesToShow:repeatColumnsCount="+numOfAttributesToShow+":"+repeatColumnsCount);
+
+        for(var cnt=0; cnt<repeatColumnsCount; cnt++){
+            //Header: Country Name 
+            var th = doc.createElement('th');
+
+            var textNode;
+            if(usOnlyMapFilter) 
+                textNode = doc.createTextNode("State");
+            else 
+                textNode = doc.createTextNode("Country");	
             th.appendChild(textNode);
             th.setAttribute("align","centre");
             headerRow.appendChild(th);	
-        }
-        
-        if(affectedEmployeeFilter) {
+
+            //Header: Number of Cases
             th = doc.createElement('th');	
-            textNode = doc.createTextNode("Employees Affected");
+            textNode = doc.createTextNode("# of Cases");	
             th.appendChild(textNode);
             th.setAttribute("align","centre");
-            headerRow.appendChild(th);	            
+            headerRow.appendChild(th);	
+
+            //Header: Total Value of Cases
+            if(valueFilter) {
+                th = doc.createElement('th');	
+                textNode = doc.createTextNode("Total Value of Cases");
+                th.appendChild(textNode);
+                th.setAttribute("align","centre");
+                headerRow.appendChild(th);	                
+            }
+
+            if(affectedEmployeeFilter) {
+                th = doc.createElement('th');	
+                textNode = doc.createTextNode("Employees Affected");
+                th.appendChild(textNode);
+                th.setAttribute("align","centre");
+                headerRow.appendChild(th);                
+            }
+
+            thead.appendChild(headerRow);
         }
-        
-        thead.appendChild(headerRow);
-        
+
         var ctyMapFreKeys = mapFre.keys();
         var ctyMapValueKeys;
         var ctyEmpValueKeys;
@@ -1266,9 +1286,14 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
          
         
         if (usOnlyMapFilter) {
+            var cnt=0;
             for(var c in ctyMapFreKeys){
                 //console.log("ctyMapFreKeys[c]"+c+"::"+ctyMapFreKeys[c]);
                 var cName = stateAbbreviationTable.getKey(ctyMapFreKeys[c]);
+                
+                if(cName === undefined) 
+                    cName = "Unmapped Records";
+
                 var cNumIssues =  mapFre.get(ctyMapFreKeys[c]);
                 var cValue=0;
                 if (valueFilter) {
@@ -1280,7 +1305,12 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 }
                 
                 if(cNumIssues > 0 || (cValue > 0)){
-                    var row = doc.createElement('tr');
+                    var row;
+                    if(cnt%repeatColumnsCount === 0){
+                        cnt=0;
+                        row = doc.createElement('tr');                        
+                    }
+                    cnt++;
                 
                     //country name
                     var td = doc.createElement('td');
@@ -1322,23 +1352,32 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                 }
             }            
         } else {
+            var cnt=0;
             for(var c in ctyMapFreKeys){
                 //console.log("ctyMapFreKeys[c]"+c+"::"+ctyMapFreKeys[c]);
                 var cName = countryAbbreviationTable.getKey(ctyMapFreKeys[c]);
+                
+                if(cName === undefined) 
+                    cName = "Unmapped Records";
+                
                 var cNumIssues =  mapFre.get(ctyMapFreKeys[c]);
                 var cValue=0;
                 if (valueFilter) {
-                    cValue = mapValue.get(ctyMapValueKeys[c]);
+                    cValue = mapValue.get(ctyMapValueKeys[c]);                    
                 }
 
                 var eValue=0;
                 if (affectedEmployeeFilter) {
-                    eValue = empValue.get(ctyEmpValueKeys[c]);
+                    eValue = empValue.get(ctyEmpValueKeys[c]);                    
                 }
 
-                if(cNumIssues > 0 || (cValue > 0)){
-                    var row = doc.createElement('tr');
-                
+                if(cNumIssues > 0 || (cValue > 0)){                    
+                    var row;
+                    if(cnt%repeatColumnsCount === 0){
+                        cnt=0;
+                        row = doc.createElement('tr');                        
+                    }
+                    cnt++;
                     //country name
                     var td = doc.createElement('td');
                     var textNode = doc.createTextNode(cName);
