@@ -6,7 +6,6 @@
         <script src="../ui/jquery.ui.datepicker.js"></script>
         <script>
             $(function() {        
-                
                 $( "#fromtanc1" ).datepicker({
 			defaultDate: "+1w",
 			changeMonth: true,
@@ -23,7 +22,6 @@
 				$( "#fromtanc1" ).datepicker( "option", "maxDate", selectedDate );
 			}
 		});
-                
                 $( "#fromtanc2" ).datepicker({
 			defaultDate: "+1w",
 			changeMonth: true,
@@ -40,7 +38,6 @@
 				$( "#fromtanc2" ).datepicker( "option", "maxDate", selectedDate );
 			}
 		});
-                
                 $( "#fromtanc3" ).datepicker({
 			defaultDate: "+1w",
 			changeMonth: true,
@@ -60,16 +57,11 @@
                 
             });        
 	</script>
-
-        
     </head>
     <body>
-  <form class="formClass" name="TANCFilterForm" method="get"  action="" >
-            
-                     
+        <form class="formClass" name="TANCFilterForm" method="get"  action="" >
             <h2>Filters to apply on TANC Casework Data</h2>
             <br>
-            
             <fieldset class="fieldsetClass">
                 <label><strong>Date Range: </strong></label>
                 <table class="tableClass">
@@ -91,9 +83,7 @@
                         <td> To  <input type="date" name="totanc3" id="totanc3" disabled /></td>
                     </tr>                
                 </table>
-                
                 <br><hr><br>
-                
                 <label><strong>Organization Type:</strong></label>            
                     <table class="tableClass">
                         <tr>
@@ -108,7 +98,6 @@
                     </table>
                 
                 <br><br>            
-            
                 <label><strong>Country(s) involved: </strong></label>
                 <table class="tableClass">
                         <tr>
