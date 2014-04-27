@@ -226,7 +226,9 @@
         <h1>Enforcement and Compliance (E&C) Mapping Software</h1>
         <hr>
         <br>
-        <input class="homeButtonClass" type="button" value="Home" onClick="goToHomeForm();" />
+        <input class="homeButtonClass" type="button" value="User Guide" onclick="window.open('userGuide.html')"/>
+        <input class="homeButtonClass" id="homeButton" type="button" value="Home" onClick="goToHomeForm();" />          
+        
         <div id="dataCategory"></div>
         <div id="fileUpload"></div>
         <div id="tancFilter"></div>
@@ -241,6 +243,7 @@
             
             window.onload = function () {                
                 showPage("#dataCategory");
+                $("#homeButton").hide();
             };
                         
             var dataCategory; //category of data from first form - set in goToFileUploadForm
@@ -296,7 +299,8 @@
                 $("#filterTrade").hide();
                 $("#filterLaw").hide();
                 $("#filterFtz").hide();
-                $(pageDivId).show();                
+                $(pageDivId).show();
+                $("#homeButton").show();
             }
             
             function goToFileUploadForm() {
@@ -314,6 +318,7 @@
                 if (checked === false) {
                     alert("No input selected - Select one of the data categories");
                     showPage("#dataCategory");
+                    $("#homeButton").hide();
                 } else {
                     dataCategory = whichinput[k].value;
                     showPage("#fileUpload");
@@ -777,6 +782,8 @@
                     
             }
         </script>
-        
-    </body>
+        <footer>
+        Prototype completed by Heinz School (Carnegie Mellon University) Graduate Students as a part of capstone educational requirements.
+        </footer>
+    </body>    
 </html>

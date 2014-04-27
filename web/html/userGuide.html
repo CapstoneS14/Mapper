@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>U.S. Department of Commerce - Mapping Software</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE10">        
+        <!--Style Sheets-->
+        <link rel="stylesheet" href="../stylesheets/local.css"> 
+        <style>
+            .userGuidePClass {
+                font-size:1.5em; 
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <h3>U.S. Department of Commerce</h3>
+        <h1>Enforcement and Compliance (E&C) Mapping Software</h1>
+        <hr>
+        <br>
+        <form class="formClass" name="userGuideForm" method="get" action="" >
+            
+            <h2>User Guide:</h2>
+            <br><ul>
+                <li>
+                    <p class="userGuidePClass">
+                        Data Category Form
+                    </p>
+                    <p>
+                        Only TANC cases is enabled as of now.
+                        The other 4 options are disabled but the flow for those are pretty similar to 
+                        TANC(the corresponding filter forms for those are developed in the same way)
+                        <br><br>
+                        Select 'TANC Casework' option and hit continue – to move on to the file upload form.
+                    </p>
+                    <img src="../images/dataCategory.jpg"/>
+                    <br><br>
+                </li>
+                <li>
+                    <p class="userGuidePClass">
+                        File Upload Form:
+                    </p>
+                    <p>
+                        The file upload form requires you to browse and select the Excel file with the data. 
+                        Assumptions involved: The data is found in a continuous table with valid entries in the rows
+                        and columns.
+                        <br><br>
+                        Select an Excel file (Only files with .xls and .xlsx extensions will be accepted).
+                        Click on 'Upload'.
+                    </p>
+                    <img src="../images/fileUpload.jpg"/>
+                    <br><br>
+                    <p>
+                        Select Yes in the dialog box asking for permission to run ActiveX control – 
+                        This is required to read the input Excel file data into the backend.
+                    </p>
+                    <img src="../images/activeXWarning.jpg"/>
+                    <br><br>
+                </li>
+                <li>
+                    <p class="userGuidePClass">
+                        Filter Form:
+                    </p>
+                    <p>
+                        Select all the required filters for which you wish to see the data on map.
+                        <br><br>
+                        Click on 'Continue' located at the bottom of the this page.
+                    </p>
+                    <img src="../images/filter1.jpg"/>
+                    <img src="../images/filter2.jpg"/>
+                    <br><br> 
+                </li>
+                <li>
+                    <p class="userGuidePClass">
+                        Map Display Type:
+                    </p>
+                    <p>
+                        Select a display option and click on 'Continue'.
+                    </p>            
+                    <img src="../images/mapDisplayType.jpg"/>
+                    <br><br>
+                </li>
+                <li>
+                    <p class="userGuidePClass">
+                        Map:
+                    </p>
+                    <p>
+                        Maps generated are interactive. 
+                        If you hover over a particular region it would give you the details for that region.
+                        <br><br>
+                        Also, below you will find a table summarizing the information.
+                    </p>
+                    <img src="../images/finalMap1.jpg"/>
+                    <img src="../images/finalMap2.jpg"/>
+                    <br><br>
+                </li>                
+            </ul>            
+       </form>    
+    </body>
+</html>

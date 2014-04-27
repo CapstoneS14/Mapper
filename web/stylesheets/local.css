@@ -24,6 +24,14 @@ h3 {
     color: white
 }
 
+footer {
+    font-size: 1em; 	    
+    text-align: left;
+    color: white;
+    margin-left : 50px;
+    padding-left: 20px;        
+}
+
 .formClass {
     margin-top : 20px;
     margin-bottom : 50px;
