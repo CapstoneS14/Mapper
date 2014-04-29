@@ -3,7 +3,7 @@
         <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script src="../ui/jquery.ui.datepicker.js"></script>
+        <!--<script src="../ui/jquery.ui.datepicker.js"></script>
         <script>
             $(function() {        
                 $( "#fromadcvd1" ).datepicker({
@@ -56,7 +56,7 @@
 		});                             
                 
             });        
-	</script>
+	</script>-->
     </head>
     <body>
         <form class="formClass" name="adcvdFilterForm" method="get"  action="" >
@@ -79,19 +79,19 @@
                 <label><strong>Date Range: </strong></label>
                 <table class="tableClass">
                     <tr>
-                        <td><input type="radio" name="filter2adcvd" value="init" onClick="chkdatetanc();"/> Cases Initiated:</td>
+                        <td><input type="radio" name="filter2adcvd" value="init" onClick=""/> Cases Initiated:</td>
                         <td> From <input type="text" name="fromadcvd1" id="fromadcvd1" disabled/></td>
                         <td> To   <input type="text" name="toadcvd1" id="toadcvd1" disabled /></td>
                     </tr>                
 
                     <tr>
-                        <td><input type="radio" name="filter2adcvd" value="close" onClick="chkdatetanc();"/> Cases Closed:</td>
+                        <td><input type="radio" name="filter2adcvd" value="close" onClick=""/> Cases Closed:</td>
                         <td> From <input type="date" name="fromadcvd2" id="fromadcvd2" disabled/></td>
                         <td> To   <input type="date" name="toadcvd2" id="toadcvd2" disabled /></td>
                     </tr>                
 
                     <tr>
-                        <td><input type="radio" name="filter2adcvd" value="success" onClick="chkdatetanc();"/> Cases of Success Between:</td>
+                        <td><input type="radio" name="filter2adcvd" value="success" onClick=""/> Cases of Success Between:</td>
                         <td> From <input type="date" name="fromadcvd3" id="fromadcvd3" disabled/></td>
                         <td> To  <input type="date" name="toadcvd3" id="toadcvd3" disabled /></td>
                     </tr>                
@@ -115,10 +115,10 @@
                 <table class="tableClass">
                         <tr>
                             <td class="colRadioClassUnequal">
-                                <input type="radio" checked name="adcvdCountry" value="all" onClick="chkcountrytanc();"/> All
+                                <input type="radio" checked name="adcvdCountry" value="all" onClick=""/> All
                             </td>
                             <td style="width:2%;">
-                                <input type="radio" name="adcvdcountry" value="list" onClick="chkcountrytanc();"/>
+                                <input type="radio" name="adcvdcountry" value="list" onClick=""/>
                             </td> 
                             <td style="width:42%;">
                                 <select style="width:100%;" name="adcvdCountryList" multiple="multiple">   
@@ -371,7 +371,7 @@
                 <table class="tableClass">
                     <tr>
                         <td>
-                            <select class="selectClass" name="tancIndustry">
+                            <select class="selectClass" name="adcvdIndustry">
                                 <option value = "All" selected>All Industries</option>
                                 <option value = "Aerospace">Aerospace</option>
                                 <option value = "Automobiles">Automobiles</option>

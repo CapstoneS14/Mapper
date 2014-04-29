@@ -3,7 +3,7 @@
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script src="../ui/jquery.ui.datepicker.js"></script>
+        <!--<script src="../ui/jquery.ui.datepicker.js"></script>
         <script>
             $(function() {        
                 $( "#fromtrade1" ).datepicker({
@@ -40,7 +40,7 @@
 		});
                 
             });        
-	</script>
+	</script>-->
     </head>
     <body>
         <form class="formClass" name="filtertrade" method="get"  action="" >
@@ -50,13 +50,13 @@
                 <label><strong>Date Range: </strong></label>
                 <table class="tableClass">
                     <tr>
-                        <td><input type="radio" name="filter2trade" value="init" onClick="chkdatetanc();"/> Cases Initiated:</td>
+                        <td><input type="radio" name="filter2trade" value="init" onClick=""/> Cases Initiated:</td>
                         <td> From <input type="text" name="fromtrade1" id="fromtrade1" disabled/></td>
                         <td> To   <input type="text" name="totrade1" id="totrade1" disabled /></td>
                     </tr>                
 
                     <tr>
-                        <td><input type="radio" name="filter2trade" value="close" onClick="chkdatetanc();"/> Cases Closed:</td>
+                        <td><input type="radio" name="filter2trade" value="close" onClick=""/> Cases Closed:</td>
                         <td> From <input type="date" name="fromtrade2" id="fromtrade2" disabled/></td>
                         <td> To   <input type="date" name="totrade2" id="totrade2" disabled /></td>
                     </tr>                
@@ -80,10 +80,10 @@
                 <table class="tableClass">
                         <tr>
                             <td class="colRadioClassUnequal">
-                                <input type="radio" checked name="tradeCountry" value="all" onClick="chkcountrytanc();"/> All
+                                <input type="radio" checked name="tradeCountry" value="all" onClick=""/> All
                             </td>
                             <td style="width:2%;">
-                                <input type="radio" name="tradecountry" value="list" onClick="chkcountrytanc();"/>
+                                <input type="radio" name="tradecountry" value="list" onClick=""/>
                             </td> 
                             <td style="width:42%;">
                                 <select style="width:100%;" name="tradeCountryList" multiple="multiple">   
@@ -336,7 +336,7 @@
                 <table class="tableClass">
                     <tr>
                         <td>
-                            <select class="selectClass" name="tancIndustry">
+                            <select class="selectClass" name="tradeIndustry">
                                 <option value = "All" selected>All Industries</option>
                                 <option value = "Aerospace">Aerospace</option>
                                 <option value = "Automobiles">Automobiles</option>

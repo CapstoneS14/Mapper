@@ -665,7 +665,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             }
         } else {	//calculate frequency of each state on the us map
             if(workersMapFilter) {
-                title = "<h2>Enforcement and Compliance Information (Workers Affected Count): US only - by States</h2>";
+                title = "<h2>Enforcement and Compliance Information (Employees Affected Count): US only - by States</h2>";
             } else {
                 title = "<h2>Enforcement and Compliance Information (Case Count): US only - by States</h2>";    
             }
