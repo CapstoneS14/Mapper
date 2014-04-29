@@ -3,26 +3,109 @@
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="../ui/jquery.ui.datepicker.js"></script>
+        <script>
+            $(function() {        
+                $( "#fromftz1" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#toftz1" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});		
+                $( "#toftz1" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#fromftz1" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});
+                $( "#fromftz2" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#toftz2" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});
+		$( "#toftz2" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#fromftz2" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});
+                $( "#fromftz3" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#toftz3" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});
+		$( "#toftz3" ).datepicker({
+			defaultDate: "+1w",
+			changeMonth: true,
+			numberOfMonths: 1,
+			onClose: function( selectedDate ) {
+				$( "#fromftz3" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});                             
+                
+            });        
+	</script>
     </head>
     <body>
-        <form class="formClass" name="filterftz" method="get"  action="">
-            <input type="button" value="Home" onClick="goToHomeForm();">
-            <h3>Apply Filters</h3>
-            <label><strong>Select date</strong></label><br/>    
-            <p><input type="radio" name="filter2ftz" value="init" /> Case Initiated </p>
-            <input type="date" name="to" /> to  <input type="date" name="initendad" /><br/>
-            <br/>
-            <label><strong>Filter Company</strong></label><br/>    
-            <p><input type="radio" name="filter3ftz" value="export" /> Exports ($ millions) </p>
-            <p><input type="radio" checked name="filter3ftz" value="All" /> Imports ($ millions) </p>
-            <p><input type="radio" checked name="filter3ftz" value="All" /> All- default </p>
-            <br/>
-            <label><strong>Filter Jobs Facilitated</strong></label><br/>    
-            <p><input type="radio" name="filter4ftz" value="jobs" /> Jobs Facilitated </p>      
-
-            <input type="button" value="Continue" onclick="mapview();" >
-            <button type="reset" value="Reset">Reset</button>
+        <form class="formClass" name="ftzFilterForm" method="get"  action="" >
+            <h2>Filters to apply on Foreign Trade Zones Casework Data</h2>
+            <br>
+            <fieldset class="fieldsetClass">
+                <label><strong>Date Range: </strong></label>
+                <table class="tableClass">
+                    <tr>
+                        <td><input type="radio" name="filter2ftz" value="init" onClick="chkdatetanc();"/> Cases Initiated:</td>
+                        <td> From <input type="text" name="fromftz1" id="fromftz1" disabled/></td>
+                        <td> To   <input type="text" name="toftz1" id="toftz1" disabled /></td>
+                    </tr>                
+                </table>
+                <br><hr><br>
+                <label><strong>Area: </strong></label>
+                <table class="tableClass">
+                    <tr>
+                        <td class="colRadioClass">
+                            <input type="radio" checked name="filter3ftz" value="All" />All
+                        </td>
+                        <td class="colRadioClass">
+                            <input type="radio" name="filter3ftz" value="export" />Exports ($ millions)
+                        </td>
+                        <td class="colRadioClass">
+                            <input type="radio" name="filter3ftz" value="import" />Imports ($ millions)
+                        </td>                        
+                    </tr>                
+                </table>
+                <br><hr><br>
+                <label><strong>Jobs Facilitated: </strong></label>
+                <table class="tableClass">
+                    <tr>
+                        <td class="colRadioClass">
+                            <input type="radio" checked name="filter4ftz" value="true" />Do not display
+                        </td>
+                        <td class="colRadioClass">
+                            <input type="radio" name="filter4ftz" value="false" /> Display
+                        </td>
+                        <td></td>
+                    </tr>            
+                </table>
+            
+            <br><hr><br>            
+        
+            <input class="buttonClass" type="button" value="Continue" onclick="mapview();" />
+            <button class="buttonClass" type="reset" value="Reset">Reset</button>
+            
+            </fieldset>
         </form>
-
     </body>
 </html>
