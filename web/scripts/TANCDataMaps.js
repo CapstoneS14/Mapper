@@ -1571,10 +1571,3 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
         document.getElementById('resultInfo').appendChild(table);    
         
     };
-    
-
-var TancDrawBubbleMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto, smef, 
-            countryList, industryfilter, issuefilter, pubfilter, ftafilter, wtofilter, usMapfilter, valuefilter) {
-
-    
-};  
