@@ -60,7 +60,7 @@
                 var jsonArray = " [ ";
                 
                 try {                                        
-                    div.style.visibility = 'visible';                     
+                    //div.style.visibility = 'visible';                     
                     progress('start');                    
                     excel = new ActiveXObject("Excel.Application");                    
                     excel.Visible = false;
@@ -214,7 +214,7 @@
                 }
                 console.log(jsonArray);
                 progress('done');
-                div.style.visibility = 'hidden';
+                //div.style.visibility = 'hidden';
                 return jsonArray;
             }
         </script>
@@ -228,6 +228,7 @@
         <br>
         <input class="homeButtonClass" type="button" value="User Guide" onclick="window.open('userGuide.html')"/>
         <input class="homeButtonClass" id="homeButton" type="button" value="Home" onClick="goToHomeForm();" />          
+        <input class="homeButtonClass" id="backButton" type="button" value="Back" onClick="goToPreviousForm();" />          
         
         <div id="dataCategory"></div>
         <div id="fileUpload"></div>
@@ -244,6 +245,8 @@
             window.onload = function () {                
                 showPage("#dataCategory");
                 $("#homeButton").hide();
+                $("#backButton").hide();
+                backPageDivId = null;
             };
                         
             var dataCategory; //category of data from first form - set in goToFileUploadForm
@@ -289,6 +292,9 @@
             var mapValue; //store accumulated value of each record on the map
             var NumOfInvalidRecord; //records that can't be mapped
             
+            var currPageDivId = "#dataCategory";
+            var backPageDivId = null;
+            
             function showPage(pageDivId){
                 $("#dataCategory").hide();
                 $("#fileUpload").hide();
@@ -301,6 +307,31 @@
                 $("#filterFtz").hide();
                 $(pageDivId).show();
                 $("#homeButton").show();
+                $("#backButton").show();
+                currPageDivId = pageDivId;
+                setBackPageDivId(pageDivId);
+            }
+            
+            function setBackPageDivId(pageDivId){
+                if(pageDivId === '#dataCategory'){
+                    backPageDivId =  null;
+                }else if(pageDivId === '#fileUpload'){
+                    backPageDivId =  '#dataCategory';
+                }else if(pageDivId === '#tancFilter'){
+                    backPageDivId =  '#fileUpload';
+                }else if(pageDivId === '#mapDisplayType'){
+                    backPageDivId =  '#tancFilter';
+                }else if(pageDivId === '#finalMap'){
+                    backPageDivId =  '#mapDisplayType';
+                }else if(pageDivId === '#adcvdFilter'){
+                    backPageDivId =  '#fileUpload';
+                }else if(pageDivId === '#filterTrade'){
+                    backPageDivId =  '#fileUpload';
+                }else if(pageDivId === '#filterLaw'){
+                    backPageDivId =  '#fileUpload';
+                }else if(pageDivId === '#filterFtz'){
+                    backPageDivId =  '#fileUpload';
+                }
             }
             
             function goToFileUploadForm() {
@@ -319,9 +350,12 @@
                     alert("No input selected - Select one of the data categories");
                     showPage("#dataCategory");
                     $("#homeButton").hide();
+                    $("#backButton").hide();
+                    backPageDivId = null;
                 } else {
                     dataCategory = whichinput[k].value;
                     showPage("#fileUpload");
+                    $("#homeButton").hide();
                 }
                     
             }            
@@ -395,7 +429,11 @@
                 }
             }               
             
-            function goToFiltersForm() {
+            function resetProgressBar(){
+                progress("reset");
+            }
+            
+            function uploadFile() {
                 var fileName = document.getElementById("myFile").value;
                 
                 if(document.forms["fileUploadForm"]["file"].value !== "") {
@@ -410,12 +448,16 @@
                     }                    
                     
                     var div = document.getElementById('progressbar');
-                    dataRecords = readData(fileName, div);
-                    //Parse and process json object string created above - retrieving record number of the first element in records array
-                    //var contents = jsonParse(dataRecords);
-                    
-                            //+"\nPartial Content: First record number - " +  contents["records"][0]["Record Number"]);
-
+                    dataRecords = readData(fileName, div);                    
+                } else {
+                    alert('Must Select any of your file for upload!');
+                }
+            }
+            
+            function goToFiltersForm() {
+                if(dataRecords === null || dataRecords === undefined) {
+                    alert('No data file uploaded! Upload a data file first before continuing');
+                }else{
                     if(dataCategory==="TancCases") {
                         showPage("#tancFilter");
                     } else if(dataCategory==="AdCvdActions") {
@@ -426,16 +468,32 @@
                         showPage("#filterFtz");
                     } else if(dataCategory==="EnforcementAndCompliance") {
                         showPage("#filterLaw");
-                    }
-                    
-                } else {
-                    alert('Must Select any of your file for upload!');
+                    }     
                 }
-            }  
-            
+            }            
+           
             function goToHomeForm() {
                 location.reload();
                 location.reload();
+            }
+            
+            function goToPreviousForm(){
+                //alert("currPageDivId:"+currPageDivId+":::::backPageDivId:"+backPageDivId);
+                if(currPageDivId !== null && backPageDivId !== null){
+                    $(currPageDivId).hide();
+                    //clear the final map output
+                    if(currPageDivId === '#finalMap'){
+                        $("#mapTitle").html("");
+                        $("#resultMap").html("");
+                        $("#filtersApplied").html("");
+                        $("#resultInfo").html("");                    
+                    }
+                    //shoe the previous page
+                    $(backPageDivId).show();
+                    //update the current and back pages id
+                    currPageDivId = backPageDivId;
+                    setBackPageDivId(currPageDivId);
+                }
             }
             
             function mapview() {                

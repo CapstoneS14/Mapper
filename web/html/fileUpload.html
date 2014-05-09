@@ -8,10 +8,11 @@
             
             $(function() {        
                     $( "#progressbar-widget" ).progressbar({
-                                value: Math.floor( Math.random() * 50 ),                                
+                                value: Math.floor( Math.random() * 25 ),                                
                               	complete: function() {
                                             $( "#progressbar-text").text( "Loading Complete!" );
-                        }
+                                }
+                                                            
                     });
                     $( "#progressbar-widget" ).css({'background':'white'});
                     $( "#progressbar-widget > div" ).css({'background':'green'});
@@ -19,20 +20,26 @@
             });
                     
             function progress(doneFlag) {
-                if(doneFlag === 'start'){                    
-                    
-//                    $( "#progressbar-widget").progressbar( "value", getRandomNumberGreaterThan25());
-//                    
-//                    function getRandomNumberGreaterThan25(){
-//                        var num = Math.floor( Math.random() * 100);
-//                        while(num<=25){
-//                           num = Math.floor( Math.random() * 100);
-//                        }
-//                        return num;
-//                    }                    
-                    
-                }if(doneFlag === 'done'){
-                    $( "#progressbar-widget").progressbar( "value", 100 );
+                //alert("progress:"+doneFlag+":");
+                if(doneFlag === 'reset'){            
+                    document.getElementById('progressbar').style.visibility = 'hidden';
+                    $( "#progressbar-widget").progressbar( "value", 0);
+                    $( "#progressbar-text").text("");
+                }else if(doneFlag === 'start'){ 
+                    document.getElementById('progressbar').style.visibility = 'visible';
+                    $( "#progressbar-widget").progressbar( "value", getRandomNumberGreaterThan25());
+                    $( "#progressbar-text").text("Loading...");
+                            
+                    function getRandomNumberGreaterThan25(){
+                        var num = Math.floor( Math.random() * 100);
+                        while(num<=25){
+                           num = Math.floor( Math.random() * 100);
+                        }
+                        return num;                   
+                    }                    
+                 }else if(doneFlag === 'done'){
+                    document.getElementById('progressbar').style.visibility = 'visible';
+                    $( "#progressbar-widget").progressbar( "value", 100 );                    
                 }
             }
             
@@ -45,11 +52,12 @@
             <br>
             Browse to select an input Excel data file in order to proceed: 
             <br><br>
-            <input class="fileSelectClass" type="file" name="file" id="myFile"> <br>
+            <input class="fileSelectClass" type="file" name="file" id="myFile" onclick="resetProgressBar()"> <br>
             <br><br>
             
-            <input class="buttonClass"  type="button" value="Upload"  onclick="goToFiltersForm();"/>            
+            <input class="buttonClass"  type="button" value="Upload"  onclick="uploadFile();"/>            
             <button class="buttonClass" type="reset" value="Reset">Cancel</button>
+            <input class="buttonClass"  type="button" value="Continue"  onclick="goToFiltersForm();"/>            
             <br/>
             <br/>
             <br/>
