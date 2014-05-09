@@ -51,7 +51,7 @@
             }
             
             //read data from the file
-            function readData(file, div) {
+            function readData(file) {
                 var excel;
                 var excel_file;
                 var excel_sheet;
@@ -60,7 +60,6 @@
                 var jsonArray = " [ ";
                 
                 try {                                        
-                    //div.style.visibility = 'visible';                     
                     progress('start');                    
                     excel = new ActiveXObject("Excel.Application");                    
                     excel.Visible = false;
@@ -113,11 +112,6 @@
                         headers.push(data);
                         yVal++;
                     }
-                    
-                    //Test headers array
-                    /*for(var i = 0; i<headers.length; i++) {
-                        console.log(headers[i]);
-                    }*/
                     
                     //Read data in chunks of 10 rows
                     var chunk_size = 10;
@@ -214,7 +208,6 @@
                 }
                 console.log(jsonArray);
                 progress('done');
-                //div.style.visibility = 'hidden';
                 return jsonArray;
             }
         </script>
@@ -281,11 +274,9 @@
             var workersMapFilter = false; // only show US map shaded based on workers count, 
                                           //boolean default = false to not show US map shaded based on workers count
             
-			/*          
-            for the two disabled filters which do not have relevant data records yet            
-            var marketAccessFilter = false; // boolean: display or not, default is false (Do not display)
-            */
-            //still disabled in UI as of now for lack of data
+                                          
+            //var marketAccessFilter = false; // boolean: display or not, default is false (Do not display)
+           
             var affectedEmployeeFilter = false; // boolean: display or not, default is false (Do not display)
             
             var mapFre = new HashMap(); //store frequency of each record on the map
@@ -447,8 +438,7 @@
                         document.getElementById('file').value='';                       
                     }                    
                     
-                    var div = document.getElementById('progressbar');
-                    dataRecords = readData(fileName, div);                    
+                    dataRecords = readData(fileName);                    
                 } else {
                     alert('Must Select any of your file for upload!');
                 }
@@ -478,7 +468,6 @@
             }
             
             function goToPreviousForm(){
-                //alert("currPageDivId:"+currPageDivId+":::::backPageDivId:"+backPageDivId);
                 if(currPageDivId !== null && backPageDivId !== null){
                     $(currPageDivId).hide();
                     //clear the final map output
@@ -488,7 +477,7 @@
                         $("#filtersApplied").html("");
                         $("#resultInfo").html("");                    
                     }
-                    //shoe the previous page
+                    //show the previous page
                     $(backPageDivId).show();
                     //update the current and back pages id
                     currPageDivId = backPageDivId;
@@ -502,14 +491,6 @@
             }
             function mapview() {                
                                 
-                /*
-                 * ---- to implement
-                 * move all these read if blocks to a function called read filters 
-                 *      that decides which form to use based on data category to read filters
-                 *      populates appropriate global filter variables which need to be passed to
-                 *      drawDataMaps later
-                 *      and returns a noErrors value
-                 */
                 var noErrors = true;
                 //read date range filters -- Tanc
                 if (dateOption === "init") {
@@ -556,7 +537,7 @@
                     }                    
                 }
                 
-                //read sme/ all organizations filter -- tanc
+                //read sme/all organizations filter -- tanc
                 var whichinput=document.getElementsByName("tancSMEFilter");
                 var k;
                 var len=whichinput.length;
@@ -579,8 +560,7 @@
                     countryList =  [];
                     for (var i = 0 ; i<selectList.length; i++) {
                         if (selectList[i].selected) {
-                            //alert("Item " + i + ": "  + selectList[i].value);
-                            countryList.push(selectList[i].value);
+                           countryList.push(selectList[i].value);
                         }
                     }
                 } else  {
@@ -720,11 +700,9 @@
                 }
                                          
                 if (mapOption === "shadeus") {
-                    //alert("Display Shaded US Map");
                     usOnlyMapFilter = true;
                     workersMapFilter = false;
                 } else if (mapOption === "shadeworld") {
-                    //alert("Display Shaded World Map");
                     usOnlyMapFilter = false;
                     workersMapFilter = false;
                 } else if (mapOption === "shadeusWorkers") {
@@ -773,8 +751,9 @@
             }
             
             /* 
-             * --- to take a look at below functions as well as forms 
-             * and modify as above for other case data with ids of elements 
+             * --- Directions for enhancements
+             * Look at below functions and the corresponding filter forms 
+             * Modify as above for other case data with ids of elements 
              * and appropriate filter variables -----
              */
             function chkdateadcase() {
