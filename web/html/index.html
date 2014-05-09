@@ -464,7 +464,7 @@
                         showPage("#adcvdFilter");
                     } else if(dataCategory==="TradeRemedyActions") {
                         showPage("#filterTrade");
-                    } else if(dataCategory==="Foreign tarde zone") {
+                    } else if(dataCategory==="ForeignTradeZone") {
                         showPage("#filterFtz");
                     } else if(dataCategory==="EnforcementAndCompliance") {
                         showPage("#filterLaw");
@@ -739,10 +739,37 @@
                     valueFilter, affectedEmployeeFilter, workersMapFilter);
             }
             
+            function savemap() {
+                var $container = $('#resultMap');
+                var svg = $container.html().trim();
+
+                var canvas = document.getElementById("myMap");
+
+                canvg(canvas,svg);
+
+                var destinationCanvas = document.getElementById("canvasMap");
+                destinationCanvas.width = canvas.width;
+                destinationCanvas.height = canvas.height;
+                
+
+                var destCtx = destinationCanvas.getContext('2d');
+
+                //create a rectangle with the desired color
+                destCtx.fillStyle = "#FFFFFF";
+                destCtx.fillRect(0,0,canvas.width,canvas.height);
+
+                //draw the original canvas onto the destination canvas
+                destCtx.drawImage(canvas, 0, 0);
+                destinationCanvas.style.display="block";
+                var theImage = destinationCanvas.toDataURL('image/jpg');
+                window.open(theImage);
+                
+            }
             
             /* 
              * --- to take a look at below functions as well as forms 
-             * and modify as above for other case data -----
+             * and modify as above for other case data with ids of elements 
+             * and appropriate filter variables -----
              */
             function chkdateadcase() {
                 var whichinput=document.getElementsByName("filter2adcase");         

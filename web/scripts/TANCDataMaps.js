@@ -665,7 +665,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
             }
         } else {	//calculate frequency of each state on the us map
             if(workersMapFilter) {
-                title = "<h2>Enforcement and Compliance Information (Workers Affected Count): US only - by States</h2>";
+                title = "<h2>Enforcement and Compliance Information (Employees Affected Count): US only - by States</h2>";
             } else {
                 title = "<h2>Enforcement and Compliance Information (Case Count): US only - by States</h2>";    
             }
@@ -1123,78 +1123,7 @@ var drawTancDataMaps = function (dataRecords, sf, diffrom, difto, dcffrom, dcfto
                         }
                     }                    
                 }
-            } /*else if (usOnlyMapFilter === false && workersMapFilter === true) { // us map - shade by employees affected
-                var state = data[record]["Case Address: State"];
-                if(state === null || typeof state === "undefined") {
-                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
-                    continue;
-                }
-                if (!mapFre.containsKey(state)) {
-                    NumOfInvalidRecord = NumOfInvalidRecord + 1;
-                } else {
-                    var country = data[record]["Country(s)"];
-                    if (country.indexOf(",") < 0 && country !== "European Union") {
-                        var cty = countryAbbreviationTable.get(country);
-                        if (cty === null) {
-                            //document.write("Invalid record: " + country + "<br>");
-                            NumOfInvalidRecord = NumOfInvalidRecord + 1;
-                        } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
-                            appliedFilters = appliedFilters + " Country(s) involved: " + 
-                                countryFilterList + ";";
-                            continue;
-                        }                        
-                    } else if (country.indexOf("European Union") >= 0) { // EU
-                        var countries = EUlist;
-                        for (var i in countries) {
-                            var cty = countryAbbreviationTable.get(countries[i]);
-                            if (cty === null) {
-                                //document.write("Invalid record: " + countries[i] + "<br>");
-                                NumOfInvalidRecord = NumOfInvalidRecord + 1;
-                            } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
-                                appliedFilters = appliedFilters + " Country(s) involved: " + 
-                                    countryFilterList + ";";
-                                continue;
-                            }
-                        }
-                    } else if (country.indexOf(",") >= 0) {
-                        var countries = country.split(", ");
-                        for (var i in countries) {
-                            var cty = countryAbbreviationTable.get(countries[i]);
-                            if (cty === null) {
-                                //document.write("Invalid record: " + countries[i] + "<br>");
-                                NumOfInvalidRecord = NumOfInvalidRecord + 1;
-                            } else if (countryFilterList !== "All" && arrayContains(countryFilterList, cty) === false) {
-                                appliedFilters = appliedFilters + " Country(s) involved: " + 
-                                    countryFilterList + ";";
-                                continue;
-                            }
-                        }   
-                    }   
-
-                    var tmp = mapFre.get(state) + 1;
-                    mapFre.put(state, tmp);
-                    if (valueFilter) {
-                        var curVal = data[record]["Case Value (in $ millions)"];
-                        if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
-                            var tmpVal = 0 + mapValue.get(state);
-                            mapValue.put(state, tmpVal);
-                        } else {
-                            var tmpVal = parseInt(curVal) + mapValue.get(state);
-                            mapValue.put(state, tmpVal);
-                        }
-                    }
-                    if (affectedEmployeeFilter || workersMapFilter) {
-                        var curVal = data[record]["Employees"];
-                        if (isNaN(parseInt(curVal)) || curVal === null || typeof curVal === "undefined") {
-                            var tmpVal = 0 + empValue.get(state);
-                            empValue.put(state, tmpVal);
-                        } else {
-                            var tmpVal = parseInt(curVal) + empValue.get(state);
-                            empValue.put(state, tmpVal);
-                        }
-                    }                    
-                }
-            }   */         
+            } 
         }
         
         if(affectedEmployeeFilter) {
